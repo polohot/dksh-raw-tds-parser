@@ -22,232 +22,335 @@ def buildQuestionGetProductNameAndSupplierFromParsedText(parsed_output):
     question += parsed_output  
     return question
 
-def buildStructuredOutputBody(parsed_text, product_name, manufacturer_name):
-    body = {
-    "model": "gpt-4o",
-    "messages": [
+def buildStructuredOutputBody(parsed_text, product_name, manufacturer_name, ls_base64):
+    # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
+    messages = [
         {
-        "role": "system",
-        "content": f"""
-                    You will read the given text and extract specific product-related information.
-                    Always return all fields. If any information is missing or not found, return the string 'Not Specified' for that field.
-                    If there is multiple products in the text, only focus on finding answer for product [{product_name}] from manufacturer [{manufacturer_name}]. 
-                    """        
+            "role": "system",
+            "content": f"""
+                You will read the given text and extract specific product-related information.
+                Always return all fields. If any information is missing or not found, return the string 'Not Specified' for that field.
+                If there is multiple products in the text, only focus on finding answer for product [{product_name}] from manufacturer [{manufacturer_name}]. 
+            """
         },
         {
-        "role": "user",
-        "content": parsed_text
+            "role": "user",
+            "content": parsed_text
         }
-    ],
-    "response_format": {
-        "type": "json_schema",
-        "json_schema": {
-        "name": "full_supply_chain_form",
-        "strict": True,
-        "schema": {
-            "type": "object",
-            "properties": {
-            "manufacturing_site_address": {
-                "type": "string",
-                "description": "Full address where the product is manufactured"
-            },
-            "manufacturing_country": {
-                "type": "string",
-                "description": "Country where the product is manufactured"
-            },
-            "manufacturer_article_number": {
-                "type": "string",
-                "description": "Internal reference number of the product from the manufacturer"
-            },
-            "physical_location_of_goods": {
-                "type": "string",
-                "description": "Country where the goods are physically located"
-            },
-            "contains_animal_origin": {
-                "type": "string",
-                "description": "Does the product contain substances of animal origin?"
-            },
-            "contains_vegetal_origin": {
-                "type": "string",
-                "description": "Does the product contain substances of vegetal origin?"
-            },
-            "contains_palm": {
-                "type": "string",
-                "description": "Does the product contain or use palm origin derivatives?"
-            },
-            "contains_mineral_origin": {
-                "type": "string",
-                "description": "Does the product contain substances of mineral origin?"
-            },
-            "contains_conflict_minerals": {
-                "type": "string",
-                "description": "Does the product contain conflict minerals (e.g., tantalum, tungsten, gold)?"
-            },
-            "contains_synthetic_origin": {
-                "type": "string",
-                "description": "Does the product contain substances of synthetic origin?"
-            },
-            "other_specified_origin": {
-                "type": "string",
-                "description": "If other origin is specified, include the detail"
-            },
-            "outer_packaging_unit": {
-                "type": "string",
-                "description": "Type of outer packaging unit (e.g., bag, box, drum)"
-            },
-            "outer_packaging_material": {
-                "type": "string",
-                "description": "Material used in outer packaging (e.g., PE, aluminum)"
-            },
-            "un_homologated_outer_packaging": {
-                "type": "string",
-                "description": "Is the outer packaging UN homologated?"
-            },
-            "inner_packaging_unit": {
-                "type": "string",
-                "description": "Inner packaging unit type"
-            },
-            "inner_packaging_material": {
-                "type": "string",
-                "description": "Material used in inner packaging"
-            },
-            "gross_weight_kg": {
-                "type": "string",
-                "description": "Gross weight in kilograms"
-            },
-            "net_weight_kg": {
-                "type": "string",
-                "description": "Net weight in kilograms"
-            },
-            "dimensions_lwh": {
-                "type": "string",
-                "description": "Length / Width / Height (in meters or cm)"
-            },
-            "volume_m3": {
-                "type": "string",
-                "description": "Volume of the packaging unit in cubic meters"
-            },
-            "pallet_type_material": {
-                "type": "string",
-                "description": "Type and material of pallet used"
-            },
-            "storage_conditions": {
-                "type": "string",
-                "description": "Storage conditions including temperature and humidity"
-            },
-            "transport_conditions": {
-                "type": "string",
-                "description": "Required transport temperature or conditions"
-            },
-            "shelf_life": {
-                "type": "string",
-                "description": "Shelf life of the product"
-            },
-            "lot_batch_structure": {
-                "type": "string",
-                "description": "Structure of lot or batch number (e.g., 200101 = YYMMDD)"
-            },
-            "tariff_code": {
-                "type": "string",
-                "description": "Tariff code for customs (TARIC for EU or local tariff code)"
-            },
-            "origin_country": {
-                "type": "string",
-                "description": "Country of origin (manufactured, processed or grown)"
-            },
-            "customs_status": {
-                "type": "string",
-                "description": "'Union' if product is from within EU; 'Non-Union' if from outside"
-            },
-            "preferential_origin_eu": {
-                "type": "string",
-                "description": "Preferential origin as per FTA with EU"
-            },
-            "preferential_origin_uk": {
-                "type": "string",
-                "description": "Preferential origin as per FTA with UK"
-            },
-            "preferential_origin_ch": {
-                "type": "string",
-                "description": "Preferential origin as per FTA with Switzerland"
-            },
-            "eu_supplier": {
-                "type": "string",
-                "description": "Is the supplier based in the EU?"
-            },
-            "estimated_cost_local": {
-                "type": "string",
-                "description": "Estimated cost in local currency"
-            },
-            "quantity_in_1st_po": {
-                "type": "string",
-                "description": "Quantity ordered in the first PO to supplier"
-            },
-            "estimated_year_quantity": {
-                "type": "string",
-                "description": "Estimated total quantity for current year"
-            },
-            "custom_clearance_by": {
-                "type": "string",
-                "description": "Who handles customs clearance (Us, Supplier)"
-            },
-            "country_sold_to": {
-                "type": "string",
-                "description": "Destination country of the goods"
-            },
-            "location_at_time_of_po": {
-                "type": "string",
-                "description": "Country where goods are located at the time of PO"
-            },
-            "custom_clearance_country": {
-                "type": "string",
-                "description": "Country where the goods will be cleared by customs"
+    ]    
+    # ADD BASE64 IMAGES IF PROVIDED
+    for base64_img in ls_base64:
+        messages.append({
+            "role": "user",
+            "content": [
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/png;base64,{base64_img}"
+                    }
+                }
+            ]
+        })
+    # BUILD BODY
+    body = {
+        "model": "gpt-4o",
+        "messages": messages,
+        "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+                "name": "full_supply_chain_form",
+                "strict": True,
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        # ... (same as your original schema)
+                    },
+                    "required": [
+                        # ... (same as your original required list)
+                    ],
+                    "additionalProperties": False
+                }
             }
-            },
-            "required": [
-            "manufacturing_site_address",
-            "manufacturing_country",
-            "manufacturer_article_number",
-            "physical_location_of_goods",
-            "contains_animal_origin",
-            "contains_vegetal_origin",
-            "contains_palm",
-            "contains_mineral_origin",
-            "contains_conflict_minerals",
-            "contains_synthetic_origin",
-            "other_specified_origin",
-            "outer_packaging_unit",
-            "outer_packaging_material",
-            "un_homologated_outer_packaging",
-            "inner_packaging_unit",
-            "inner_packaging_material",
-            "gross_weight_kg",
-            "net_weight_kg",
-            "dimensions_lwh",
-            "volume_m3",
-            "pallet_type_material",
-            "storage_conditions",
-            "transport_conditions",
-            "shelf_life",
-            "lot_batch_structure",
-            "tariff_code",
-            "origin_country",
-            "customs_status",
-            "preferential_origin_eu",
-            "preferential_origin_uk",
-            "preferential_origin_ch",
-            "eu_supplier",
-            "estimated_cost_local",
-            "quantity_in_1st_po",
-            "estimated_year_quantity",
-            "custom_clearance_by",
-            "country_sold_to",
-            "location_at_time_of_po",
-            "custom_clearance_country"
-            ],
-            "additionalProperties": False
+        }
+    }
+
+    body = {
+        "model": "gpt-4o",
+        "messages": messages,
+        "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+                "name": "full_supply_chain_form",
+                "strict": True,
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "manufacturing_site_address": {
+                            "type": "string",
+                            "description": "Full address where the product is manufactured"},
+                        "manufacturing_country": {
+                            "type": "string",
+                            "description": "Country where the product is manufactured"},
+                        "manufacturer_article_number": {
+                            "type": "string",
+                            "description": "Internal reference number of the product from the manufacturer"},
+                        "physical_location_of_goods": {
+                            "type": "string",
+                            "description": "Country where the goods are physically located"},
+                        "contains_animal_origin": {
+                            "type": "string",
+                            "description": "Does the product contain substances of animal origin?"},
+                        "contains_vegetal_origin": {
+                            "type": "string",
+                            "description": "Does the product contain substances of vegetal origin?"},
+                        "contains_palm": {
+                            "type": "string",
+                            "description": "Does the product contain or use palm origin derivatives?"},
+                        "contains_mineral_origin": {
+                            "type": "string",
+                            "description": "Does the product contain substances of mineral origin?"},
+                        "contains_conflict_minerals": {
+                            "type": "string",
+                            "description": "Does the product contain conflict minerals (e.g., tantalum, tungsten, gold)?"},
+                        "contains_synthetic_origin": {
+                            "type": "string",
+                            "description": "Does the product contain substances of synthetic origin?"},
+                        "other_specified_origin": {
+                            "type": "string",
+                            "description": "If other origin is specified, include the detail"},
+                        "outer_packaging_unit": {
+                            "type": "string",
+                            "description": "Type of outer packaging unit (e.g., bag, box, drum)"},
+                        "outer_packaging_material": {
+                            "type": "string",
+                            "description": "Material used in outer packaging (e.g., PE, aluminum)"},
+                        "un_homologated_outer_packaging": {
+                            "type": "string",
+                            "description": "Is the outer packaging UN homologated?"},
+                        "inner_packaging_unit": {
+                            "type": "string",
+                            "description": "Inner packaging unit type"},
+                        "inner_packaging_material": {
+                            "type": "string",
+                            "description": "Material used in inner packaging"},
+                        "gross_weight_kg": {
+                            "type": "string",
+                            "description": "Gross weight in kilograms"},
+                        "net_weight_kg": {
+                            "type": "string",
+                            "description": "Net weight in kilograms"},
+                        "dimensions_lwh": {
+                            "type": "string",
+                            "description": "Length / Width / Height (in meters or cm)"},
+                        "volume_m3": {
+                            "type": "string",
+                            "description": "Volume of the packaging unit in cubic meters"},
+                        "pallet_type_material": {
+                            "type": "string",
+                            "description": "Type and material of pallet used"},
+                        "storage_conditions": {
+                            "type": "string",
+                            "description": "Storage conditions including temperature and humidity"},
+                        "transport_conditions": {
+                            "type": "string",
+                            "description": "Required transport temperature or conditions"},
+                        "shelf_life": {
+                            "type": "string",
+                            "description": "Shelf life of the product"},
+                        "lot_batch_structure": {
+                            "type": "string",
+                            "description": "Structure of lot or batch number (e.g., 200101 = YYMMDD)"},
+                        "tariff_code": {
+                            "type": "string",
+                            "description": "Tariff code for customs (TARIC for EU or local tariff code)"},
+                        "origin_country": {
+                            "type": "string",
+                            "description": "Country of origin (manufactured, processed or grown)"},
+                        "customs_status": {
+                            "type": "string",
+                            "description": "'Union' if product is from within EU; 'Non-Union' if from outside"},
+                        "preferential_origin_eu": {
+                            "type": "string",
+                            "description": "Preferential origin as per FTA with EU"},
+                        "preferential_origin_uk": {
+                            "type": "string",
+                            "description": "Preferential origin as per FTA with UK"},
+                        "preferential_origin_ch": {
+                            "type": "string",
+                            "description": "Preferential origin as per FTA with Switzerland"},
+                        "eu_supplier": {
+                            "type": "string",
+                            "description": "Is the supplier based in the EU?"},
+                        "estimated_cost_local": {
+                            "type": "string",
+                            "description": "Estimated cost in local currency"},
+                        "quantity_in_1st_po": {
+                            "type": "string",
+                            "description": "Quantity ordered in the first PO to supplier"},
+                        "estimated_year_quantity": {
+                            "type": "string",
+                            "description": "Estimated total quantity for current year"},
+                        "custom_clearance_by": {
+                            "type": "string",
+                            "description": "Who handles customs clearance (Us, Supplier)"},
+                        "country_sold_to": {
+                            "type": "string",
+                            "description": "Destination country of the goods"},
+                        "location_at_time_of_po": {
+                            "type": "string",
+                            "description": "Country where goods are located at the time of PO"},
+                        "custom_clearance_country": {
+                            "type": "string",
+                            "description": "Country where the goods will be cleared by customs"}
+                        },
+                    "required": [
+                        "manufacturing_site_address",
+                        "manufacturing_country",
+                        "manufacturer_article_number",
+                        "physical_location_of_goods",
+                        "contains_animal_origin",
+                        "contains_vegetal_origin",
+                        "contains_palm",
+                        "contains_mineral_origin",
+                        "contains_conflict_minerals",
+                        "contains_synthetic_origin",
+                        "other_specified_origin",
+                        "outer_packaging_unit",
+                        "outer_packaging_material",
+                        "un_homologated_outer_packaging",
+                        "inner_packaging_unit",
+                        "inner_packaging_material",
+                        "gross_weight_kg",
+                        "net_weight_kg",
+                        "dimensions_lwh",
+                        "volume_m3",
+                        "pallet_type_material",
+                        "storage_conditions",
+                        "transport_conditions",
+                        "shelf_life",
+                        "lot_batch_structure",
+                        "tariff_code",
+                        "origin_country",
+                        "customs_status",
+                        "preferential_origin_eu",
+                        "preferential_origin_uk",
+                        "preferential_origin_ch",
+                        "eu_supplier",
+                        "estimated_cost_local",
+                        "quantity_in_1st_po",
+                        "estimated_year_quantity",
+                        "custom_clearance_by",
+                        "country_sold_to",
+                        "location_at_time_of_po",
+                        "custom_clearance_country"
+                    ],
+                    "additionalProperties": False
         }
         }
     }
     }
+    return body
+
+def buildCompositionOutputBody(parsed_text, product_name, manufacturer_name, ls_base64):
+    messages = [
+        {
+            "role": "system",
+            "content": f"""
+                You are a data extraction agent that processes technical documents and extracts chemical composition information.
+                Focus only on product [{product_name}] from manufacturer [{manufacturer_name}].
+                Your goal is to detect the composition details of that product and convert them into a structured format.
+
+                Output format:
+                {{
+                  "composition": [
+                    {{
+                      "substance_name": string,
+                      "role_of_substance": one of:
+                        - Not Specified
+                        - additive
+                        - carrier
+                        - emulsifier
+                        - ingredient
+                        - impurity (including residual solvents)
+                        - preservative
+                        - processing aids
+                        - solvent
+                        - stabilizer
+                        - other (specify)
+                          > Example: other (colorant)
+                          > Example: other (defoaming)
+                      "ec_number": string,
+                      "percentage": string
+                    }}
+                  ]
+                }}
+
+                - If a field is missing or unclear, use "Not Specified".
+                - If no composition is found for the specified product-manufacturer pair, return:
+                [["Not Specified", "Not Specified", "Not Specified", "Not Specified"]]
+                - If only some data is available for a substance (e.g., only Substance Name is mentioned), return what is available, and mark missing fields as "Not Specified".                
+                    > Example: ["Magnesium Sulfate", "Not Specified", "Not Specified", "Not Specified"]
+                    > Example: ["Citric Acid", "ingredient", "Not Specified", "Not Specified"]
+                    > Example: ["Water", "solvent", "231-791-2", "Not Specified"]
+                    > Example: ["Sodium Benzoate", "preservative", "Not Specified", "0.1%"]
+                    > Example: ["Glycerin", "Not Specified", "200-289-5", "Not Specified"]                         
+                    > Example: ["Zinc Oxide", "other (UV filter)", "Not Specified", "Not Specified"]          
+                - Return all found substances as a list of lists in the required format.
+            """
+        },
+        {
+            "role": "user",
+            "content": parsed_text
+        }
+    ]
+
+    for base64_img in ls_base64:
+        messages.append({
+            "role": "user",
+            "content": [
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/png;base64,{base64_img}"
+                    }
+                }
+            ]
+        })
+
+    body = {
+        "model": "gpt-4o",
+        "messages": messages,
+        "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+                "name": "composition_output",
+                "strict": True,
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "composition": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "substance_name": { "type": "string" },
+                                    "role_of_substance": {
+                                        "type": "string",
+                                        "pattern": "^(Not Specified|additive|carrier|emulsifier|ingredient|impurity \\(including residual solvents\\)|preservative|processing aids|solvent|stabilizer|other \\(.+\\))$"
+                                    },
+                                    "ec_number": { "type": "string" },
+                                    "percentage": { "type": "string" }
+                                },
+                                "required": ["substance_name", "role_of_substance", "ec_number", "percentage"],
+                                "additionalProperties": False
+                            }
+                        }
+                    },
+                    "required": ["composition"],
+                    "additionalProperties": False
+                }
+            }
+        }
+    }
+
     return body
