@@ -16,7 +16,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # App Configuration
-st.set_page_config(page_title="PIM TDS parser")
+st.set_page_config(page_title="PIM TDS parser", layout="wide")
 st.title("PIM TDS parser - V0.1-alpha")
 st.write("Only allow pdf files")
 
@@ -27,7 +27,8 @@ if 'file_dict' not in st.session_state:
     st.session_state['file_dict'] = {}
 if 'dfPROD' not in st.session_state:
     st.session_state['dfPROD'] = pd.DataFrame()
-
+if 'dfSUBS' not in st.session_state:
+    st.session_state['dfSUBS'] = pd.DataFrame()
 
 
 #######################
@@ -131,7 +132,7 @@ if st.session_state['STEP']=='USER_UPLOAD_AND_PARSE':
         with st.expander("dfPROD", expanded=False):
             st.dataframe(st.session_state['dfPROD'])
 
-        # BUILD SUMMARY DATAFRAME
+        # BUILD SUMMARY DATAFRAME BY PRODUCT
         st.write(f"⏳ **BUILDING SUMMARY TABLE**")
         lsdf = []
         for filename in file_dict.keys():
@@ -225,9 +226,72 @@ elif st.session_state['STEP']=='GET_FIELDS':
                 st.write(f"❌ Error Searching Composition **{file_name}** for **{product_name}** from **{manufacturer_name}**: {str(e)}")
         # PREPARE DF
         dfPROD['CNT_COMPOSITION'] = [None if 'Error' in x else len(x['composition']) for x in dfPROD['RAW_COMPOSITION']]
+
+
+        # BUILD SUMMARY DATAFRAME BY COMPOSITION
+        st.write(f"⏳ **BUILDING SUMMARY TABLE**")
+        lsdf = []
+        for i in range(len(dfPROD)):
+            raw_composition = dfPROD['RAW_COMPOSITION'].iat[i]['composition']
+            raw_fields = dfPROD['RAW_FIELDS'].iat[i]
+            for comp in raw_composition:
+                lsdf.append(
+                    pd.DataFrame({'FILE_NAME':[dfPROD['FILE_NAME'].iat[i]],
+                    'PRODUCT_NAME': [dfPROD['PRODUCT_NAME'].iat[i]],
+                    'SUPPLIER_NAME': [dfPROD['SUPPLIER_NAME'].iat[i]],
+                    'MANUFACTURING_SITE_ADDRESS': [raw_fields['manufacturing_site_address']],
+                    'MANUFACTURER_ARTICLE_NUMBER': [raw_fields['manufacturer_article_number']],
+                    'PHYSICAL_LOCATION': [raw_fields['physical_location_of_goods']],
+
+                    'SUBSTANCE_NAME': [comp['substance_name']],
+                    'SUBSTANCE_ROLE': [comp['role_of_substance']],
+                    'SUBSTANCE_EC': [comp['ec_number']],
+                    'SUBSTANCE_PERCENTAGE': [comp['percentage']],    
+
+                    'CONTAIN_ANIMAL_ORIGIN': [raw_fields['contains_animal_origin']],  
+                    'CONTAIN_VEGETAL_ORIGIN': [raw_fields['contains_vegetal_origin']],
+                    'CONTAIN_PALM_ORIGIN': [raw_fields['contains_palm']],
+                    'CONTAIN_MINERAL_ORIGIN': [raw_fields['contains_mineral_origin']],
+                    'CONTAIN_CONFLICT_MINERALS': [raw_fields['contains_conflict_minerals']],
+                    'CONTAIN_SYNTHETIC_ORIGIN': [raw_fields['contains_synthetic_origin']],
+                    'CONTAIN_OTHER_SPECIFIC_ORIGIN': [raw_fields['other_specified_origin']],
+
+                    'OUTER_PACKAGING_UNIT': [raw_fields['outer_packaging_unit']],
+                    'OUTER_PACKAGING_MATERIAL': [raw_fields['outer_packaging_material']],
+                    'OUTER_PACKAGING_UN_HOMOLOGATED': [raw_fields['un_homologated_outer_packaging']],
+                    'INNER_PACKAGING_UNIT': [raw_fields['inner_packaging_unit']],                  
+                    'INNER_MATERIAL': [raw_fields['inner_packaging_material']],
+                    'WEIGHT_GROSS_KG': [raw_fields['gross_weight_kg']],             
+                    'WEIGHT_NET_KG': [raw_fields['net_weight_kg']],    
+                    'DIMENSIONS_LWH': [raw_fields['dimensions_lwh']],      
+                    'VOLUME_OF_PACKAGING_UNIT_M3': [raw_fields['volume_m3']],
+                    'PALLET_TYPE_AND_MATERIAL': [raw_fields['pallet_type_material']],
+                    'STORAGE_CONDITIONS': [raw_fields['storage_conditions']],
+                    'TRANSPORT_CONDITIONS': [raw_fields['transport_conditions']],
+                    'SHELF_LIFE': [raw_fields['shelf_life']],
+                    'LOT_BATCH_STRUCTURE': [raw_fields['lot_batch_structure']],
+
+                    'TARIFF_CODE': [raw_fields['tariff_code']],
+                    'ORIGIN_COUNTRY': [raw_fields['origin_country']],
+                    'CUSTOMS_STATUS': [raw_fields['customs_status']],
+                    'PREFER_ORIGIN_EU': [raw_fields['preferential_origin_eu']],
+                    'PREFER_ORIGIN_UK': [raw_fields['preferential_origin_uk']],
+                    'PREFER_ORIGIN_CH': [raw_fields['preferential_origin_ch']],
+                    'PREFER_EU_SUPPLIER': [raw_fields['preferred_eu_supplier']],
+
+                    'ESTIMATED_COST_LOCAL_CURRENCY': [raw_fields['estimated_cost_local']],
+                    'QUANTITY_IN_1ST_PO': [raw_fields['quantity_in_1st_po']],
+                    'ESTIMATED_CURRENT_YEAR_QTY': [raw_fields['estimated_year_quantity']],
+                    'CUSTOM_CLEARANCE_DONE_BY': [raw_fields['custom_clearance_by']],
+                    'COUNTRY_SOLDTO': [raw_fields['country_sold_to']],
+                    'LOCATION_AT_TIME_OF_PO': [raw_fields['location_at_time_of_po']],
+                    'CUSTOM_CLEARANCE_COUNTRY': [raw_fields['custom_clearance_country']],
+                    }))
+        dfSUBS = pd.concat(lsdf, ignore_index=True)
         # SAVE TO SESSION
         st.session_state['file_dict'] = file_dict
         st.session_state['dfPROD'] = dfPROD.copy()
+        st.session_state['dfSUBS'] = dfSUBS.copy()
         st.session_state['STEP'] = 'EXPORT'       
         st.rerun()
 
@@ -237,7 +301,10 @@ elif st.session_state['STEP']=='GET_FIELDS':
 elif st.session_state['STEP']=='EXPORT':
     file_dict = st.session_state['file_dict']
     dfPROD = st.session_state['dfPROD'].copy()
+    dfSUBS = st.session_state['dfSUBS'].copy()
     st.dataframe(dfPROD)
+    st.dataframe(dfSUBS)
+    st.json(st.session_state['file_dict'])
 
 
 ##########

@@ -63,28 +63,6 @@ def buildStructuredOutputBody(parsed_text, product_name, manufacturer_name, ls_b
                 "schema": {
                     "type": "object",
                     "properties": {
-                        # ... (same as your original schema)
-                    },
-                    "required": [
-                        # ... (same as your original required list)
-                    ],
-                    "additionalProperties": False
-                }
-            }
-        }
-    }
-
-    body = {
-        "model": "gpt-4o",
-        "messages": messages,
-        "response_format": {
-            "type": "json_schema",
-            "json_schema": {
-                "name": "full_supply_chain_form",
-                "strict": True,
-                "schema": {
-                    "type": "object",
-                    "properties": {
                         "manufacturing_site_address": {
                             "type": "string",
                             "description": "Full address where the product is manufactured"},
@@ -111,7 +89,7 @@ def buildStructuredOutputBody(parsed_text, product_name, manufacturer_name, ls_b
                             "description": "Does the product contain substances of mineral origin?"},
                         "contains_conflict_minerals": {
                             "type": "string",
-                            "description": "Does the product contain conflict minerals (e.g., tantalum, tungsten, gold)?"},
+                            "description": "Does the product contain conflict minerals? (These conflict minerals are tin, tantalum, tungsten, gold and their derivatives)"},
                         "contains_synthetic_origin": {
                             "type": "string",
                             "description": "Does the product contain substances of synthetic origin?"},
@@ -178,9 +156,9 @@ def buildStructuredOutputBody(parsed_text, product_name, manufacturer_name, ls_b
                         "preferential_origin_ch": {
                             "type": "string",
                             "description": "Preferential origin as per FTA with Switzerland"},
-                        "eu_supplier": {
+                        "preferred_eu_supplier": {
                             "type": "string",
-                            "description": "Is the supplier based in the EU?"},
+                            "description": "Preferred supplier based in EU?"},
                         "estimated_cost_local": {
                             "type": "string",
                             "description": "Estimated cost in local currency"},
@@ -235,7 +213,7 @@ def buildStructuredOutputBody(parsed_text, product_name, manufacturer_name, ls_b
                         "preferential_origin_eu",
                         "preferential_origin_uk",
                         "preferential_origin_ch",
-                        "eu_supplier",
+                        "preferred_eu_supplier",
                         "estimated_cost_local",
                         "quantity_in_1st_po",
                         "estimated_year_quantity",
@@ -285,9 +263,16 @@ def buildCompositionOutputBody(parsed_text, product_name, manufacturer_name, ls_
                   ]
                 }}
 
+                Output explanation
+                - substance_name: Name of the substance used in the composition of this product.
+                - role_of_substance: What is the purpose of this substance.
+                - ec_number: EC number of this substance used in the composition of this product.
+                - percentage: Percentage composition this substance, which is the composition of the product (not about the product usage recommendation percentage)
+
+                Output rules:
                 - If a field is missing or unclear, use "Not Specified".
                 - If no composition is found for the specified product-manufacturer pair, return:
-                [["Not Specified", "Not Specified", "Not Specified", "Not Specified"]]
+                    > [["Not Specified", "Not Specified", "Not Specified", "Not Specified"]]
                 - If only some data is available for a substance (e.g., only Substance Name is mentioned), return what is available, and mark missing fields as "Not Specified".                
                     > Example: ["Magnesium Sulfate", "Not Specified", "Not Specified", "Not Specified"]
                     > Example: ["Citric Acid", "ingredient", "Not Specified", "Not Specified"]
@@ -296,6 +281,10 @@ def buildCompositionOutputBody(parsed_text, product_name, manufacturer_name, ls_
                     > Example: ["Glycerin", "Not Specified", "200-289-5", "Not Specified"]                         
                     > Example: ["Zinc Oxide", "other (UV filter)", "Not Specified", "Not Specified"]          
                 - Return all found substances as a list of lists in the required format.
+                    > Example: [["Magnesium Sulfate", "Not Specified", "Not Specified", "Not Specified"]]
+                    > Example: [["Citric Acid", "ingredient", "Not Specified", "Not Specified"],["Water", "solvent", "231-791-2", "Not Specified"]]
+                    > Example: [["Sodium Benzoate", "preservative", "Not Specified", "0.1%"],["Glycerin", "Not Specified", "200-289-5", "Not Specified"],["Zinc Oxide", "other (UV filter)", "Not Specified", "Not Specified"]]               
+
             """
         },
         {
@@ -333,13 +322,21 @@ def buildCompositionOutputBody(parsed_text, product_name, manufacturer_name, ls_
                             "items": {
                                 "type": "object",
                                 "properties": {
-                                    "substance_name": { "type": "string" },
+
+                                    "substance_name": { 
+                                        "type": "string",
+                                        "description": "Name of the substance used in the composition of this product"},
                                     "role_of_substance": {
                                         "type": "string",
-                                        "pattern": "^(Not Specified|additive|carrier|emulsifier|ingredient|impurity \\(including residual solvents\\)|preservative|processing aids|solvent|stabilizer|other \\(.+\\))$"
-                                    },
-                                    "ec_number": { "type": "string" },
-                                    "percentage": { "type": "string" }
+                                        "pattern": "^(Not Specified|additive|carrier|emulsifier|ingredient|impurity \\(including residual solvents\\)|preservative|processing aids|solvent|stabilizer|other \\(.+\\))$",
+                                        "description": "What is the purpose of this substance"},                                    
+                                    "ec_number": { 
+                                        "type": "string",
+                                        "description": "EC number of this substance used in the composition of this product"},
+                                    "percentage": { 
+                                        "type": "string",
+                                        "description": "percentage of this substance, which is the composition of the product"},
+
                                 },
                                 "required": ["substance_name", "role_of_substance", "ec_number", "percentage"],
                                 "additionalProperties": False
