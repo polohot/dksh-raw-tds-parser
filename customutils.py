@@ -1,26 +1,95 @@
-def buildQuestionGetProductNameAndSupplierFromParsedText(parsed_output):
-    question = """
-    ### INSTRUCTION ###
-    You are a helpful assistant that extracts the name and manufacturer from parsed output of PDF file.
-    The parsed file is the Technical Data Sheet of the product.
-    Sometime the parsed pdf only have 1 product, sometime could have multiple products.                
-    Output the needed data into specific format.
+from azure.core.credentials import AzureKeyCredential
+from azure.ai.documentintelligence import DocumentIntelligenceClient
 
-    ### OUTPUT FORMAT ###
-    Output as list of json, sample below
-    do not put any text before or after the square brackets
-    Sample output1: [{"PRODUCT_NAME":"Sugar C1002","SUPPLIER_NAME":"ACME Sugar Malaysia Berhad"}]    
-    Sample output2: [{"PRODUCT_NAME":"Mint Concentrate MT2245","SUPPLIER_NAME":"Emmi Switzerland"}]
-    Sample output3: [{"PRODUCT_NAME":"iPhone 15 Pro","SUPPLIER_NAME":"Apple Inc."},
-                    {"PRODUCT_NAME":"Galaxy S24 Ultra","SUPPLIER_NAME":"Samsung Electronics"}]     
-    Sample output4: [{"PRODUCT_NAME":"PlayStation 5","SUPPLIER_NAME":"Sony Interactive Entertainment"},
-                    {"PRODUCT_NAME":"Air Jordan 1 Retro High OG","SUPPLIER_NAME":"Nike, Inc."},
-                    {"PRODUCT_NAME":"Model 3","SUPPLIER_NAME":"Tesla, Inc."}]   
+def azureDocumentIntelligenceParsePDF(file_path, key):
+    document_intelligence_client = DocumentIntelligenceClient(
+        endpoint="https://document-intelligence-free-main01.cognitiveservices.azure.com/", credential=AzureKeyCredential(key))
+    with open(file_path, "rb") as f:
+        poller = document_intelligence_client.begin_analyze_document(
+            "prebuilt-read", 
+            f,
+            content_type="application/pdf")
+        result = poller.result()
+    # Build Markdown content from lines
+    markdown_lines = []
+    for page_num, page in enumerate(result.pages):
+        markdown_lines.append(f"\n## Page {page_num + 1}\n")
+        for line in page.lines:
+            markdown_lines.append(line.content)
+    markdown_output = "\n".join(markdown_lines)
+    #print("Markdown Output:\n")
+    #print(markdown_output)
+    return markdown_output
 
-    ### PARSED OUTPUT ###
-    """
-    question += parsed_output  
-    return question
+def buildBodyGetProductNameAndSupplierFromTextAndImage(parsed_text, ls_base64):
+    # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
+    messages = [
+        {
+            "role": "system",
+            "content": """
+                ### INSTRUCTION ###
+                You are a helpful assistant that extracts the name and manufacturer from parsed output of PDF file.
+                The parsed file is the Technical Data Sheet of the product.
+                Sometime the parsed pdf only have 1 product, sometime could have multiple products.                
+                Output the needed data into specific format.
+
+                ### OUTPUT FORMAT ###
+                Output as list of json, sample below
+                do not put any text before or after the square brackets
+                Sample output1: [{"PRODUCT_NAME":"Sugar C1002","SUPPLIER_NAME":"ACME Sugar Malaysia Berhad"}]    
+                Sample output2: [{"PRODUCT_NAME":"Mint Concentrate MT2245","SUPPLIER_NAME":"Emmi Switzerland"}]
+                Sample output3: [{"PRODUCT_NAME":"iPhone 15 Pro","SUPPLIER_NAME":"Apple Inc."},
+                                {"PRODUCT_NAME":"Galaxy S24 Ultra","SUPPLIER_NAME":"Samsung Electronics"}]     
+                Sample output4: [{"PRODUCT_NAME":"PlayStation 5","SUPPLIER_NAME":"Sony Interactive Entertainment"},
+                                {"PRODUCT_NAME":"Air Jordan 1 Retro High OG","SUPPLIER_NAME":"Nike, Inc."},
+                                {"PRODUCT_NAME":"Model 3","SUPPLIER_NAME":"Tesla, Inc."}]   
+            """
+        },
+        {
+            "role": "user",
+            "content": parsed_text
+        }
+    ]    
+
+    # ADD BASE64 IMAGES IF PROVIDED
+    for base64_img in ls_base64:
+        messages.append({
+            "role": "user", "content": [{"type": "image_url",
+                                         "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]
+        })
+    
+    # BUILD BODY
+    body = {
+        "model": "gpt-4o",
+        "messages": messages,
+        "max_tokens": 1000,
+        "temperature": 0.2}
+    return body
+
+# def buildQuestionGetProductNameAndSupplierFromParsedText(parsed_output):
+
+#     question = """
+#     ### INSTRUCTION ###
+#     You are a helpful assistant that extracts the name and manufacturer from parsed output of PDF file.
+#     The parsed file is the Technical Data Sheet of the product.
+#     Sometime the parsed pdf only have 1 product, sometime could have multiple products.                
+#     Output the needed data into specific format.
+
+#     ### OUTPUT FORMAT ###
+#     Output as list of json, sample below
+#     do not put any text before or after the square brackets
+#     Sample output1: [{"PRODUCT_NAME":"Sugar C1002","SUPPLIER_NAME":"ACME Sugar Malaysia Berhad"}]    
+#     Sample output2: [{"PRODUCT_NAME":"Mint Concentrate MT2245","SUPPLIER_NAME":"Emmi Switzerland"}]
+#     Sample output3: [{"PRODUCT_NAME":"iPhone 15 Pro","SUPPLIER_NAME":"Apple Inc."},
+#                     {"PRODUCT_NAME":"Galaxy S24 Ultra","SUPPLIER_NAME":"Samsung Electronics"}]     
+#     Sample output4: [{"PRODUCT_NAME":"PlayStation 5","SUPPLIER_NAME":"Sony Interactive Entertainment"},
+#                     {"PRODUCT_NAME":"Air Jordan 1 Retro High OG","SUPPLIER_NAME":"Nike, Inc."},
+#                     {"PRODUCT_NAME":"Model 3","SUPPLIER_NAME":"Tesla, Inc."}]   
+
+#     ### PARSED OUTPUT ###
+#     """
+#     question += parsed_output  
+#     return question
 
 def buildStructuredOutputBody(parsed_text, product_name, manufacturer_name, ls_base64):
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
@@ -41,15 +110,8 @@ def buildStructuredOutputBody(parsed_text, product_name, manufacturer_name, ls_b
     # ADD BASE64 IMAGES IF PROVIDED
     for base64_img in ls_base64:
         messages.append({
-            "role": "user",
-            "content": [
-                {
-                    "type": "image_url",
-                    "image_url": {
-                        "url": f"data:image/png;base64,{base64_img}"
-                    }
-                }
-            ]
+            "role": "user", "content": [{"type": "image_url",
+                                         "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]
         })
     # BUILD BODY
     body = {
@@ -295,15 +357,8 @@ def buildCompositionOutputBody(parsed_text, product_name, manufacturer_name, ls_
 
     for base64_img in ls_base64:
         messages.append({
-            "role": "user",
-            "content": [
-                {
-                    "type": "image_url",
-                    "image_url": {
-                        "url": f"data:image/png;base64,{base64_img}"
-                    }
-                }
-            ]
+            "role": "user", "content": [{"type": "image_url",
+                                         "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]
         })
 
     body = {
@@ -344,6 +399,160 @@ def buildCompositionOutputBody(parsed_text, product_name, manufacturer_name, ls_
                         }
                     },
                     "required": ["composition"],
+                    "additionalProperties": False
+                }
+            }
+        }
+    }
+
+    return body
+
+
+
+###############################################################################################################################################################################
+###############################################################################################################################################################################
+###############################################################################################################################################################################
+###############################################################################################################################################################################
+###############################################################################################################################################################################
+
+
+
+def PIM_buildBodySelectIndustryCluster(parsed_text, product_name, manufacturer_name, ls_base64, business_line):
+    # Define mapping of business lines to industry clusters
+    if business_line == 'FBI':
+        selection_list = [
+            'Beverage & Dairy',
+            'Confectionery & Bakery',
+            'Food Supplements & Nutrition',
+            'Processed Food & Food Service']
+    elif business_line == 'PCI':
+        selection_list = [
+            'Cosmetics & Toiletries',
+            'Homecare & Institutional Cleaning',
+            'Cosmetics & Toiletries, Homecare & Institutional Cleaning']
+    elif business_line == 'PHI':
+        selection_list = [
+            'Animal Care',
+            'API',
+            'Biopharma',
+            'Excipients',
+            'Intermediates & Reagents',
+            'Nutraceuticals',
+            'Packing Materials',
+            'Clean Room Management']
+    elif business_line == 'SCI':
+        selection_list = [
+            'Electronic & Specialties',
+            'Paints & Coatings',
+            'Polymers',
+            'Agrochemicals',
+            'Electronic & Specialties, Paints & Coatings',
+            'Paints & Coatings, Polymers',
+            'Electronic & Specialties, Polymers',
+            'Electronic & Specialties, Paints & Coatings, Polymers']
+    # SYSTEM PROMPT
+    system_prompt = f"""
+        You are a data extraction agent that processes technical documents and extracts information.
+        Based on the provided text and image, Focus only on product [{product_name}] from manufacturer [{manufacturer_name}].        
+        select exactly one INDUSTRY CLUSTER from the following list:{selection_list}
+
+        Output format:
+        {{
+          "industry_cluster": string
+        }}
+    """
+    # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user","content": parsed_text}
+    ]
+    # ADD BASE64 IMAGES IF PROVIDED
+    for base64_img in ls_base64:
+        messages.append({
+            "role": "user", "content": [{"type": "image_url",
+                                         "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]
+        })
+    # CONSTRUCT BODY
+    body = {
+        "model": "gpt-4o",
+        "messages": messages,
+        "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+                "name": "industry_cluster_output",
+                "strict": True,
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "industry_cluster": {
+                            "type": "string",
+                            "enum": selection_list,
+                            "description": "Selected industry cluster based given text and image"
+                        }
+                    },
+                    "required": ["industry_cluster"],
+                    "additionalProperties": False
+                }
+            }
+        }
+    }
+
+    return body
+
+
+
+def PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name, ls_base64):
+    selection_list = [
+        'Animal',
+        'Biomolecule/Micro-organisms',
+        'Derived Natural',
+        'Mineral',
+        'Synthetic',
+        'Vegetal'
+    ]
+    # SYSTEM PROMPT
+    system_prompt = f"""
+        You are a data extraction agent that processes technical documents and extracts information.
+        Based on the provided text and image, Focus only on product [{product_name}] from manufacturer [{manufacturer_name}].        
+        select one or more compositions from the following list:{selection_list}
+
+        Output format:
+        {{
+          "compositions": string
+        }}
+    """
+    # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user","content": parsed_text}
+    ]
+    # ADD BASE64 IMAGES IF PROVIDED
+    for base64_img in ls_base64:
+        messages.append({
+            "role": "user", "content": [{"type": "image_url",
+                                         "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]
+        })
+    # CONSTRUCT BODY
+    body = {
+        "model": "gpt-4o",
+        "messages": messages,
+        "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+                "name": "composition_output",
+                "strict": True,
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "compositions": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": selection_list},
+                            "minItems": 1,
+                            "description": "One or more selected compositions based on the given text and image"}
+                    },
+                    "required": ["compositions"],
                     "additionalProperties": False
                 }
             }

@@ -1,6 +1,7 @@
 import os
 import io
 import pandas as pd
+import numpy as np
 import streamlit as st
 import requests
 import tempfile
@@ -8,6 +9,9 @@ import json
 import base64
 import fitz
 from PIL import Image
+
+from azure.core.credentials import AzureKeyCredential
+from azure.ai.documentintelligence import DocumentIntelligenceClient
 
 from customutils import *
 
@@ -17,7 +21,7 @@ load_dotenv()
 
 # App Configuration
 st.set_page_config(page_title="Generate Product Form", layout="wide")
-st.write("Only allow pdf files")
+st.title("(1) Product Form Generation from PDF")
 
 # Initialize session state
 if 'STEP' not in st.session_state:
@@ -34,6 +38,7 @@ if 'dfSUBS' not in st.session_state:
 # USER UPLOAD & PARSE #
 #######################
 if st.session_state['STEP']=='USER_UPLOAD_AND_PARSE':
+    st.header('Upload PDF Files')
     uploaded_files = st.file_uploader("Upload your PIM TDS file", accept_multiple_files=True, type=["pdf"])
     if uploaded_files and st.button("Process"):
         ### UPLOAD TO TEMP PATH
@@ -46,33 +51,45 @@ if st.session_state['STEP']=='USER_UPLOAD_AND_PARSE':
                 file_dict[uploaded_file.name] = {
                     'serverPath': tmp_file.name,
                     'status': 'Uploaded',
-                    'result': None
                 }
         st.session_state['file_dict'] = file_dict
         ### PARSE FILES
         file_dict = st.session_state['file_dict']
         for filename, fileinfo in file_dict.items():
             st.write(f"⏳ **{filename}** Preparing...")
-            ### S1_PARSE_TO_TEXT
+
+            ####################
+            # S1_PARSE_TO_TEXT #
+            ####################
             file_dict[filename]['S1_PARSE'] = {}
             try:
-                with open(fileinfo['serverPath'], 'rb') as f:
-                    mime = 'application/pdf' if filename.endswith('.pdf') else 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                    files = [('files', (filename, f, mime))]
-                    data = {"apikey": os.getenv('LLAMA_CLOUD_API_KEY')}
-                    response = requests.post(
-                        "https://ancient-almeda-personal-personal-22e19704.koyeb.app/llama_parse_batch",
-                        data=data,
-                        files=files,
-                        verify=False)
-                    if response.status_code == 200:
-                        file_dict[filename]['S1_PARSE']['status'] = '✅ Success'
-                        file_dict[filename]['S1_PARSE']['result'] = response.json()['results']
-                    else:
-                        file_dict[filename]['S1_PARSE']['status'] = f'❌ Error: (HTTP {response.status_code})'
+                ### USING LLAMA PARSE
+                # with open(fileinfo['serverPath'], 'rb') as f:
+                #     mime = 'application/pdf' if filename.endswith('.pdf') else 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                #     files = [('files', (filename, f, mime))]
+                #     data = {"apikey": os.getenv('LLAMA_CLOUD_API_KEY')}
+                #     response = requests.post(
+                #         "https://ancient-almeda-personal-personal-22e19704.koyeb.app/llama_parse_batch",
+                #         data=data,
+                #         files=files,
+                #         verify=False)
+                #     if response.status_code == 200:
+                #         file_dict[filename]['S1_PARSE']['status'] = '✅ Success'
+                #         file_dict[filename]['S1_PARSE']['result'] = response.json()['results']
+                #     else:
+                #         file_dict[filename]['S1_PARSE']['status'] = f'❌ Error: (HTTP {response.status_code})'
+
+                ### USING AZURE DOCUMENT INTELLIGENCE
+                markdownText = azureDocumentIntelligenceParsePDF(fileinfo['serverPath'], os.getenv('AZURE_DOCUMENT_INTELLIGENCE_API_KEY'))
+                file_dict[filename]['S1_PARSE']['status'] = '✅ Success'
+                file_dict[filename]['S1_PARSE']['result'] = [markdownText]
             except Exception as e:
                 file_dict[filename]['S1_PARSE']['status'] = f'❌ Error: {str(e)}'
-            ### S2_READ_PDF_TO_BASE64
+                file_dict[filename]['S1_PARSE']['result'] = None
+
+            #########################
+            # S2_READ_PDF_TO_BASE64 #
+            #########################
             file_dict[filename]['S2_READ_PDF_TO_BASE64'] = {}
             try:
                 doc = fitz.open(fileinfo['serverPath'])          
@@ -90,23 +107,36 @@ if st.session_state['STEP']=='USER_UPLOAD_AND_PARSE':
             except Exception as e:
                 file_dict[filename]['S2_READ_PDF_TO_BASE64']['status'] = f'❌ Error: {str(e)}'
                 file_dict[filename]['S2_READ_PDF_TO_BASE64']['pages'] = []
-            ### S3_GET_PROD_NAME_AND_SUPP
+
+            #############################
+            # S3_GET_PROD_NAME_AND_SUPP #
+            #############################
             file_dict[filename]['S3_GET_PROD_NAME_AND_SUPP'] = {}
-            if file_dict[filename]['S1_PARSE']['status'] == '✅ Success' and file_dict[filename]['S2_READ_PDF_TO_BASE64']['status'] == '✅ Success':
+            #if file_dict[filename]['S1_PARSE']['status'] == '✅ Success' and file_dict[filename]['S2_READ_PDF_TO_BASE64']['status'] == '✅ Success':
+            if file_dict[filename]['S2_READ_PDF_TO_BASE64']['status'] == '✅ Success':    
                 try:
-                    parsed_output = str(file_dict[filename]['S1_PARSE']['result'][0])
-                    question = buildQuestionGetProductNameAndSupplierFromParsedText(parsed_output)
-                    # BUILD BODY
-                    body = {
-                        "model": "gpt-4o",
-                        "messages": [{'role': 'user', 'content': question}],
-                        "max_tokens": 1000,
-                        "temperature": 0.2}
-                    # CALL API
-                    response = requests.post("https://ancient-almeda-personal-personal-22e19704.koyeb.app/openai",                                         
-                                            json=body, 
-                                            params={"apikey": os.getenv('OPENAI_API_KEY')},
-                                            verify=False)
+                    parsed_text = str(file_dict[filename]['S1_PARSE']['result'][0])
+                    ls_base64 = file_dict[filename]['S2_READ_PDF_TO_BASE64']['pages']
+                    #############################################
+                    # SEARCH PRODUCT NAME AND SUPPLIER FROM PDF #
+                    #############################################
+                    body = buildBodyGetProductNameAndSupplierFromTextAndImage(parsed_text, ls_base64) 
+                    file_dict[filename]['S3_GET_PROD_NAME_AND_SUPP']['body'] = body
+
+                    ### CALL API - USING TUNNEL
+                    # response = requests.post("https://ancient-almeda-personal-personal-22e19704.koyeb.app/openai",                                         
+                    #                         json=body, 
+                    #                         params={"apikey": os.getenv('OPENAI_API_KEY')},
+                    #                         verify=False)
+
+                    ### CALL API - USING AZURE AI FOUNDARY
+                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-main01-gpt-4o-main01/chat/completions?api-version=2024-12-01-preview"
+                    response = requests.post(url,                                    
+                                             headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
+                                             data=json.dumps(body),
+                                             verify=False)  
+                                     
+                    # RESULT
                     if response.status_code == 200:
                         file_dict[filename]['S3_GET_PROD_NAME_AND_SUPP']['status'] = '✅ Success'
                         rescontent = response.json()['choices'][0]['message']['content']
@@ -119,17 +149,11 @@ if st.session_state['STEP']=='USER_UPLOAD_AND_PARSE':
                             st.write(f"⏳ **{filename}** Product: {product['PRODUCT_NAME']}, Supplier: {product['SUPPLIER_NAME']}")   
                     else:
                         file_dict[filename]['S3_GET_PROD_NAME_AND_SUPP']['status'] = f'❌ Error: (HTTP {response.status_code})'
+                        file_dict[filename]['S3_GET_PROD_NAME_AND_SUPP']['error'] = response.json()
                 except Exception as e:
                     file_dict[filename]['S3_GET_PROD_NAME_AND_SUPP']['status'] = f'❌ Error: {str(e)}'
             else:
                 file_dict[filename]['S3_GET_PROD_NAME_AND_SUPP']['status'] = f'❌ Error: S1 or S2 error'
-
-        # DEBUG
-        st.session_state['file_dict'] = file_dict
-        with st.expander("Parsed Results", expanded=False):
-            st.json(st.session_state['file_dict'])
-        with st.expander("dfPROD", expanded=False):
-            st.dataframe(st.session_state['dfPROD'])
 
         # BUILD SUMMARY DATAFRAME BY PRODUCT
         st.write(f"⏳ **BUILDING SUMMARY TABLE**")
@@ -156,9 +180,18 @@ if st.session_state['STEP']=='USER_UPLOAD_AND_PARSE':
 # GET FIELDS #
 ############## 
 elif st.session_state['STEP']=='GET_FIELDS':
+    st.header('List Of Products Found in Each File')
     file_dict = st.session_state['file_dict']
     dfPROD = st.session_state['dfPROD'].copy()
     st.dataframe(dfPROD)
+
+    # DEBUG
+    # st.session_state['file_dict'] = file_dict
+    # with st.expander("Parsed Results", expanded=False):
+    #     st.json(st.session_state['file_dict'])
+    # with st.expander("dfPROD", expanded=False):
+    #     st.dataframe(st.session_state['dfPROD'])
+
     if st.button("Get Structured Data From PDF"):
         dfPROD['RAW_FIELDS_JSON'] = None
         dfPROD['RAW_FIELDS'] = None
@@ -186,10 +219,19 @@ elif st.session_state['STEP']=='GET_FIELDS':
             body = buildStructuredOutputBody(parsed_text, product_name, manufacturer_name, ls_base64)
             # CALL API
             try:
-                response = requests.post("https://ancient-almeda-personal-personal-22e19704.koyeb.app/openai",                                         
-                                        json=body, 
-                                        params={"apikey": os.getenv('OPENAI_API_KEY')},
-                                        verify=False)
+
+                ### USING TUNNEL
+                # response = requests.post("https://ancient-almeda-personal-personal-22e19704.koyeb.app/openai",                                         
+                #                         json=body, 
+                #                         params={"apikey": os.getenv('OPENAI_API_KEY')},
+                #                         verify=False)
+
+                ### USING AZURE AI FOUNDARY
+                url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-main01-gpt-4o-main01/chat/completions?api-version=2024-12-01-preview"
+                response = requests.post(url,                                    
+                                         headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
+                                         data=json.dumps(body),
+                                         verify=False)
                 response_json = response.json()
                 dfPROD['RAW_FIELDS_JSON'].iat[i] = response_json
                 if response.status_code == 200:
@@ -208,10 +250,20 @@ elif st.session_state['STEP']=='GET_FIELDS':
             body = buildCompositionOutputBody(parsed_text, product_name, manufacturer_name, ls_base64)
             # CALL API
             try:
-                response = requests.post("https://ancient-almeda-personal-personal-22e19704.koyeb.app/openai",                                         
-                                        json=body, 
-                                        params={"apikey": os.getenv('OPENAI_API_KEY')},
-                                        verify=False)
+
+                ### USING TUNNEL
+                # response = requests.post("https://ancient-almeda-personal-personal-22e19704.koyeb.app/openai",                                         
+                #                         json=body, 
+                #                         params={"apikey": os.getenv('OPENAI_API_KEY')},
+                #                         verify=False)
+
+                ### USING AZURE AI FOUNDARY
+                url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-main01-gpt-4o-main01/chat/completions?api-version=2024-12-01-preview"
+                response = requests.post(url,                                    
+                                         headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
+                                         data=json.dumps(body),
+                                         verify=False)
+
                 response_json = response.json()
                 dfPROD['RAW_COMPOSITION_JSON'].iat[i] = response_json
                 if response.status_code == 200:
@@ -226,6 +278,12 @@ elif st.session_state['STEP']=='GET_FIELDS':
         # PREPARE DF
         dfPROD['CNT_COMPOSITION'] = [None if 'Error' in x else len(x['composition']) for x in dfPROD['RAW_COMPOSITION']]
 
+        # DEBUG
+        # st.session_state['file_dict'] = file_dict
+        # with st.expander("Parsed Results", expanded=False):
+        #     st.json(st.session_state['file_dict'])
+        # with st.expander("dfPROD", expanded=False):
+        #     st.dataframe(st.session_state['dfPROD'])
 
         # BUILD SUMMARY DATAFRAME BY COMPOSITION
         st.write(f"⏳ **BUILDING SUMMARY TABLE**")
@@ -298,12 +356,17 @@ elif st.session_state['STEP']=='GET_FIELDS':
 # EXPORT #
 ########## 
 elif st.session_state['STEP']=='EXPORT':
+    st.header('Export Results')
     file_dict = st.session_state['file_dict']
     dfPROD = st.session_state['dfPROD'].copy()
     dfSUBS = st.session_state['dfSUBS'].copy()
+    st.write("Exported Data:")
     st.dataframe(dfPROD)
+
+
+
     st.dataframe(dfSUBS)
-    st.json(st.session_state['file_dict'])
+    #st.json(st.session_state['file_dict'])
 
 
 ##########
