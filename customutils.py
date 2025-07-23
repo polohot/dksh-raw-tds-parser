@@ -33,7 +33,7 @@ from azure.ai.documentintelligence import DocumentIntelligenceClient
 
 def azureDocumentIntelligenceParsePDF(file_path, key):
     document_intelligence_client = DocumentIntelligenceClient(
-        endpoint="https://document-intelligence-free-main01.cognitiveservices.azure.com/", credential=AzureKeyCredential(key))
+        endpoint="https://document-intelligence-standard-s0-main02.cognitiveservices.azure.com/", credential=AzureKeyCredential(key))
     with open(file_path, "rb") as f:
         poller = document_intelligence_client.begin_analyze_document(
             "prebuilt-read", 
@@ -533,18 +533,62 @@ def PIM_buildBodySelectIndustryCluster(parsed_text, product_name, manufacturer_n
             }
         }
     }
-
     return body    
 
-def PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name, ls_base64, searched_text=''):
-    selection_list = [
-        'Animal',
-        'Biomolecule/Micro-organisms',
-        'Derived Natural',
-        'Mineral',
-        'Synthetic',
-        'Vegetal'
-    ]
+def PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text=''):
+    # Define mapping of business lines to industry clusters
+    if business_line == 'FBI':
+        selection_list = [
+            "Plant (Vegetal)",
+            "Animal",
+            "Microbial, Fungal (yeast, bacteria)",
+            "Algal, Marine",
+            "Mineral, Inorganic",
+            "Synthetic, Chemically Manufactured",
+            "Fermentation, Biotech-Derived",
+            "Semi-Synthetic, Modified Natural",
+            "Nature-Identical (chemically equivalent to natural)",
+            "Upcycled, Recovered Food Streams",
+            "Processing Aid, Carrier (solvents, anticaking agents, fillers)"]
+    elif business_line == 'PCI':
+        selection_list = [
+            "Animal",
+            "Biomolecule/Micro-organisms",
+            "Derived Natural",
+            "Mineral",
+            "Synthetic",
+            "Vegetal"]
+    elif business_line == 'PHI':
+        selection_list = [
+            "Plant, Herbal",
+            "Animal-Derived",
+            "Microbial, Fungal (yeast, bacteria, molds)",
+            "Marine, Algal",
+            "Mineral, Inorganic",
+            "Synthetic Small Molecule (chemically manufactured)",
+            "Semi-Synthetic, Modified Natural",
+            "Biotech, Biologic (recombinant proteins, vaccines, cells, tissues)",
+            "Cell-Derived, Tissue-Derived (human, animal)",
+            "Gene-Based, Nucleic Acid-Based (mRNA, DNA, oligonucleotides)",
+            "Radiochemical, Isotope-Labeled",
+            "Polymeric Excipient, Synthetic Polymer (e.g., PEG, PVP)",
+            "Fixed-Dose, Combination Product Blend"]
+    elif business_line == 'SCI':
+        selection_list = [
+            "Petrochemical, Hydrocarbon-Derived",
+            "Bio-based, Renewable",
+            "Microbial, Biotech-Derived",
+            "Inorganic, Mineral",
+            "Organic Synthetic (non-polymeric)",
+            "Polymer, Resin, Elastomer",
+            "Silicone, Organosilicon",
+            "Fluorinated, Halogenated",
+            "Metal, Organometallic, Catalyst",
+            "Formulated Blend, Mixture",
+            "CO₂, Carbon-Capture-Derived",
+            "Recycled, Reclaimed, By-product Stream",
+            "Ionic Liquid, Deep Eutectic Solvent",
+            "Electrochemically Produced, Battery-Grade Material"]
     # SYSTEM PROMPT
     system_prompt = f"""
         You are a data extraction agent that processes technical documents and extracts information.
@@ -594,7 +638,6 @@ def PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name,
             }
         }
     }
-
     return body
 
 
@@ -1269,7 +1312,7 @@ def PIM_buildBodyFindPhysicalForm(parsed_text, product_name, manufacturer_name, 
     system_prompt = f"""
         You are a data extraction agent that processes technical documents and extracts information.
         Based on the provided text and images, focus only on product [{product_name}] from manufacturer [{manufacturer_name}].
-        Select the correct PHYSICAL_FORM of this specific product.
+        Select the correct PHYSICAL_FORM of this specific product. If none is found, output "N/A".
 
         Output format:
         {{
@@ -1305,7 +1348,7 @@ def PIM_buildBodyFindPhysicalForm(parsed_text, product_name, manufacturer_name, 
                         "physical_form": {
                             "type": "string",
                             "enum": selection_list,
-                            "description": f"Select PHYSICAL_FORM of the product [{product_name}]"
+                            "description": f"Select PHYSICAL_FORM of the product [{product_name}]. If none is found, output 'N/A'."
                         }
                     },
                     "required": ["physical_form"],

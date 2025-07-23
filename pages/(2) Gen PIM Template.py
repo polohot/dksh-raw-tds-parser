@@ -81,7 +81,8 @@ if st.session_state['STEP1']==True:
     col1, col2, col3 = st.columns(3)
     # PERP COUNTRY SELECTION
     with col1:
-        countries = [f"{country.name} ({country.alpha_2})" for country in pycountry.countries]
+        # countries = [f"{country.name} ({country.alpha_2})" for country in pycountry.countries] 
+        countries = [f"{country.name}" for country in pycountry.countries] # 2025-07-23 | Saint: want only country name
         selected_country = st.selectbox("Select Country", sorted(countries))
     # PREP BUSINESS LINE SELECTION
     with col2:
@@ -136,6 +137,7 @@ if st.session_state['STEP1']==True:
                 file_dict[filename]['S1_PARSE'] = {}
                 try:
                     ### USING LLAMA PARSE
+                    # addToLog(f"⏳ Parse PDF - Parsing using LLaMA Parse...", 2)
                     # with open(fileinfo['serverPath'], 'rb') as f:
                     #     mime = 'application/pdf' if filename.endswith('.pdf') else 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
                     #     files = [('files', (filename, f, mime))]
@@ -146,20 +148,25 @@ if st.session_state['STEP1']==True:
                     #         files=files,
                     #         verify=False)
                     #     if response.status_code == 200:
+                    #         addToLog(f"✅ Parse PDF - Success", 2)     
                     #         file_dict[filename]['S1_PARSE']['status'] = '✅ Success'
                     #         file_dict[filename]['S1_PARSE']['result'] = response.json()['results']
                     #     else:
+                    #         addToLog(f"❌ Parse PDF - Error: (HTTP {response.status_code})", 2)
                     #         file_dict[filename]['S1_PARSE']['status'] = f'❌ Error: (HTTP {response.status_code})'
 
                     ### USING AZURE DOCUMENT INTELLIGENCE
+                    addToLog(f"⏳ Parse PDF - Parsing using Azure Document Intelligence...", 2)
                     markdownText = azureDocumentIntelligenceParsePDF(fileinfo['serverPath'], os.getenv('AZURE_DOCUMENT_INTELLIGENCE_API_KEY'))
                     file_dict[filename]['S1_PARSE']['status'] = '✅ Success'
                     file_dict[filename]['S1_PARSE']['result'] = [markdownText]
                     addToLog(f"✅ Parse PDF - Success", 2)                    
+
                 except Exception as e:
                     addToLog(f"❌ Parse PDF - Error: {str(e)}", 2)
                     file_dict[filename]['S1_PARSE']['status'] = f'❌ Error: {str(e)}'
                     file_dict[filename]['S1_PARSE']['result'] = ['']
+
                 #########################
                 # S2_READ_PDF_TO_BASE64 #
                 #########################
@@ -196,7 +203,8 @@ if st.session_state['STEP1']==True:
                             addToLog(f"⚠️ Get Products - Warning: File size is too large, Only Image will be used", 2)
                         else:
                             addToLog(f"⚠️ Get Products - Warning: Only Image will be used", 2)
-                    # PROCESS                    
+                    # PROCESS             
+                    addToLog(f"⏳ Get Products - Using Azure AI services gpt4o...", 2)       
                     while True:
                         try:
                             parsed_text = str(file_dict[filename]['S1_PARSE']['result'][0])
@@ -226,7 +234,7 @@ if st.session_state['STEP1']==True:
                                 rescontent = response.json()['choices'][0]['message']['content']      
                                 rescontent = json.loads(rescontent)['products_and_suppliers']
                                 file_dict[filename]['S3_GET_PROD_NAME_AND_SUPP']['result'] = rescontent
-                                addToLog(f"✅ Get Products - Found {len(rescontent)} product(s) in <strong>{filename}</strong>", 2)
+                                addToLog(f"✅ Get Products - Found {len(rescontent)} product(s)", 2)
                                 for product in rescontent:
                                     addToLog(f"✅ Get Products - Found: <strong>{product['PRODUCT_NAME']}</strong>, Supplier: <strong>{product['SUPPLIER_NAME']}</strong>", 2)
                                 break
@@ -234,7 +242,7 @@ if st.session_state['STEP1']==True:
                                 addToLog(f"🔄 Get Products - Service Unavailable - Error: (HTTP {response.status_code}) - Retrying...", 2)
                                 continue
                             elif response.status_code == 400:
-                                addToLog(f"❌ Get Products - Error: (HTTP 400) - Probably File is too big", 2)
+                                addToLog(f"❌ Get Products - Error: (HTTP 400) - Probably File is too big or too may pages", 2)
                                 file_dict[filename]['S3_GET_PROD_NAME_AND_SUPP']['status'] = f'❌ Error: (HTTP {response.status_code})'
                                 file_dict[filename]['S3_GET_PROD_NAME_AND_SUPP']['error'] = response.json()    
                                 break
@@ -287,6 +295,11 @@ if st.session_state['STEP1']==True:
 # GET FIELDS #
 ############## 
 if st.session_state['STEP2']==True:
+    # PRINT LOG
+    st.header('Logs')
+    for html_log in st.session_state['HTML_LOG']:
+        st.markdown(html_log, unsafe_allow_html=True)
+    # HEADER
     st.header('List Of Products Found in Each File')
     # LOAD STATE
     file_dict = st.session_state['file_dict']
@@ -300,17 +313,18 @@ if st.session_state['STEP2']==True:
     st.dataframe(dfPROD.astype(str))
 
     # DEBUG
-    with st.expander("input_dict", expanded=False):
-        st.json(st.session_state['input_dict'])
-    with st.expander("file_dict", expanded=False):
-        st.json(st.session_state['file_dict'])
-    with st.expander("dfPROD", expanded=False):
-        st.dataframe(st.session_state['dfPROD'].astype(str))
+    # with st.expander("input_dict", expanded=False):
+    #     st.json(st.session_state['input_dict'])
+    # with st.expander("file_dict", expanded=False):
+    #     st.json(st.session_state['file_dict'])
+    # with st.expander("dfPROD", expanded=False):
+    #     st.dataframe(st.session_state['dfPROD'].astype(str))
 
     if st.button("Get Structured Data From PDF"):
         st.header('Logs')
         addToLog("### ⏳ <strong>STEP2: GET STRUCTURED FIELDS...</strong> ###", 0)
         dfPROD['INDUSTRY_CLUSTER'] = ''
+        dfPROD['COMPOSITIONS_RESPONSE'] = ''
         dfPROD['COMPOSITIONS_WEB_SEARCH'] = ''  
         dfPROD['COMPOSITIONS'] = ''
         dfPROD['APPLICATIONS_WEB_SEARCH'] = ''
@@ -323,6 +337,7 @@ if st.session_state['STEP2']==True:
         # dfPROD['PHYSICAL_FORM_WEB_SEARCH'] = '' # NOT NEEDED NOWWW
         dfPROD['PHYSICAL_FORM'] = ''
         dfPROD['DESCRIPTION'] = ''
+        dfPROD['RECOMMENDED_DOSAGE_RESPONSE'] = ''
         dfPROD['RECOMMENDED_DOSAGE'] = ''
         dfPROD['REGULATORY_REQUIREMENTS'] = '(MANUAL_INPUT)'
         dfPROD['CERTIFICATIONS'] = ''
@@ -385,70 +400,70 @@ if st.session_state['STEP2']==True:
             #############################
             # COMPOSITIONS - WEB SEARCH #
             #############################
-            if business_line == 'PCI':
-                question = f"What are the COMPOSITIONS of [{product_name}] from manufacturer [{manufacturer_name}], like what is it made from?"
-                body = {"model": "gpt-4o-search-preview",
-                        'web_search_options': {'search_context_size': 'high'},
-                        "messages": [{'role': 'user', 
-                                    'content': question}],
-                        "max_tokens": 4096}
-                ### CALL API - USING TUNNEL
-                while True:
-                    try:
-                        response = requests.post("https://ancient-almeda-personal-personal-22e19704.koyeb.app/openai",                                         
-                                                json=body, 
-                                                params={"apikey": os.getenv('OPENAI_API_KEY')},
-                                                verify=False)                    
-                        if response.status_code == 200:
-                            rescontent = response.json()
-                            dfPROD['COMPOSITIONS_WEB_SEARCH'].iat[i] = rescontent['choices'][0]['message']['content']
-                            addToLog(f"✅ GPT Search Compositions - Search for <strong>Compositions</strong> of <strong>{product_name}</strong> from <strong>{manufacturer_name}</strong> on web", 2)
-                            break
-                        elif response.status_code in [499, 500, 503]:
-                            addToLog(f"🔄 GPT Search Compositions - Error: (HTTP {response.status_code}) - Retrying...", 2)     
-                            continue
-                        else:
-                            addToLog(f"❌ GPT Search Compositions - Error: (HTTP {response.status_code})", 2)
-                            dfPROD['COMPOSITIONS_WEB_SEARCH'].iat[i] = response.json()
-                            break
-                    except Exception as e:
-                        addToLog(f"❌ GPT Search Compositions - Error: {str(e)}", 2)
-                        dfPROD['COMPOSITIONS_WEB_SEARCH'].iat[i] = str(e)
+            question = f"""
+                        What are the COMPOSITIONS of [{product_name}] from manufacturer [{manufacturer_name}], like what is it made from? or the raw material used?
+                        If there is no information available, Just return "No information available on Internet", do not list any composition, ingredient, or raw material.
+                        If there is information avaliable, list the composition,ingredient, or raw material used in the product.
+                        """
+            body = {"model": "gpt-4o-search-preview",
+                    'web_search_options': {'search_context_size': 'high'},
+                    "messages": [{'role': 'user', 
+                                'content': question}],
+                    "max_tokens": 4096}
+            ### CALL API - USING TUNNEL
+            while True:
+                try:
+                    response = requests.post("https://ancient-almeda-personal-personal-22e19704.koyeb.app/openai",                                         
+                                            json=body, 
+                                            params={"apikey": os.getenv('OPENAI_API_KEY')},
+                                            verify=False)                    
+                    if response.status_code == 200:
+                        rescontent = response.json()
+                        dfPROD['COMPOSITIONS_WEB_SEARCH'].iat[i] = rescontent['choices'][0]['message']['content']
+                        addToLog(f"✅ GPT Search Compositions - Search for <strong>Compositions</strong> of <strong>{product_name}</strong> from <strong>{manufacturer_name}</strong> on web", 2)
                         break
+                    elif response.status_code in [499, 500, 503]:
+                        addToLog(f"🔄 GPT Search Compositions - Error: (HTTP {response.status_code}) - Retrying...", 2)     
+                        continue
+                    else:
+                        addToLog(f"❌ GPT Search Compositions - Error: (HTTP {response.status_code})", 2)
+                        dfPROD['COMPOSITIONS_WEB_SEARCH'].iat[i] = response.json()
+                        break
+                except Exception as e:
+                    addToLog(f"❌ GPT Search Compositions - Error: {str(e)}", 2)
+                    dfPROD['COMPOSITIONS_WEB_SEARCH'].iat[i] = str(e)
+                    break
 
             ################
             # COMPOSITIONS #
             ################
-            if business_line == 'PCI':
-                searched_text = dfPROD['COMPOSITIONS_WEB_SEARCH'].iat[i]
-                body = PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name, ls_base64, searched_text)
-                ### CALL API - USING AZURE AI FOUNDARY
-                while True:
-                    try:
-                        url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-main01-gpt-4o-main01/chat/completions?api-version=2024-12-01-preview"
-                        response = requests.post(url,                                    
-                                                headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
-                                                data=json.dumps(body),
-                                                verify=False)  
-                        if response.status_code == 200:
-                            rescontent = response.json()['choices'][0]['message']['content']
-                            dfPROD['COMPOSITIONS'].iat[i] = json.loads(rescontent)['compositions']
-                            addToLog(f"✅ Get Compositions - {dfPROD['COMPOSITIONS'].iat[i]}", 2)
-                            break
-                        elif response.status_code in [499, 500, 503]:
-                            addToLog(f"🔄 Get Compositions - Error: (HTTP {response.status_code}) - Retrying...", 2) 
-                            continue
-                        else:
-                            addToLog(f"❌ Get Compositions - Error: (HTTP {response.status_code})", 2)
-                            dfPROD['COMPOSITIONS'].iat[i] = response.json()
-                            break
-                    except Exception as e:
-                        addToLog(f"❌ Get Compositions - Error: {str(e)}", 2)
-                        dfPROD['COMPOSITIONS'].iat[i] = str(e)
+            searched_text = dfPROD['COMPOSITIONS_WEB_SEARCH'].iat[i]
+            body = PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text)
+            ### CALL API - USING AZURE AI FOUNDARY
+            while True:
+                try:
+                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-main01-gpt-4o-main01/chat/completions?api-version=2024-12-01-preview"
+                    response = requests.post(url,                                    
+                                            headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
+                                            data=json.dumps(body),
+                                            verify=False)  
+                    if response.status_code == 200:
+                        dfPROD['COMPOSITIONS_RESPONSE'].iat[i] = response.json()
+                        rescontent = response.json()['choices'][0]['message']['content']
+                        dfPROD['COMPOSITIONS'].iat[i] = json.loads(rescontent)['compositions']
+                        addToLog(f"✅ Get Compositions - {dfPROD['COMPOSITIONS'].iat[i]}", 2)
                         break
-            else:
-                addToLog(f"⏭️ Get Compositions - Skip - Only do for PCI", 2)
-                dfPROD['COMPOSITIONS'].iat[i] = '(MANUAL_INPUT)' 
+                    elif response.status_code in [499, 500, 503]:
+                        addToLog(f"🔄 Get Compositions - Error: (HTTP {response.status_code}) - Retrying...", 2) 
+                        continue
+                    else:
+                        addToLog(f"❌ Get Compositions - Error: (HTTP {response.status_code})", 2)
+                        dfPROD['COMPOSITIONS'].iat[i] = response.json()
+                        break
+                except Exception as e:
+                    addToLog(f"❌ Get Compositions - Error: {str(e)}", 2)
+                    dfPROD['COMPOSITIONS'].iat[i] = str(e)
+                    break
 
             ############################
             # APPLICATION - WEB SEARCH #
@@ -603,106 +618,7 @@ if st.session_state['STEP2']==True:
                 except Exception as e:
                     addToLog(f"❌ Get CAS from Document - Error: {str(e)}", 2)
                     dfPROD['CAS_FROM_DOC'].iat[i] = str(e)
-                    break
-
-            ###########################
-            # CAS NUMBER - WEB SEARCH #
-            ###########################            
-            # question = f"""
-            #            What is the CAS number for product [{product_name}] from manufacturer [{manufacturer_name}]? 
-            #            If not avaliable then it is ok, just say you cannot find, or it does not exists, dont try to find similar, dont guess
-            #            """
-            # body = {"model": "gpt-4o-search-preview",
-            #         'web_search_options': {'search_context_size': 'high'},
-            #         "messages": [{'role': 'user',
-            #                       'content': question}],
-            #         "max_tokens": 4096}
-            # ### CALL API - USING TUNNEL
-            # while True:
-            #     try:
-            #         response = requests.post("https://ancient-almeda-personal-personal-22e19704.koyeb.app/openai",                                         
-            #                                 json=body, 
-            #                                 params={"apikey": os.getenv('OPENAI_API_KEY')},
-            #                                 verify=False)                    
-            #         if response.status_code == 200:
-            #             rescontent = response.json()
-            #             dfPROD['CAS_WEB_SEARCH'].iat[i] = rescontent['choices'][0]['message']['content']
-            #             addToLog(f"✅ GPT Search CAS Number - Search for <strong>CAS</strong> of <strong>{product_name}</strong> from <strong>{manufacturer_name}</strong> on web", 2)
-            #             break
-            #         elif response.status_code in [499, 500, 503]:
-            #             addToLog(f"🔄 GPT Search CAS Number - Error: (HTTP {response.status_code}) - Retrying...", 2) 
-            #             continue
-            #         else:
-            #             addToLog(f"❌ GPT Search CAS Number - Error: (HTTP {response.status_code})", 2)
-            #             dfPROD['CAS_WEB_SEARCH'].iat[i] = response.json()
-            #             break
-            #     except Exception as e:
-            #         addToLog(f"❌ GPT Search CAS Number - Error: {str(e)}", 2)
-            #         dfPROD['CAS_WEB_SEARCH'].iat[i] = str(e)
-            #         break
-
-            #########################
-            # CAS NUMBER - FROM WEB #
-            #########################
-            # searched_text = dfPROD['CAS_WEB_SEARCH'].iat[i]
-            # body = PIM_buildBodyFindCASNumber(parsed_text, product_name, manufacturer_name, ls_base64, searched_text)
-            # ### CALL API - USING AZURE AI FOUNDARY
-            # while True:
-            #     try:
-            #         url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-main01-gpt-4o-main01/chat/completions?api-version=2024-12-01-preview"
-            #         response = requests.post(url,                                    
-            #                                 headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
-            #                                 data=json.dumps(body),
-            #                                 verify=False)  
-            #         if response.status_code == 200:
-            #             rescontent = response.json()['choices'][0]['message']['content']
-            #             dfPROD['CAS_FROM_WEB'].iat[i] = json.loads(rescontent)['cas_number']
-            #             addToLog(f"✅ Get CAS from Web - {dfPROD['CAS_FROM_WEB'].iat[i]}", 2)
-            #             break
-            #         elif response.status_code in [499, 500, 503]:
-            #             addToLog(f"🔄 Get CAS from Web - Error: (HTTP {response.status_code}) - Retrying...", 2) 
-            #             continue
-            #         else:
-            #             addToLog(f"❌ Get CAS from Web - Error: (HTTP {response.status_code})", 2)
-            #             dfPROD['CAS_FROM_WEB'].iat[i] = response.json()
-            #             break
-            #     except Exception as e:
-            #         addToLog(f"❌ Get CAS from Web - Error: {str(e)}", 2)
-            #         dfPROD['CAS_FROM_WEB'].iat[i] = str(e)
-            #         break
-
-            ###############################
-            # PHYSICAL_FORM - WEB SEARCH #
-            ##############################
-            # question = f"Give me as much information as possible about the PHYSICAL_FORM of [{product_name}] from manufacturer [{manufacturer_name}]"
-            # body = {"model": "gpt-4o-search-preview",
-            #         'web_search_options': {'search_context_size': 'high'},
-            #         "messages": [{'role': 'user',
-            #                       'content': question}],
-            #         "max_tokens": 4096}
-            # ### CALL API - USING TUNNEL
-            # while True:
-            #     try:
-            #         response = requests.post("https://ancient-almeda-personal-personal-22e19704.koyeb.app/openai",                                         
-            #                                 json=body, 
-            #                                 params={"apikey": os.getenv('OPENAI_API_KEY')},
-            #                                 verify=False)                    
-            #         if response.status_code == 200:
-            #             rescontent = response.json()
-            #             dfPROD['PHYSICAL_FORM_WEB_SEARCH'].iat[i] = rescontent['choices'][0]['message']['content']
-            #             addToLog(f"✅ GPT Search Physical Form - Search for <strong>Physical Form</strong> of <strong>{product_name}</strong> from <strong>{manufacturer_name}</strong> on web", 2)
-            #             break
-            #         elif response.status_code in [499, 500, 503]:
-            #             addToLog(f"🔄 GPT Search Physical Form - Error: (HTTP {response.status_code}) - Retrying...", 2) 
-            #             continue
-            #         else:
-            #             addToLog(f"❌ GPT Search Physical Form - Error: (HTTP {response.status_code})", 2)
-            #             dfPROD['PHYSICAL_FORM_WEB_SEARCH'].iat[i] = response.json()
-            #             break
-            #     except Exception as e:
-            #         addToLog(f"❌ GPT Search Physical Form - Error: {str(e)}", 2)
-            #         dfPROD['PHYSICAL_FORM_WEB_SEARCH'].iat[i] = str(e)
-            #         break         
+                    break  
 
             #################
             # PHYSICAL_FORM #
@@ -745,7 +661,8 @@ if st.session_state['STEP2']==True:
                                             headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
                                             data=json.dumps(body),
                                             verify=False)  
-                    if response.status_code == 200:
+                    if response.status_code == 200:                        
+                        dfPROD['RECOMMENDED_DOSAGE_RESPONSE'].iat[i] = response.json()
                         rescontent = response.json()['choices'][0]['message']['content']
                         dfPROD['RECOMMENDED_DOSAGE'].iat[i] = json.loads(rescontent)['recommended_dosage']
                         addToLog(f"✅ Get Recommended Dosage - {dfPROD['RECOMMENDED_DOSAGE'].iat[i]}", 2)
@@ -905,8 +822,12 @@ if st.session_state['STEP2']==True:
 # EXPORT #
 ##########
 if st.session_state['STEP3'] == True:
+    # PRINT LOG
+    st.header('Logs')
+    for html_log in st.session_state['HTML_LOG']:
+        st.markdown(html_log, unsafe_allow_html=True)
 
-    # DEBUG
+    # # DEBUG
     # with st.expander("input_dict", expanded=False):
     #     st.json(st.session_state['input_dict'])
     # with st.expander("file_dict", expanded=False):
@@ -942,9 +863,9 @@ if st.session_state['STEP3'] == True:
     # with st.expander("dfPROD", expanded=False):
     #     st.dataframe(st.session_state['dfPROD'].astype(str))
 
-# PRINT LOG
-st.header('Logs')
-for html_log in st.session_state['HTML_LOG']:
-    st.markdown(html_log, unsafe_allow_html=True)
+# # PRINT LOG
+# st.header('Logs')
+# for html_log in st.session_state['HTML_LOG']:
+#     st.markdown(html_log, unsafe_allow_html=True)
 
 
