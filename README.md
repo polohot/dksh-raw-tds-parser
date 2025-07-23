@@ -1,5 +1,7 @@
 # dksh-raw-tds-parser
 
+**Use AI to parser PDF into specific format**
+
 ```
 [V0.2-alpha] - 2025-07-22
 - Change Parsing PDF, from using LlamaParse, to use Internal Azure AI Document Intelligence for compliance
