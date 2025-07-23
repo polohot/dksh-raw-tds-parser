@@ -1,0 +1,10 @@
+streamlit==1.46.1
+streamlit_javascript==0.1.5
+streamlit_js_eval==0.1.7
+dotenv==0.9.9
+openai==1.93.0
+pandas==2.3.0
+PyMuPDF==1.26.3
+PyPDF2==3.0.1
+pycountry==24.6.1
+azure-ai-documentintelligence==1.0.2
