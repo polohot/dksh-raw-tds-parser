@@ -89,7 +89,7 @@ def PIM_buildBodyGetProductNameAndSupplierFromTextAndImage(parsed_text, ls_base6
         })
     # CONSTRUCT BODY
     body = {
-        "model": "gpt-4o",
+        "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0.2,
         "response_format": {
@@ -151,7 +151,7 @@ def buildStructuredOutputBody(parsed_text, product_name, manufacturer_name, ls_b
         })
     # BUILD BODY
     body = {
-        "model": "gpt-4o",
+        "model": "gpt-4.1-mini",
         "messages": messages,
         "response_format": {
             "type": "json_schema",
@@ -398,7 +398,7 @@ def buildCompositionOutputBody(parsed_text, product_name, manufacturer_name, ls_
         })
 
     body = {
-        "model": "gpt-4o",
+        "model": "gpt-4.1-mini",
         "messages": messages,
         "response_format": {
             "type": "json_schema",
@@ -510,7 +510,7 @@ def PIM_buildBodySelectIndustryCluster(parsed_text, product_name, manufacturer_n
         })
     # CONSTRUCT BODY
     body = {
-        "model": "gpt-4o",
+        "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0.2,
         "response_format": {
@@ -613,7 +613,7 @@ def PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name,
         })
     # CONSTRUCT BODY
     body = {
-        "model": "gpt-4o",
+        "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0.2,
         "response_format": {
@@ -814,7 +814,7 @@ def PIM_buildBodySelectApplication(parsed_text, product_name, manufacturer_name,
         })
     # CONSTRUCT BODY
     body = {
-        "model": "gpt-4o",
+        "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0.2,
         "response_format": {
@@ -1164,7 +1164,7 @@ def PIM_buildBodySelectFunction(parsed_text, product_name, manufacturer_name, ls
         })
     # CONSTRUCT BODY
     body = {
-        "model": "gpt-4o",
+        "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0.2,
         "response_format": {
@@ -1219,7 +1219,7 @@ def PIM_buildBodyFindCASNumber(parsed_text, product_name, manufacturer_name, ls_
         })
     # CONSTRUCT BODY
     body = {
-        "model": "gpt-4o",
+        "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0.2,
         "response_format": {
@@ -1334,7 +1334,7 @@ def PIM_buildBodyFindPhysicalForm(parsed_text, product_name, manufacturer_name, 
 
     # CONSTRUCT BODY
     body = {
-        "model": "gpt-4o",
+        "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0.2,
         "response_format": {
@@ -1384,7 +1384,7 @@ def PIM_buildBodyGetProductDescription(parsed_text, product_name, manufacturer_n
         })
     # CONSTRUCT BODY
     body = {
-        "model": "gpt-4o",
+        "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0.2,
         "response_format": {
@@ -1434,7 +1434,7 @@ def PIM_buildBodyGetRecommendedDosage(parsed_text, product_name, manufacturer_na
         })
     # CONSTRUCT BODY
     body = {
-        "model": "gpt-4o",
+        "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0.2,
         "response_format": {
@@ -1558,7 +1558,7 @@ def PIM_buildBodySelectCertifications(parsed_text, product_name, manufacturer_na
         })
     # CONSTRUCT BODY
     body = {
-        "model": "gpt-4o",
+        "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0.2,
         "response_format": {
@@ -1716,7 +1716,7 @@ def PIM_buildBodySelectClaims(parsed_text, product_name, manufacturer_name, ls_b
         })
     # CONSTRUCT BODY
     body = {
-        "model": "gpt-4o",
+        "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0.2,
         "response_format": {
@@ -1790,7 +1790,7 @@ def PIM_buildBodySelectHealthBenefits(parsed_text, product_name, manufacturer_na
         })
     # CONSTRUCT BODY
     body = {
-        "model": "gpt-4o",
+        "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0.2,
         "response_format": {
