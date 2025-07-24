@@ -222,7 +222,7 @@ if st.session_state['STEP1']==True:
                             #                         verify=False)
 
                             ### CALL API - USING AZURE AI FOUNDARY
-                            url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-main01-gpt-4o-main01/chat/completions?api-version=2024-12-01-preview"
+                            url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4o-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
                             response = requests.post(url,                                    
                                                     headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
                                                     data=json.dumps(body),
@@ -313,12 +313,12 @@ if st.session_state['STEP2']==True:
     st.dataframe(dfPROD.astype(str))
 
     # DEBUG
-    # with st.expander("input_dict", expanded=False):
-    #     st.json(st.session_state['input_dict'])
-    # with st.expander("file_dict", expanded=False):
-    #     st.json(st.session_state['file_dict'])
-    # with st.expander("dfPROD", expanded=False):
-    #     st.dataframe(st.session_state['dfPROD'].astype(str))
+    with st.expander("input_dict", expanded=False):
+        st.json(st.session_state['input_dict'])
+    with st.expander("file_dict", expanded=False):
+        st.json(st.session_state['file_dict'])
+    with st.expander("dfPROD", expanded=False):
+        st.dataframe(st.session_state['dfPROD'].astype(str))
 
     if st.button("Get Structured Data From PDF"):
         st.header('Logs')
@@ -336,7 +336,7 @@ if st.session_state['STEP2']==True:
         # dfPROD['CAS_FROM_WEB'] = ''             # NOT NEEDED NOW
         # dfPROD['PHYSICAL_FORM_WEB_SEARCH'] = '' # NOT NEEDED NOWWW
         dfPROD['PHYSICAL_FORM'] = ''
-        dfPROD['DESCRIPTION'] = ''
+        dfPROD['PRODUCT_DESCRIPTION'] = ''
         dfPROD['RECOMMENDED_DOSAGE_RESPONSE'] = ''
         dfPROD['RECOMMENDED_DOSAGE'] = ''
         dfPROD['REGULATORY_REQUIREMENTS'] = '(MANUAL_INPUT)'
@@ -375,7 +375,7 @@ if st.session_state['STEP2']==True:
             ### CALL API - USING AZURE AI FOUNDARY
             while True:
                 try:
-                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-main01-gpt-4o-main01/chat/completions?api-version=2024-12-01-preview"
+                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4o-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
                     response = requests.post(url,                                    
                                             headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
                                             data=json.dumps(body),
@@ -442,7 +442,7 @@ if st.session_state['STEP2']==True:
             ### CALL API - USING AZURE AI FOUNDARY
             while True:
                 try:
-                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-main01-gpt-4o-main01/chat/completions?api-version=2024-12-01-preview"
+                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4o-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
                     response = requests.post(url,                                    
                                             headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
                                             data=json.dumps(body),
@@ -506,7 +506,7 @@ if st.session_state['STEP2']==True:
             ### CALL API - USING AZURE AI FOUNDARY
             while True:
                 try:
-                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-main01-gpt-4o-main01/chat/completions?api-version=2024-12-01-preview"
+                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4o-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
                     response = requests.post(url,                                    
                                             headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
                                             data=json.dumps(body),
@@ -569,7 +569,7 @@ if st.session_state['STEP2']==True:
             ### CALL API - USING AZURE AI FOUNDARY
             while True:
                 try:
-                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-main01-gpt-4o-main01/chat/completions?api-version=2024-12-01-preview"
+                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4o-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
                     response = requests.post(url,                                    
                                             headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
                                             data=json.dumps(body),
@@ -598,7 +598,7 @@ if st.session_state['STEP2']==True:
             ### CALL API - USING AZURE AI FOUNDARY
             while True:
                 try:
-                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-main01-gpt-4o-main01/chat/completions?api-version=2024-12-01-preview"
+                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4o-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
                     response = requests.post(url,                                    
                                             headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
                                             data=json.dumps(body),
@@ -627,7 +627,7 @@ if st.session_state['STEP2']==True:
             ### CALL API - USING AZURE AI FOUNDARY
             while True:
                 try:
-                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-main01-gpt-4o-main01/chat/completions?api-version=2024-12-01-preview"
+                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4o-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
                     response = requests.post(url,                                    
                                             headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
                                             data=json.dumps(body),
@@ -649,6 +649,35 @@ if st.session_state['STEP2']==True:
                     dfPROD['PHYSICAL_FORM'].iat[i] = str(e)
                     break
 
+            #######################
+            # PRODUCT_DESCRIPTION #
+            #######################
+            body = PIM_buildBodyGetProductDescription(parsed_text, product_name, manufacturer_name, ls_base64, searched_text='')
+            ### CALL API - USING AZURE AI FOUNDARY
+            while True:
+                try:
+                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4o-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+                    response = requests.post(url,                                    
+                                            headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
+                                            data=json.dumps(body),
+                                            verify=False)  
+                    if response.status_code == 200:
+                        rescontent = response.json()['choices'][0]['message']['content']
+                        dfPROD['PRODUCT_DESCRIPTION'].iat[i] = json.loads(rescontent)['product_description']
+                        addToLog(f"✅ Get Product Description - {dfPROD['PRODUCT_DESCRIPTION'].iat[i]}", 2)
+                        break
+                    elif response.status_code in [499, 500, 503]:
+                        addToLog(f"🔄 Get Product Description - Error: (HTTP {response.status_code}) - Retrying...", 2) 
+                        continue
+                    else:
+                        addToLog(f"❌ Get Product Description - Error: (HTTP {response.status_code})", 2)
+                        dfPROD['PRODUCT_DESCRIPTION'].iat[i] = response.json()
+                        break
+                except Exception as e:
+                    addToLog(f"❌ Get Product Description - Error: {str(e)}", 2)
+                    dfPROD['PRODUCT_DESCRIPTION'].iat[i] = str(e)
+                    break
+
             ######################
             # RECOMMENDED_DOSAGE #
             ######################
@@ -656,7 +685,7 @@ if st.session_state['STEP2']==True:
             ### CALL API - USING AZURE AI FOUNDARY
             while True:
                 try:
-                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-main01-gpt-4o-main01/chat/completions?api-version=2024-12-01-preview"
+                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4o-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
                     response = requests.post(url,                                    
                                             headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
                                             data=json.dumps(body),
@@ -686,7 +715,7 @@ if st.session_state['STEP2']==True:
             ### CALL API - USING AZURE AI FOUNDARY
             while True:
                 try:
-                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-main01-gpt-4o-main01/chat/completions?api-version=2024-12-01-preview"
+                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4o-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
                     response = requests.post(url,                                    
                                             headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
                                             data=json.dumps(body),
@@ -715,7 +744,7 @@ if st.session_state['STEP2']==True:
             ### CALL API - USING AZURE AI FOUNDARY
             while True:
                 try:
-                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-main01-gpt-4o-main01/chat/completions?api-version=2024-12-01-preview"
+                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4o-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
                     response = requests.post(url,                                    
                                             headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
                                             data=json.dumps(body),
@@ -752,7 +781,7 @@ if st.session_state['STEP2']==True:
                     ### CALL API - USING AZURE AI FOUNDARY
                     while True:
                         try:
-                            url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-main01-gpt-4o-main01/chat/completions?api-version=2024-12-01-preview"
+                            url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4o-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
                             response = requests.post(url,                                    
                                                     headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
                                                     data=json.dumps(body),
@@ -848,7 +877,7 @@ if st.session_state['STEP3'] == True:
     dfTPL = dfTPL[['COUNTRY','BUSINESS_LINE',
                     'INDUSTRY_CLUSTER','SUPPLIER_NAME',
                     'COMPOSITIONS','APPLICATIONS','FUNCTIONS',
-                    'PRODUCT_NAME','CAS_FROM_DOC','PHYSICAL_FORM','DESCRIPTION',
+                    'PRODUCT_NAME','CAS_FROM_DOC','PHYSICAL_FORM','PRODUCT_DESCRIPTION',
                     'RECOMMENDED_DOSAGE','REGULATORY_REQUIREMENTS','CERTIFICATIONS',
                     'FILE_NAME','COMPANY_CD','CLAIMS','PDP_VDO',
                     'LIGHT_VERSION','RECOMMENDED_HEALTH_BENEFITS','SUSTAINABLE_DOC']]

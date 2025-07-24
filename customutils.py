@@ -33,7 +33,7 @@ from azure.ai.documentintelligence import DocumentIntelligenceClient
 
 def azureDocumentIntelligenceParsePDF(file_path, key):
     document_intelligence_client = DocumentIntelligenceClient(
-        endpoint="https://document-intelligence-standard-s0-main02.cognitiveservices.azure.com/", credential=AzureKeyCredential(key))
+        endpoint="https://document-intelligence-standard-s0-dksh-raw-tds-parser.cognitiveservices.azure.com/", credential=AzureKeyCredential(key))
     with open(file_path, "rb") as f:
         poller = document_intelligence_client.begin_analyze_document(
             "prebuilt-read", 
@@ -1352,6 +1352,55 @@ def PIM_buildBodyFindPhysicalForm(parsed_text, product_name, manufacturer_name, 
                         }
                     },
                     "required": ["physical_form"],
+                    "additionalProperties": False
+                }
+            }
+        }
+    }
+    return body
+
+def PIM_buildBodyGetProductDescription(parsed_text, product_name, manufacturer_name, ls_base64, searched_text=''):
+    # SYSTEM PROMPT
+    system_prompt = f"""
+        You are a data extraction agent that processes technical documents and extracts information.
+        Based on the provided text and images, focus only on product [{product_name}] from manufacturer [{manufacturer_name}].
+        Create 120 to 150 words of product description to be put on the web for customer to see
+
+        Output format:
+        {{
+          "product_description": string
+        }}
+    """
+    # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": parsed_text},
+        {"role": "user", "content": searched_text}]
+    # ADD BASE64 IMAGES IF PROVIDED
+    for base64_img in ls_base64:
+        messages.append({
+            "role": "user", "content": [{"type": "image_url",
+                                             "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]
+        })
+    # CONSTRUCT BODY
+    body = {
+        "model": "gpt-4o",
+        "messages": messages,
+        "temperature": 0.2,
+        "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+                "name": "product_description_output",
+                "strict": True,
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "product_description": {
+                            "type": "string",
+                            "description": "120 to 150 words of product description to be put on the web for customer to see"
+                        }
+                    },
+                    "required": ["product_description"],
                     "additionalProperties": False
                 }
             }

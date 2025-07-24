@@ -72,6 +72,14 @@ st.write("**Client time:**", client_time.strftime("%Y-%m-%d %H:%M:%S.%f"))
 st.write(f"**Difference:** {delta.total_seconds()*1000:.0f} ms")
 
 strShow = '''
+[V0.4-alpha] - 2025-07-24
+- New resource map to this project
+    AZURE AI FOUNDARY DEPLOYMENT : dksh-raw-tds-parser
+    AZURE DOCUMENT INTELLIGENCE : document-intelligence-standard-s0-dksh-raw-tds-parser
+    OPENAI PROJECT : dksh-raw-tds-parser
+- Add Generation "Product Description"
+- Current cost around 10 THB per product
+
 [V0.3-alpha] - 2025-07-23
 - Change Subscription of Azure Document Intelligence from Free to standard-s0 resource
 - (2) Gen PIM Template - Change location of run Log to show on top

@@ -130,7 +130,7 @@ if st.session_state['STEP']=='USER_UPLOAD_AND_PARSE':
                     #                         verify=False)
 
                     ### CALL API - USING AZURE AI FOUNDARY
-                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-main01-gpt-4o-main01/chat/completions?api-version=2024-12-01-preview"
+                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4o-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
                     response = requests.post(url,                                    
                                              headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
                                              data=json.dumps(body),
@@ -227,7 +227,7 @@ elif st.session_state['STEP']=='GET_FIELDS':
                 #                         verify=False)
 
                 ### USING AZURE AI FOUNDARY
-                url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-main01-gpt-4o-main01/chat/completions?api-version=2024-12-01-preview"
+                url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4o-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
                 response = requests.post(url,                                    
                                          headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
                                          data=json.dumps(body),
@@ -258,7 +258,7 @@ elif st.session_state['STEP']=='GET_FIELDS':
                 #                         verify=False)
 
                 ### USING AZURE AI FOUNDARY
-                url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-main01-gpt-4o-main01/chat/completions?api-version=2024-12-01-preview"
+                url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4o-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
                 response = requests.post(url,                                    
                                          headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
                                          data=json.dumps(body),
