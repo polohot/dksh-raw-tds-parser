@@ -383,6 +383,7 @@ if st.session_state['STEP2']==True:
                         What are the COMPOSITIONS of [{product_name}] from manufacturer [{manufacturer_name}], like what is it made from? or the raw material used?
                         If there is no information available, Just return "No information available on Internet", do not list any composition, ingredient, or raw material.
                         If there is information avaliable, list the composition,ingredient, or raw material used in the product.
+                        Use exact product name [{product_name}] and manufacturer name [{manufacturer_name}] in the search.
                         """
             body = {"model": "gpt-4o-mini-search-preview",
                     'web_search_options': {'search_context_size': 'low'},
@@ -420,7 +421,8 @@ if st.session_state['STEP2']==True:
             question = f"""
                         Give me as much information as possible about the APPLICATIONS of [{product_name}] utilization in the [{business_line_str}] industries
                         If there is no information available, Just return "No information available on Internet"
-                        If there is information avaliable, then output data
+                        If there is information avaliable, then output data.
+                        Use exact product name [{product_name}] in the search.
                         """            
             body = {"model": "gpt-4o-mini-search-preview",
                     'web_search_options': {'search_context_size': 'low'},
@@ -458,7 +460,8 @@ if st.session_state['STEP2']==True:
             question = f"""
                         Give me as much information as possible about the FUNCTIONS of [{product_name}] utilization in the [{business_line_str}] industries
                         If there is no information available, Just return "No information available on Internet"
-                        If there is information avaliable, then output data
+                        If there is information avaliable, then output data.
+                        Use exact product name [{product_name}] in the search.
                         """            
             body = {"model": "gpt-4o-mini-search-preview",
                     'web_search_options': {'search_context_size': 'low'},
@@ -956,12 +959,6 @@ if st.session_state['STEP3'] == True:
     #     st.json(st.session_state['file_dict'])
     # with st.expander("dfPROD", expanded=False):
     #     st.dataframe(st.session_state['dfPROD'].astype(str))
-
-    # st.json(st.session_state['dfPROD']['CLAIMS_BODY'].iat[0])
-    # st.json(st.session_state['dfPROD']['CLAIMS_RESPONSE'].iat[0])
-
-    # st.json(st.session_state['dfPROD']['CLAIMS_BODY'].iat[1])
-    # st.json(st.session_state['dfPROD']['CLAIMS_RESPONSE'].iat[1])
 
 
     # EXPORT
