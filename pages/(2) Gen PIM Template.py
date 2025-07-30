@@ -323,13 +323,18 @@ if st.session_state['STEP2']==True:
     if st.button("Get Structured Data From PDF"):
         st.header('Logs')
         addToLog("### ⏳ <strong>STEP2: GET STRUCTURED FIELDS...</strong> ###", 0)
-        dfPROD['INDUSTRY_CLUSTER'] = ''
-        dfPROD['COMPOSITIONS_RESPONSE'] = ''
+        dfPROD['INDUSTRY_CLUSTER'] = ''        
+        dfPROD['COMPOSITIONS_WEB_SEARCH_RESPONSE'] = ''  
         dfPROD['COMPOSITIONS_WEB_SEARCH'] = ''  
-        dfPROD['COMPOSITIONS'] = ''
+        dfPROD['APPLICATIONS_WEB_SEARCH_RESPONSE'] = ''
         dfPROD['APPLICATIONS_WEB_SEARCH'] = ''
+        dfPROD['FUNCTIONS_WEB_SEARCH_RESPONSE'] = ''
+        dfPROD['FUNCTIONS_WEB_SEARCH'] = ''        
+        dfPROD['COMBINED_WEB_SEARCH'] = '' 
+        dfPROD['THIS_PRODUCT_ONLY'] = ''
+        dfPROD['COMPOSITIONS_RESPONSE'] = ''
+        dfPROD['COMPOSITIONS'] = ''
         dfPROD['APPLICATIONS'] = ''
-        dfPROD['FUNCTIONS_WEB_SEARCH'] = ''
         dfPROD['FUNCTIONS'] = ''
         dfPROD['CAS_FROM_DOC'] = ''
         # dfPROD['CAS_WEB_SEARCH'] = ''           # NOT NEEDED NOW
@@ -341,6 +346,9 @@ if st.session_state['STEP2']==True:
         dfPROD['RECOMMENDED_DOSAGE'] = ''
         dfPROD['REGULATORY_REQUIREMENTS'] = '(MANUAL_INPUT)'
         dfPROD['CERTIFICATIONS'] = ''
+        dfPROD['CLAIMS_BODY'] = ''
+        dfPROD['CLAIMS_RESPONSE_CODE'] = ''
+        dfPROD['CLAIMS_RESPONSE'] = ''
         dfPROD['CLAIMS'] = ''
         dfPROD['PDP_VDO'] = '(MANUAL_INPUT)'
         dfPROD['LIGHT_VERSION'] = '(MANUAL_INPUT)'
@@ -387,10 +395,10 @@ if st.session_state['STEP2']==True:
                     response = requests.post("https://ancient-almeda-personal-personal-22e19704.koyeb.app/openai",                                         
                                             json=body, 
                                             params={"apikey": os.getenv('OPENAI_API_KEY')},
-                                            verify=False)                    
-                    if response.status_code == 200:
-                        rescontent = response.json()
-                        dfPROD['COMPOSITIONS_WEB_SEARCH'].iat[i] = rescontent['choices'][0]['message']['content']
+                                            verify=False)    
+                    dfPROD['COMPOSITIONS_WEB_SEARCH_RESPONSE'].iat[i] = response.json()                
+                    if response.status_code == 200:                        
+                        dfPROD['COMPOSITIONS_WEB_SEARCH'].iat[i] = response.json()['choices'][0]['message']['content']
                         addToLog(f"✅ GPT Search Compositions - Search for <strong>Compositions</strong> of <strong>{product_name}</strong> from <strong>{manufacturer_name}</strong> on web", 2)
                         break
                     elif response.status_code in [499, 500, 503]:
@@ -398,6 +406,7 @@ if st.session_state['STEP2']==True:
                         continue
                     else:
                         addToLog(f"❌ GPT Search Compositions - Error: (HTTP {response.status_code})", 2)
+                        dfPROD['COMPOSITIONS_WEB_SEARCH_RESPONSE'].iat[i] = response.json()
                         dfPROD['COMPOSITIONS_WEB_SEARCH'].iat[i] = response.json()
                         break
                 except Exception as e:
@@ -408,7 +417,11 @@ if st.session_state['STEP2']==True:
             ############################
             # APPLICATION - WEB SEARCH #
             ############################
-            question = f"Give me as much information as possible about the APPLICATIONS of [{product_name}] utilization in the [{business_line_str}] industries"
+            question = f"""
+                        Give me as much information as possible about the APPLICATIONS of [{product_name}] utilization in the [{business_line_str}] industries
+                        If there is no information available, Just return "No information available on Internet"
+                        If there is information avaliable, then output data
+                        """            
             body = {"model": "gpt-4o-mini-search-preview",
                     'web_search_options': {'search_context_size': 'low'},
                     "messages": [{'role': 'user', 
@@ -420,10 +433,10 @@ if st.session_state['STEP2']==True:
                     response = requests.post("https://ancient-almeda-personal-personal-22e19704.koyeb.app/openai",                                         
                                             json=body, 
                                             params={"apikey": os.getenv('OPENAI_API_KEY')},
-                                            verify=False)                    
+                                            verify=False)
+                    dfPROD['APPLICATIONS_WEB_SEARCH_RESPONSE'].iat[i] = response.json()               
                     if response.status_code == 200:
-                        rescontent = response.json()
-                        dfPROD['APPLICATIONS_WEB_SEARCH'].iat[i] = rescontent['choices'][0]['message']['content']
+                        dfPROD['APPLICATIONS_WEB_SEARCH'].iat[i] = response.json()['choices'][0]['message']['content']
                         addToLog(f"✅ GPT Search Applications - Search for <strong>Applications</strong> of <strong>{product_name}</strong> on web", 2)
                         break
                     elif response.status_code in [499, 500, 503]:
@@ -431,6 +444,7 @@ if st.session_state['STEP2']==True:
                         continue
                     else:
                         addToLog(f"❌ GPT Search Applications - Error: (HTTP {response.status_code})", 2)
+                        dfPROD['APPLICATIONS_WEB_SEARCH_RESPONSE'].iat[i] = response.json()
                         dfPROD['APPLICATIONS_WEB_SEARCH'].iat[i] = response.json()
                         break
                 except Exception as e:
@@ -441,7 +455,11 @@ if st.session_state['STEP2']==True:
             ##########################
             # FUNCTIONS - WEB SEARCH #
             ##########################
-            question = f"Give me as much information as possible about the FUNCTIONS of [{product_name}] utilization in the [{business_line_str}] industries"
+            question = f"""
+                        Give me as much information as possible about the FUNCTIONS of [{product_name}] utilization in the [{business_line_str}] industries
+                        If there is no information available, Just return "No information available on Internet"
+                        If there is information avaliable, then output data
+                        """            
             body = {"model": "gpt-4o-mini-search-preview",
                     'web_search_options': {'search_context_size': 'low'},
                     "messages": [{'role': 'user',
@@ -453,10 +471,10 @@ if st.session_state['STEP2']==True:
                     response = requests.post("https://ancient-almeda-personal-personal-22e19704.koyeb.app/openai",                                         
                                             json=body, 
                                             params={"apikey": os.getenv('OPENAI_API_KEY')},
-                                            verify=False)                    
+                                            verify=False)         
+                    dfPROD['FUNCTIONS_WEB_SEARCH_RESPONSE'].iat[i] = response.json()    
                     if response.status_code == 200:
-                        rescontent = response.json()
-                        dfPROD['FUNCTIONS_WEB_SEARCH'].iat[i] = rescontent['choices'][0]['message']['content']
+                        dfPROD['FUNCTIONS_WEB_SEARCH'].iat[i] = response.json()['choices'][0]['message']['content']
                         addToLog(f"✅ GPT Search Functions - Search for <strong>Functions</strong> of <strong>{product_name}</strong> on web", 2)
                         break
                     elif response.status_code in [499, 500, 503]:
@@ -464,6 +482,7 @@ if st.session_state['STEP2']==True:
                         continue
                     else:
                         addToLog(f"❌ GPT Search Functions - Error: (HTTP {response.status_code})", 2)
+                        dfPROD['FUNCTIONS_WEB_SEARCH_RESPONSE'].iat[i] = response.json()
                         dfPROD['FUNCTIONS_WEB_SEARCH'].iat[i] = response.json()
                         break
                 except Exception as e:
@@ -471,9 +490,52 @@ if st.session_state['STEP2']==True:
                     dfPROD['FUNCTIONS_WEB_SEARCH'].iat[i] = str(e)
                     break      
 
+            ######################
+            # COMBINE WEB SEARCH #
+            ######################
+            searched_text = ''
+            searched_text += '### COMPOSITIONS WEB SEARCH RESULTS ###\n'
+            searched_text += dfPROD['COMPOSITIONS_WEB_SEARCH'].astype(str).iat[i] + '\n\n\n'
+            searched_text += '### APPLICATIONS WEB SEARCH RESULTS ###\n'
+            searched_text += dfPROD['APPLICATIONS_WEB_SEARCH'].astype(str).iat[i] + '\n\n\n'
+            searched_text += '### FUNCTIONS WEB SEARCH RESULTS ###\n'
+            searched_text += dfPROD['FUNCTIONS_WEB_SEARCH'].astype(str).iat[i] + '\n\n\n'
+            dfPROD['COMBINED_WEB_SEARCH'].iat[i] = searched_text
+
+            #####################
+            # THIS PRODUCT ONLY #
+            #####################
+            body = PIM_buildBodyGetProductInfo(parsed_text, product_name, manufacturer_name, ls_base64, searched_text='')
+            ### CALL API - USING AZURE AI FOUNDARY
+            while True:
+                try:
+                    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+                    response = requests.post(url,                                    
+                                            headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
+                                            data=json.dumps(body),
+                                            verify=False)  
+                    if response.status_code == 200:
+                        rescontent = response.json()['choices'][0]['message']['content']
+                        dfPROD['THIS_PRODUCT_ONLY'].iat[i] = rescontent
+                        addToLog(f"✅ Get This Product Only - Success", 2)
+                        break
+                    elif response.status_code in [499, 500, 503]:
+                        addToLog(f"🔄 Get This Product Only - Error: (HTTP {response.status_code}) - Retrying...", 2)       
+                        continue
+                    else:
+                        addToLog(f"❌ Get This Product Only - Error: (HTTP {response.status_code})", 2)
+                        dfPROD['THIS_PRODUCT_ONLY'].iat[i] = response.json()
+                        break
+                except Exception as e:
+                    addToLog(f"❌ Get This Product Only - Error: {str(e)}", 2)
+                    dfPROD['THIS_PRODUCT_ONLY'].iat[i] = str(e)
+                    break
+
             ####################
             # INDUSTRY_CLUSTER #
             ####################
+            parsed_text = dfPROD['THIS_PRODUCT_ONLY'].iat[i]
+            ls_base64 = []
             body = PIM_buildBodySelectIndustryCluster(parsed_text, product_name, manufacturer_name, ls_base64, business_line)
             ### CALL API - USING AZURE AI FOUNDARY
             while True:
@@ -503,7 +565,9 @@ if st.session_state['STEP2']==True:
             ################
             # COMPOSITIONS #
             ################
-            searched_text = dfPROD['COMPOSITIONS_WEB_SEARCH'].iat[i]
+            parsed_text = dfPROD['THIS_PRODUCT_ONLY'].iat[i]
+            ls_base64 = []
+            searched_text = dfPROD['COMBINED_WEB_SEARCH'].iat[i]
             body = PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text)
             ### CALL API - USING AZURE AI FOUNDARY
             while True:
@@ -534,7 +598,9 @@ if st.session_state['STEP2']==True:
             ###############
             # APPLICATION #
             ###############
-            searched_text = dfPROD['APPLICATIONS_WEB_SEARCH'].iat[i]
+            parsed_text = dfPROD['THIS_PRODUCT_ONLY'].iat[i]
+            ls_base64 = []
+            searched_text = dfPROD['COMBINED_WEB_SEARCH'].iat[i]
             body = PIM_buildBodySelectApplication(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text)
             ### CALL API - USING AZURE AI FOUNDARY
             while True:
@@ -564,7 +630,9 @@ if st.session_state['STEP2']==True:
             #############
             # FUNCTIONS #
             #############
-            searched_text = dfPROD['FUNCTIONS_WEB_SEARCH'].iat[i]
+            parsed_text = dfPROD['THIS_PRODUCT_ONLY'].iat[i]
+            ls_base64 = []
+            searched_text = dfPROD['COMBINED_WEB_SEARCH'].iat[i]
             body = PIM_buildBodySelectFunction(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text)
             ### CALL API - USING AZURE AI FOUNDARY
             while True:
@@ -594,6 +662,8 @@ if st.session_state['STEP2']==True:
             ##############################
             # CAS NUMBER - FROM DOCUMENT #
             ##############################
+            parsed_text = dfPROD['THIS_PRODUCT_ONLY'].iat[i]
+            ls_base64 = []
             body = PIM_buildBodyFindCASNumber(parsed_text, product_name, manufacturer_name, ls_base64)
             ### CALL API - USING AZURE AI FOUNDARY
             while True:
@@ -623,7 +693,10 @@ if st.session_state['STEP2']==True:
             #################
             # PHYSICAL_FORM #
             #################
-            body = PIM_buildBodyFindPhysicalForm(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text='')
+            parsed_text = dfPROD['THIS_PRODUCT_ONLY'].iat[i]
+            ls_base64 = []
+            searched_text = ''
+            body = PIM_buildBodyFindPhysicalForm(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text)
             ### CALL API - USING AZURE AI FOUNDARY
             while True:
                 try:
@@ -652,11 +725,10 @@ if st.session_state['STEP2']==True:
             #######################
             # PRODUCT_DESCRIPTION #
             #######################
-            searched_text = ''
-            searched_text += dfPROD['COMPOSITIONS_WEB_SEARCH'].astype(str).iat[i] + '/n' 
-            searched_text += dfPROD['APPLICATIONS_WEB_SEARCH'].astype(str).iat[i] + '/n'
-            searched_text += dfPROD['FUNCTIONS_WEB_SEARCH'].astype(str).iat[i] + '/n'
-            body = PIM_buildBodyGetProductDescription(parsed_text, product_name, manufacturer_name, ls_base64, searched_text=searched_text)
+            parsed_text = dfPROD['THIS_PRODUCT_ONLY'].iat[i]
+            ls_base64 = []
+            searched_text = dfPROD['COMBINED_WEB_SEARCH'].iat[i]
+            body = PIM_buildBodyGetProductDescription(parsed_text, product_name, manufacturer_name, ls_base64, searched_text)
             ### CALL API - USING AZURE AI FOUNDARY
             while True:
                 try:
@@ -685,7 +757,10 @@ if st.session_state['STEP2']==True:
             ######################
             # RECOMMENDED_DOSAGE #
             ######################
-            body = PIM_buildBodyGetRecommendedDosage(parsed_text, product_name, manufacturer_name, ls_base64, searched_text='')
+            parsed_text = dfPROD['THIS_PRODUCT_ONLY'].iat[i]
+            ls_base64 = []
+            searched_text = ''
+            body = PIM_buildBodyGetRecommendedDosage(parsed_text, product_name, manufacturer_name, ls_base64, searched_text)
             ### CALL API - USING AZURE AI FOUNDARY
             while True:
                 try:
@@ -715,6 +790,9 @@ if st.session_state['STEP2']==True:
             ##################
             # CERTIFICATIONS #
             ##################
+            parsed_text = dfPROD['THIS_PRODUCT_ONLY'].iat[i]
+            ls_base64 = file_dict[file_name]['S2_READ_PDF_TO_BASE64']['pages']
+            searched_text = ''
             body = PIM_buildBodySelectCertifications(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text='')
             ### CALL API - USING AZURE AI FOUNDARY
             while True:
@@ -744,7 +822,11 @@ if st.session_state['STEP2']==True:
             ##########
             # CLAIMS #
             ##########
-            body = PIM_buildBodySelectClaims(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text='')
+            parsed_text = dfPROD['THIS_PRODUCT_ONLY'].iat[i]
+            ls_base64 = []
+            searched_text = dfPROD['COMBINED_WEB_SEARCH'].iat[i]
+            body = PIM_buildBodySelectClaims(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text)
+            dfPROD['CLAIMS_BODY'].iat[i] = body
             ### CALL API - USING AZURE AI FOUNDARY
             while True:
                 try:
@@ -753,15 +835,19 @@ if st.session_state['STEP2']==True:
                                             headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
                                             data=json.dumps(body),
                                             verify=False)  
-                    if response.status_code == 200:
+                    dfPROD['CLAIMS_RESPONSE_CODE'].iat[i] = response.status_code
+                    if response.status_code == 200:                        
+                        dfPROD['CLAIMS_RESPONSE'].iat[i] = response.json()
                         rescontent = response.json()['choices'][0]['message']['content']
-                        dfPROD['CLAIMS'].iat[i] = json.loads(rescontent)['claims']
+                        dfPROD['CLAIMS'].iat[i] = json.loads(rescontent)['distinct_claims']
                         addToLog(f"✅ Get Claims - {dfPROD['CLAIMS'].iat[i]}", 2)
                         break
                     elif response.status_code in [499, 500, 503]:
+                        dfPROD['CLAIMS_RESPONSE'].iat[i] = response.json()
                         addToLog(f"🔄 Get Claims - Error: (HTTP {response.status_code}) - Retrying...", 2)
                         continue
                     else:
+                        dfPROD['CLAIMS_RESPONSE'].iat[i] = response.json()
                         addToLog(f"❌ Get Claims - Error: (HTTP {response.status_code})", 2)
                         dfPROD['CLAIMS'].iat[i] = response.json()
                         break
@@ -773,6 +859,9 @@ if st.session_state['STEP2']==True:
             ###############################
             # RECOMMENDED_HEALTH_BENEFITS #
             ###############################
+            parsed_text = dfPROD['THIS_PRODUCT_ONLY'].iat[i]
+            ls_base64 = []
+            searched_text = dfPROD['COMBINED_WEB_SEARCH'].iat[i]
             if business_line == 'FBI':
                 selection_list = ["Dietary Fiber",
                                   "Food Culture",
@@ -781,7 +870,7 @@ if st.session_state['STEP2']==True:
                                   "Protein"]
                 lsFunctionsStr = str(dfPROD['FUNCTIONS'].iat[i])
                 if any(item in lsFunctionsStr for item in selection_list):
-                    body = PIM_buildBodySelectHealthBenefits(parsed_text, product_name, manufacturer_name, ls_base64, searched_text='')
+                    body = PIM_buildBodySelectHealthBenefits(parsed_text, product_name, manufacturer_name, ls_base64, searched_text)
                     ### CALL API - USING AZURE AI FOUNDARY
                     while True:
                         try:
@@ -846,7 +935,7 @@ if st.session_state['STEP2']==True:
             # SAVE EVERY LOOP
             st.session_state['dfPROD'] = dfPROD.copy()
 
-        # FINISH        
+        # # FINISH        
         st.session_state['STEP2'] = False
         st.session_state['STEP3'] = True
         st.rerun()
@@ -860,13 +949,20 @@ if st.session_state['STEP3'] == True:
     for html_log in st.session_state['HTML_LOG']:
         st.markdown(html_log, unsafe_allow_html=True)
 
-    # # DEBUG
+    # DEBUG
     # with st.expander("input_dict", expanded=False):
     #     st.json(st.session_state['input_dict'])
     # with st.expander("file_dict", expanded=False):
     #     st.json(st.session_state['file_dict'])
     # with st.expander("dfPROD", expanded=False):
     #     st.dataframe(st.session_state['dfPROD'].astype(str))
+
+    # st.json(st.session_state['dfPROD']['CLAIMS_BODY'].iat[0])
+    # st.json(st.session_state['dfPROD']['CLAIMS_RESPONSE'].iat[0])
+
+    # st.json(st.session_state['dfPROD']['CLAIMS_BODY'].iat[1])
+    # st.json(st.session_state['dfPROD']['CLAIMS_RESPONSE'].iat[1])
+
 
     # EXPORT
     st.header('FULL DATA')

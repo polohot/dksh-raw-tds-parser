@@ -1,42 +1,3 @@
-# import datetime
-# import streamlit as st
-
-# # Initialize once
-# if "log" not in st.session_state:
-#     st.session_state.log = []
-# if 'STEP1' not in st.session_state:
-#     st.session_state['STEP1'] = True
-# if 'STEP2' not in st.session_state:
-#     st.session_state['STEP2'] = False
-
-
-
-
-# def add_to_log(text: str, indent: float = 0):
-#     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-#     html = (
-#         f'<div>'
-#         f'  <span>[{timestamp}]</span>'
-#         f'  <span style="margin-left: {indent}rem;">{text}</span>'
-#         f'</div>'
-#     )
-#     st.session_state.log.append(html)   # persist
-
-# def render_log():
-#     for line in st.session_state.log:
-#         st.markdown(line, unsafe_allow_html=True)
-
-# # --- Example usage ---
-# st.button("Do something", on_click=lambda: add_to_log("Clicked the button"))
-# st.button("Force rerun", on_click=st.rerun)
-
-# st.write("### Log")
-# render_log()
-
-
-
-
-
 
 
 
@@ -72,6 +33,13 @@ st.write("**Client time:**", client_time.strftime("%Y-%m-%d %H:%M:%S.%f"))
 st.write(f"**Difference:** {delta.total_seconds()*1000:.0f} ms")
 
 strShow = '''
+[V0.5-alpha] - 2025-07-30
+- Fix bug for CLAIMS
+- New resource map to this project
+    AZURE AI FOUNDARY DEPLOYMENT : azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser
+    AZURE DOCUMENT INTELLIGENCE : document-intelligence-standard-s0-dksh-raw-tds-parser
+    OPENAI PROJECT : dksh-raw-tds-parser
+
 [V0.4-alpha] - 2025-07-24
 - New resource map to this project
     AZURE AI FOUNDARY DEPLOYMENT : dksh-raw-tds-parser

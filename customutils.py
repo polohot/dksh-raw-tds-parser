@@ -54,28 +54,49 @@ def azureDocumentIntelligenceParsePDF(file_path, key):
 def PIM_buildBodyGetProductNameAndSupplierFromTextAndImage(parsed_text, ls_base64):
     # SYSTEM PROMPT
     system_prompt = """
-    ### INSTRUCTION ###
-    You are a helpful assistant that extracts the name and manufacturer from parsed output of a PDF file.
-    The parsed file is the Technical Data Sheet of the product.
-    Sometimes the parsed PDF has only one product, sometimes multiple.
-    Output ONLY the needed data in the required format.
+    You are a data extraction agent that extract product name and manufacturer from given technical documents.
+    Sometimes the parsed PDF has only one product, sometimes multiple, make sure that the output covers all the product and manufacturer in the provided data
 
-    ### OUTPUT FORMAT ###
-    Return a JSON array of objects.
-    Do NOT put any text before or after the square brackets.
 
-    Each object must have:
-    - "PRODUCT_NAME": string
-    - "SUPPLIER_NAME": string
+    Output format:
+    {{
+        "products_and_suppliers": array of objects
+    }}
 
     Examples:
-    [{"PRODUCT_NAME":"Sugar C1002","SUPPLIER_NAME":"ACME Sugar Malaysia Berhad"}]
-    [{"PRODUCT_NAME":"Mint Concentrate MT2245","SUPPLIER_NAME":"Emmi Switzerland"}]
-    [{"PRODUCT_NAME":"iPhone 15 Pro","SUPPLIER_NAME":"Apple Inc."},
-    {"PRODUCT_NAME":"Galaxy S24 Ultra","SUPPLIER_NAME":"Samsung Electronics"}]
-    [{"PRODUCT_NAME":"PlayStation 5","SUPPLIER_NAME":"Sony Interactive Entertainment"},
+
+    [
+    {"PRODUCT_NAME":"Sugar C1002","SUPPLIER_NAME":"ACME Sugar Malaysia Berhad"}
+    ]
+
+    [
+    {"PRODUCT_NAME":"Mint Concentrate MT2245","SUPPLIER_NAME":"Emmi Switzerland"}
+    ]
+
+    [
+    {"PRODUCT_NAME":"iPhone 15 Pro","SUPPLIER_NAME":"Apple Inc."},
+    {"PRODUCT_NAME":"Galaxy S24 Ultra","SUPPLIER_NAME":"Samsung Electronics"}
+    ]
+
+    [
+    {"PRODUCT_NAME":"PlayStation 5","SUPPLIER_NAME":"Sony Interactive Entertainment"},
     {"PRODUCT_NAME":"Air Jordan 1 Retro High OG","SUPPLIER_NAME":"Nike, Inc."},
-    {"PRODUCT_NAME":"Model 3","SUPPLIER_NAME":"Tesla, Inc."}]
+    {"PRODUCT_NAME":"Model 3","SUPPLIER_NAME":"Tesla, Inc."}
+    ]
+
+    [
+    {"PRODUCT_NAME":"Coca‑Cola Classic","SUPPLIER_NAME":"The Coca‑Cola Company"},
+    {"PRODUCT_NAME":"Galaxy Tab S9","SUPPLIER_NAME":"Samsung Electronics"},
+    {"PRODUCT_NAME":"MacBook Air M2","SUPPLIER_NAME":"Apple Inc."},
+    {"PRODUCT_NAME":"Kindle Paperwhite","SUPPLIER_NAME":"Amazon.com, Inc."},
+    {"PRODUCT_NAME":"GoPro HERO12 Black","SUPPLIER_NAME":"GoPro, Inc."},
+    {"PRODUCT_NAME":"Dyson V15 Detect","SUPPLIER_NAME":"Dyson Ltd"},
+    {"PRODUCT_NAME":"Nintendo Switch OLED","SUPPLIER_NAME":"Nintendo Co., Ltd."},
+    {"PRODUCT_NAME":"Peloton Bike+","SUPPLIER_NAME":"Peloton Interactive, Inc."},
+    {"PRODUCT_NAME":"Sony WH‑1000XM5","SUPPLIER_NAME":"Sony Corporation"},
+    {"PRODUCT_NAME":"Lululemon ABC Pant","SUPPLIER_NAME":"lululemon athletica inc."}
+    ]
+
     """
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
     messages = [
@@ -91,7 +112,7 @@ def PIM_buildBodyGetProductNameAndSupplierFromTextAndImage(parsed_text, ls_base6
     body = {
         "model": "gpt-4.1-mini",
         "messages": messages,
-        "temperature": 0.2,
+        "temperature": 0,
         "response_format": {
             "type": "json_schema",
             "json_schema": {
@@ -451,7 +472,35 @@ def buildCompositionOutputBody(parsed_text, product_name, manufacturer_name, ls_
 ###############################################################################################################################################################################
 ###############################################################################################################################################################################
 
-
+def PIM_buildBodyGetProductInfo(parsed_text, product_name, manufacturer_name, ls_base64, searched_text=''):
+    # SYSTEM PROMPT
+    system_prompt = f"""
+        You are a data extraction agent that processes technical documents and extracts information.
+        Based on the provided text and images, focus only on product [{product_name}] from manufacturer [{manufacturer_name}].
+        Some time the given data will have multiple products, but you only need to focus on [{product_name}].
+        Do not do summarization on the text, Just pull the raw data.
+        If you found image related to the product, parse the image data as much detail as possible and include it in the output.
+    """
+    # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": parsed_text},
+        {"role": "user", "content": searched_text}
+    ]
+    # ADD BASE64 IMAGES IF PROVIDED
+    for base64_img in ls_base64:
+        messages.append({
+            "role": "user", "content": [{"type": "image_url",
+                                         "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]
+        })
+    # CONSTRUCT BODY
+    body = {
+        "model": "gpt-4.1-mini",
+        "messages": messages,
+        "temperature": 0,
+        "max_tokens": 4096*4
+        }
+    return body
 
 def PIM_buildBodySelectIndustryCluster(parsed_text, product_name, manufacturer_name, ls_base64, business_line):
     # Define mapping of business lines to industry clusters
@@ -490,7 +539,7 @@ def PIM_buildBodySelectIndustryCluster(parsed_text, product_name, manufacturer_n
     system_prompt = f"""
         You are a data extraction agent that processes technical documents and extracts information.
         Based on the provided text and image, Focus only on product [{product_name}] from manufacturer [{manufacturer_name}].   
-        select exactly one INDUSTRY CLUSTER related to the product [{product_name}] from the following list:{selection_list}
+        Use the given data combine with your own knowledge to determine the INDUSTRY CLUSTER related to the product [{product_name}] from the following list:{selection_list}
 
         Output format:
         {{
@@ -512,7 +561,7 @@ def PIM_buildBodySelectIndustryCluster(parsed_text, product_name, manufacturer_n
     body = {
         "model": "gpt-4.1-mini",
         "messages": messages,
-        "temperature": 0.2,
+        "temperature": 0,
         "response_format": {
             "type": "json_schema",
             "json_schema": {
@@ -593,7 +642,7 @@ def PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name,
     system_prompt = f"""
         You are a data extraction agent that processes technical documents and extracts information.
         Based on the provided text and image, Focus only on product [{product_name}] from manufacturer [{manufacturer_name}].        
-        Select as much as possible COMPOSITIONS but only those related to the product [{product_name}] from the following list:{selection_list}
+        Use the given data combine with your own knowledge to select as much as possible COMPOSITIONS but only those related to the product [{product_name}] from the following list:{selection_list}
 
         Output format:
         {{
@@ -615,7 +664,7 @@ def PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name,
     body = {
         "model": "gpt-4.1-mini",
         "messages": messages,
-        "temperature": 0.2,
+        "temperature": 0,
         "response_format": {
             "type": "json_schema",
             "json_schema": {
@@ -794,7 +843,7 @@ def PIM_buildBodySelectApplication(parsed_text, product_name, manufacturer_name,
     system_prompt = f"""
         You are a data extraction agent that processes technical documents and extracts information.
         Based on the provided text and image, Focus only on product [{product_name}] from manufacturer [{manufacturer_name}].   
-        Select as much as possible APPLICATIONS but only those related to the product [{product_name}] from the following list:{selection_list}
+        Use the given data combine with your own knowledge to select as much as possible APPLICATIONS but only those related to the product [{product_name}] from the following list:{selection_list}
 
         Output format:
         {{
@@ -816,7 +865,7 @@ def PIM_buildBodySelectApplication(parsed_text, product_name, manufacturer_name,
     body = {
         "model": "gpt-4.1-mini",
         "messages": messages,
-        "temperature": 0.2,
+        "temperature": 0,
         "response_format": {
             "type": "json_schema",
             "json_schema": {
@@ -1144,7 +1193,7 @@ def PIM_buildBodySelectFunction(parsed_text, product_name, manufacturer_name, ls
     system_prompt = f"""
         You are a data extraction agent that processes technical documents and extracts information.
         Based on the provided text and image, Focus only on product [{product_name}] from manufacturer [{manufacturer_name}].   
-        Select as much as possible FUNCTIONS but only those related to the product [{product_name}] from the following list:{selection_list}
+        Use the given data combine with your own knowledge to select as much as possible FUNCTIONS but only those related to the product [{product_name}] from the following list:{selection_list}
 
         Output format:
         {{
@@ -1166,7 +1215,7 @@ def PIM_buildBodySelectFunction(parsed_text, product_name, manufacturer_name, ls
     body = {
         "model": "gpt-4.1-mini",
         "messages": messages,
-        "temperature": 0.2,
+        "temperature": 0,
         "response_format": {
             "type": "json_schema",
             "json_schema": {
@@ -1221,7 +1270,7 @@ def PIM_buildBodyFindCASNumber(parsed_text, product_name, manufacturer_name, ls_
     body = {
         "model": "gpt-4.1-mini",
         "messages": messages,
-        "temperature": 0.2,
+        "temperature": 0,
         "response_format": {
             "type": "json_schema",
             "json_schema": {
@@ -1336,7 +1385,7 @@ def PIM_buildBodyFindPhysicalForm(parsed_text, product_name, manufacturer_name, 
     body = {
         "model": "gpt-4.1-mini",
         "messages": messages,
-        "temperature": 0.2,
+        "temperature": 0,
         "response_format": {
             "type": "json_schema",
             "json_schema": {
@@ -1364,7 +1413,9 @@ def PIM_buildBodyGetProductDescription(parsed_text, product_name, manufacturer_n
     system_prompt = f"""
         You are a data extraction agent that processes technical documents and extracts information.
         Based on the provided text and images, focus only on product [{product_name}] from manufacturer [{manufacturer_name}].
-        Create 120 to 150 words of product description to be put on the web for customer to see
+        The Description should begin with the product name and be at least 400 characters in length.
+        The Description may include information such as the product’s physical form and composition. 
+        It can also highlight the product’s strengths, potential benefits, and relevant applications.
 
         Output format:
         {{
@@ -1386,7 +1437,7 @@ def PIM_buildBodyGetProductDescription(parsed_text, product_name, manufacturer_n
     body = {
         "model": "gpt-4.1-mini",
         "messages": messages,
-        "temperature": 0.2,
+        "temperature": 0,
         "response_format": {
             "type": "json_schema",
             "json_schema": {
@@ -1397,7 +1448,11 @@ def PIM_buildBodyGetProductDescription(parsed_text, product_name, manufacturer_n
                     "properties": {
                         "product_description": {
                             "type": "string",
-                            "description": "120 to 150 words of product description to be put on the web for customer to see"
+                            "description": """
+                                           The Description should begin with the product name and be at least 400 characters in length.
+                                           The Description may include information such as the product’s physical form and composition. 
+                                           It can also highlight the product’s strengths, potential benefits, and relevant applications.
+                                           """
                         }
                     },
                     "required": ["product_description"],
@@ -1436,7 +1491,7 @@ def PIM_buildBodyGetRecommendedDosage(parsed_text, product_name, manufacturer_na
     body = {
         "model": "gpt-4.1-mini",
         "messages": messages,
-        "temperature": 0.2,
+        "temperature": 0,
         "response_format": {
             "type": "json_schema",
             "json_schema": {
@@ -1560,7 +1615,7 @@ def PIM_buildBodySelectCertifications(parsed_text, product_name, manufacturer_na
     body = {
         "model": "gpt-4.1-mini",
         "messages": messages,
-        "temperature": 0.2,
+        "temperature": 0,
         "response_format": {
             "type": "json_schema",
             "json_schema": {
@@ -1593,114 +1648,118 @@ def PIM_buildBodySelectClaims(parsed_text, product_name, manufacturer_name, ls_b
     # Define mapping of business lines to industry clusters
     if business_line == 'FBI':
         selection_list = [
-            "Bio-Fermentation",
-            "Meat & Dairy Alternative",
-            "Natural & Ethically Sourced",
-            "Resource & Energy Optimization",
-            "Sustainable Food Waste Reduction",
-            "Upcycled"]
+            'Bio-Fermentation',
+            'Meat & Dairy Alternative',
+            'Natural & Ethically Sourced',
+            'Resource & Energy Optimization',
+            'Sustainable Food Waste Reduction',
+            'Upcycled'
+        ]
     elif business_line == 'PCI':
         selection_list = [
-            "Anti-Aging",
-            "Anti-Bacterial",
-            "Anti-Cellulite",
-            "Anti-Dandruff",
-            "Anti-Dark Circles",
-            "Anti-Fatigue",
-            "Anti-Frizz",
-            "Anti-Inflammatory",
-            "Anti-Itching",
-            "Anti-Microbial",
-            "Antioxidant",
-            "Anti-Pollution",
-            "Anti-Stress",
-            "Anti-Stretch Mark",
-            "Anti-Virus",
-            "Anti-Wrinkle",
-            "Blue Light Protection",
-            "Brightening",
-            "Conditioning",
-            "Cooling/Warming Effect",
-            "COSMOS Standard",
-            "Curl Retention",
-            "Elasticity",
-            "Fair Trade / Fair For Life",
-            "Film Forming",
-            "Firming",
-            "Free Radical Scavenger",
-            "Gene Expression Modulation",
-            "Hair Color Protection",
-            "Hair Loss Reduction",
-            "Hair Radiance",
-            "Hair Repair",
-            "Hair Volume",
-            "Immuno Modulation",
-            "Insect Repellent",
-            "ISCC",
-            "Lifting",
-            "Mattifying",
-            "Microbiome Balance",
-            "Moisturizing",
-            "NATRUE Standard",
-            "Natural Cosmetic",
-            "Nordic Swan Ecolabel",
-            "Nourishing",
-            "Odor Masking",
-            "Organic",
-            "Pore Refiner",
-            "Purifying",
-            "Redness Reduction",
-            "Relaxer",
-            "Safer Choice",
-            "Scalp Protection",
-            "Sculpting",
-            "Sebum Control",
-            "Skin Barrier Function",
-            "Skin Radiance",
-            "Skin Renewal",
-            "Skin Repair",
-            "Smoothing",
-            "Soft Focus",
-            "Soothing",
-            "Strengthening",
-            "Sustainable Palm Oil",
-            "Texturizer",
-            "UV Protection",
-            "Vegan",
-            "Wound Healing"]
+            'Anti-Aging',
+            'Anti-Bacterial',
+            'Anti-Cellulite',
+            'Anti-Dandruff',
+            'Anti-Dark Circles',
+            'Anti-Fatigue',
+            'Anti-Frizz',
+            'Anti-Inflammatory',
+            'Anti-Itching',
+            'Anti-Microbial',
+            'Anti-Oxidant',
+            'Anti-Pollution',
+            'Anti-Stress',
+            'Anti-Stretch Mark',
+            'Anti-Virus',
+            'Anti-Wrinkle',
+            'Blue Light Protection',
+            'Brightening',
+            'Conditioning',
+            'Cooling/Warming Effect',
+            'COSMOS Standard',
+            'Curl Retention',
+            'Elasticity',
+            'Fair Trade / Fair For Life',
+            'Film Forming',
+            'Firming',
+            'Free Radical Scavenger',
+            'Gene Expression Modulation',
+            'Hair Color Protection',
+            'Hair Loss Reduction',
+            'Hair Radiance',
+            'Hair Repair',
+            'Hair Volume',
+            'Immuno Modulation',
+            'Insect Repellent',
+            'ISCC',
+            'Lifting',
+            'Mattifying',
+            'Microbiome Balance',
+            'Moisturizing',
+            'NATRUE Standard',
+            'Natural Cosmetic',
+            'Nordic Swan Ecolabel',
+            'Nourishing',
+            'Odor Masking',
+            'Organic',
+            'Pore Refiner',
+            'Purifying',
+            'Redness Reduction',
+            'Relaxer',
+            'Safer Choice',
+            'Scalp Protection',
+            'Sculpting',
+            'Sebum Control',
+            'Skin Barrier Function',
+            'Skin Radiance',
+            'Skin Renewal',
+            'Skin Repair',
+            'Smoothing',
+            'Soft Focus',
+            'Soothing',
+            'Strengthening',
+            'Sustainable Palm Oil',
+            'Texturizer',
+            'UV Protection',
+            'Vegan',
+            'Wound Healing'
+        ]
     elif business_line == 'PHI':
         selection_list = [
-            "Animal Derived Component Free (ADCF)",
-            "Biodegradable",
-            "Bio-Fermentation",
-            "Circularity",
-            "Environmentally Sustainable Pharmaceutical Manufacturing",
-            "Free from Nitrosamine Impurities",
-            "Free from Solvents Class 1",
-            "Organic",
-            "Plant-Based (Min. 80%)",
-            "Sustainable Palm Oil"]
+            'Animal Derived Component Free (ADCF)',
+            'Biodegradable',
+            'Bio-Fermentation',
+            'Circularity',
+            'Environmentally Sustainable Pharmaceutical Manufacturing',
+            'Free from Nitrosamine Impurities',
+            'Free from Solvents Class 1',
+            'Organic',
+            'Plant-Based (Min. 80%)',
+            'Sustainable Palm Oil'
+        ]
     elif business_line == 'SCI':
         selection_list = [
-            "Bio-Based",
-            "Biodegradable",
-            "Bioplastic",
-            "Circularity",
-            "EcoTain Label",
-            "Emission Control",
-            "Low VOC",
-            "Solvent Free Alternatives",
-            "VOC Free"]       
+            'Bio-Based',
+            'Biodegradable',
+            'Bioplastic',
+            'Circularity',
+            'EcoTain Label',
+            'Emission Control',
+            'Low VOC',
+            'Solvent Free Alternatives',
+            'VOC Free'
+        ] 
 
     # SYSTEM PROMPT
     system_prompt = f"""
         You are a data extraction agent that processes technical documents and extracts information.
         Based on the provided text and image, Focus only on product [{product_name}] from manufacturer [{manufacturer_name}].   
-        Select as much as possible CLAIMS but only those related to the product [{product_name}] from the following list:{selection_list}
+        Use the given data combine with your own knowledge to select relevant and distinct CLAIMS for this product, no duplications, from the following list:{selection_list}
 
         Output format:
         {{
-          "claims": array of string
+          'distinct_claims': array of string
         }}
     """
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
@@ -1718,31 +1777,31 @@ def PIM_buildBodySelectClaims(parsed_text, product_name, manufacturer_name, ls_b
     body = {
         "model": "gpt-4.1-mini",
         "messages": messages,
-        "temperature": 0.2,
+        "temperature": 0,
+        "max_tokens": 1024,
         "response_format": {
             "type": "json_schema",
             "json_schema": {
-                "name": "claims_output",
+                "name": "distinct_claims_output",
                 "strict": True,
                 "schema": {
                     "type": "object",
                     "properties": {
-                        "claims": {
+                        "distinct_claims": {
                             "type": "array",
                             "items": {
                                 "type": "string",
                                 "enum": selection_list},
                             "minItems": 1,
-                            "description": f"Select as much as possible CLAIMS but only those related to the product [{product_name}]"
+                            "description": f"Select relevant and distinct CLAIMS for this product, no duplications"
                         }
                     },
-                    "required": ["claims"],
+                    "required": ["distinct_claims"],
                     "additionalProperties": False
                 }
             }
         }
     }
-
     return body
 
 
@@ -1770,7 +1829,7 @@ def PIM_buildBodySelectHealthBenefits(parsed_text, product_name, manufacturer_na
     system_prompt = f"""
         You are a data extraction agent that processes technical documents and extracts information.
         Based on the provided text and image, Focus only on product [{product_name}] from manufacturer [{manufacturer_name}].   
-        Select as much as possible RECOMMENDED_HEALTH_BENEFITS but only those related to the product [{product_name}] from the following list:{selection_list}
+        Use the given data combine with your own knowledge to select as much as possible RECOMMENDED_HEALTH_BENEFITS but only those related to the product [{product_name}] from the following list:{selection_list}
 
         Output format:
         {{
@@ -1792,7 +1851,7 @@ def PIM_buildBodySelectHealthBenefits(parsed_text, product_name, manufacturer_na
     body = {
         "model": "gpt-4.1-mini",
         "messages": messages,
-        "temperature": 0.2,
+        "temperature": 0,
         "response_format": {
             "type": "json_schema",
             "json_schema": {

@@ -3,6 +3,13 @@
 **Use AI to parser PDF into specific format**
 
 ```
+[V0.5-alpha] - 2025-07-30
+- Fix bug for CLAIMS
+- New resource map to this project
+    AZURE AI FOUNDARY DEPLOYMENT : azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser
+    AZURE DOCUMENT INTELLIGENCE : document-intelligence-standard-s0-dksh-raw-tds-parser
+    OPENAI PROJECT : dksh-raw-tds-parser
+
 [V0.4-alpha] - 2025-07-24
 - New resource map to this project
     AZURE AI FOUNDARY DEPLOYMENT : dksh-raw-tds-parser
