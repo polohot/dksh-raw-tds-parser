@@ -74,29 +74,41 @@ def PIM_buildBodyGetProductNameAndSupplierFromTextAndImage(parsed_text, ls_base6
     ]
 
     [
-    {"PRODUCT_NAME":"iPhone 15 Pro","SUPPLIER_NAME":"Apple Inc."},
-    {"PRODUCT_NAME":"Galaxy S24 Ultra","SUPPLIER_NAME":"Samsung Electronics"}
+    {"PRODUCT_NAME":"AirPods Pro (2nd Generation)","SUPPLIER_NAME":"Apple Inc."},
+    {"PRODUCT_NAME":"Apple Watch Series 9","SUPPLIER_NAME":"Apple Inc."}
+    ]
+
+    [
+    {"PRODUCT_NAME":"HP Spectre x360 14","SUPPLIER_NAME":"HP Inc."},
+    {"PRODUCT_NAME":"HP ENVY 6055 All-in-One Printer","SUPPLIER_NAME":"HP Inc."},
+    {"PRODUCT_NAME":"HP Omen 45L Gaming Desktop","SUPPLIER_NAME":"HP Inc."}
     ]
 
     [
     {"PRODUCT_NAME":"PlayStation 5","SUPPLIER_NAME":"Sony Interactive Entertainment"},
-    {"PRODUCT_NAME":"Air Jordan 1 Retro High OG","SUPPLIER_NAME":"Nike, Inc."},
-    {"PRODUCT_NAME":"Model 3","SUPPLIER_NAME":"Tesla, Inc."}
+    {"PRODUCT_NAME":"PlayStation 5 Digital Edition","SUPPLIER_NAME":"Sony Interactive Entertainment"},
+    {"PRODUCT_NAME":"PlayStation VR2","SUPPLIER_NAME":"Sony Interactive Entertainment"},
+    {"PRODUCT_NAME":"WH-1000XM5 Wireless Headphones","SUPPLIER_NAME":"Sony Interactive Entertainment"},
+    {"PRODUCT_NAME":"Alpha 7 IV Mirrorless Camera","SUPPLIER_NAME":"Sony Interactive Entertainment"}
     ]
 
     [
-    {"PRODUCT_NAME":"Coca‑Cola Classic","SUPPLIER_NAME":"The Coca‑Cola Company"},
-    {"PRODUCT_NAME":"Galaxy Tab S9","SUPPLIER_NAME":"Samsung Electronics"},
-    {"PRODUCT_NAME":"MacBook Air M2","SUPPLIER_NAME":"Apple Inc."},
-    {"PRODUCT_NAME":"Kindle Paperwhite","SUPPLIER_NAME":"Amazon.com, Inc."},
-    {"PRODUCT_NAME":"GoPro HERO12 Black","SUPPLIER_NAME":"GoPro, Inc."},
-    {"PRODUCT_NAME":"Dyson V15 Detect","SUPPLIER_NAME":"Dyson Ltd"},
-    {"PRODUCT_NAME":"Nintendo Switch OLED","SUPPLIER_NAME":"Nintendo Co., Ltd."},
-    {"PRODUCT_NAME":"Peloton Bike+","SUPPLIER_NAME":"Peloton Interactive, Inc."},
-    {"PRODUCT_NAME":"Sony WH‑1000XM5","SUPPLIER_NAME":"Sony Corporation"},
-    {"PRODUCT_NAME":"Lululemon ABC Pant","SUPPLIER_NAME":"lululemon athletica inc."}
+    {"PRODUCT_NAME":"LG Gram 17 Laptop","SUPPLIER_NAME":"LG Electronics"},
+    {"PRODUCT_NAME":"LG C3 OLED TV","SUPPLIER_NAME":"LG Electronics"},
+    {"PRODUCT_NAME":"LG UltraGear 27GN950 Gaming Monitor","SUPPLIER_NAME":"LG Electronics"},
+    {"PRODUCT_NAME":"LG TONE Free HBS-FN7 Earbuds","SUPPLIER_NAME":"LG Electronics"},
+    {"PRODUCT_NAME":"LG CordZero A9 Ultimate Vacuum","SUPPLIER_NAME":"LG Electronics"},
+    {"PRODUCT_NAME":"LG Styler ThinQ Steam Closet","SUPPLIER_NAME":"LG Electronics"},
+    {"PRODUCT_NAME":"LG TWINWash Washing Machine","SUPPLIER_NAME":"LG Electronics"},
+    {"PRODUCT_NAME":"LG InstaView Door-in-Door Refrigerator","SUPPLIER_NAME":"LG Electronics"},
+    {"PRODUCT_NAME":"LG ThinQ Speaker XBOOM 360","SUPPLIER_NAME":"LG Electronics"},
+    {"PRODUCT_NAME":"LG UBK90 Ultra HD Blu-ray Player","SUPPLIER_NAME":"LG Electronics"},
+    {"PRODUCT_NAME":"LG R9 Robot Vacuum Cleaner","SUPPLIER_NAME":"LG Electronics"},
+    {"PRODUCT_NAME":"LG OLED evo Gallery Edition TV","SUPPLIER_NAME":"LG Electronics"},
+    {"PRODUCT_NAME":"LG Soundbar S95QR","SUPPLIER_NAME":"LG Electronics"},
+    {"PRODUCT_NAME":"LG DualUp Monitor 28MQ780","SUPPLIER_NAME":"LG Electronics"},
+    {"PRODUCT_NAME":"LG PuriCare 360° Air Purifier","SUPPLIER_NAME":"LG Electronics"}
     ]
-
     """
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
     messages = [
@@ -113,6 +125,7 @@ def PIM_buildBodyGetProductNameAndSupplierFromTextAndImage(parsed_text, ls_base6
         "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0,
+        "max_tokens": 1024*16,
         "response_format": {
             "type": "json_schema",
             "json_schema": {
@@ -174,6 +187,7 @@ def buildStructuredOutputBody(parsed_text, product_name, manufacturer_name, ls_b
     body = {
         "model": "gpt-4.1-mini",
         "messages": messages,
+        "max_tokens": 1024*16,
         "response_format": {
             "type": "json_schema",
             "json_schema": {
@@ -421,6 +435,7 @@ def buildCompositionOutputBody(parsed_text, product_name, manufacturer_name, ls_
     body = {
         "model": "gpt-4.1-mini",
         "messages": messages,
+        "max_tokens": 1024*16,
         "response_format": {
             "type": "json_schema",
             "json_schema": {
@@ -498,7 +513,7 @@ def PIM_buildBodyGetProductInfo(parsed_text, product_name, manufacturer_name, ls
         "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0,
-        "max_tokens": 4096*4
+        "max_tokens": 1024*16
         }
     return body
 
@@ -562,6 +577,7 @@ def PIM_buildBodySelectIndustryCluster(parsed_text, product_name, manufacturer_n
         "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0,
+        "max_tokens": 1024*16,
         "response_format": {
             "type": "json_schema",
             "json_schema": {
@@ -640,14 +656,16 @@ def PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name,
             "Electrochemically Produced, Battery-Grade Material"]
     # SYSTEM PROMPT
     system_prompt = f"""
-        You are a data extraction agent that processes technical documents and extracts information.
-        Based on the provided text and image, Focus only on product [{product_name}] from manufacturer [{manufacturer_name}].        
-        Use the given data combine with your own knowledge to select as much as possible COMPOSITIONS but only those related to the product [{product_name}] from the following list:{selection_list}
+    You are an expert data‐flagging assistant for technical product dossiers. 
+    Your task is to analyze only the details provided for product “{product_name}” from manufacturer “{manufacturer_name}” (including text and any images) 
+    and determine, for each composition category in the selection list, whether the product may contain substances from that category.
 
-        Output format:
-        {{
-          "compositions": array of string
-        }}
+    Output format:
+    {{
+        'composition1': boolean,
+        'composition2': boolean,
+        ...
+    }}
     """
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
     messages = [
@@ -656,39 +674,29 @@ def PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name,
         {"role": "user", "content": searched_text}]
     # ADD BASE64 IMAGES IF PROVIDED
     for base64_img in ls_base64:
-        messages.append({
-            "role": "user", "content": [{"type": "image_url",
-                                         "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]
-        })
+        messages.append({"role": "user", 
+                         "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]})
     # CONSTRUCT BODY
+    properties = {name: {"type": "boolean"} for name in selection_list}
+    required   = list(selection_list)
+    json_schema = {
+        "name": "flags_only",
+        "strict": True,
+        "schema": {
+            "type": "object",
+            "properties": properties,
+            "required": required,
+            "additionalProperties": False}}
+    # Full request body
     body = {
         "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0,
+        "max_tokens": 1024*16,
         "response_format": {
             "type": "json_schema",
-            "json_schema": {
-                "name": "composition_output",
-                "strict": True,
-                "schema": {
-                    "type": "object",
-                    "properties": {
-                        "compositions": {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "enum": selection_list},
-                            "minItems": 1,
-                            "description": f"Select as much as possible COMPOSITIONS but only those related to the product [{product_name}]"}
-                    },
-                    "required": ["compositions"],
-                    "additionalProperties": False
-                }
-            }
-        }
-    }
+            "json_schema": json_schema}}
     return body
-
 
 def PIM_buildBodySelectApplication(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text=''):
     # Define mapping of business lines to industry clusters
@@ -841,57 +849,47 @@ def PIM_buildBodySelectApplication(parsed_text, product_name, manufacturer_name,
 
     # SYSTEM PROMPT
     system_prompt = f"""
-        You are a data extraction agent that processes technical documents and extracts information.
-        Based on the provided text and image, Focus only on product [{product_name}] from manufacturer [{manufacturer_name}].   
-        Use the given data combine with your own knowledge to select as much as possible APPLICATIONS but only those related to the product [{product_name}] from the following list:{selection_list}
+    You are an expert data‐flagging assistant for technical product dossiers.
+    Analyze only the details provided for product “{product_name}” from manufacturer “{manufacturer_name}” (including parsed text, any images, and optional searched text) 
+    and determine, for each application category in the selection list, whether the product is related to that application.
 
-        Output format:
-        {{
-          "applications": array of string
-        }}
+    Output format:
+    {{
+        'application1': boolean,
+        'application2': boolean,
+        ...
+    }}
     """
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
     messages = [
         {"role": "system", "content": system_prompt},
-        {"role": "user", "content": parsed_text},
+        {"role": "user","content": parsed_text},
         {"role": "user", "content": searched_text}]
     # ADD BASE64 IMAGES IF PROVIDED
     for base64_img in ls_base64:
-        messages.append({
-            "role": "user", "content": [{"type": "image_url",
-                                         "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]
-        })
+        messages.append({"role": "user", 
+                         "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]})
     # CONSTRUCT BODY
+    properties = {name: {"type": "boolean"} for name in selection_list}
+    required   = list(selection_list)
+    json_schema = {
+        "name": "flags_only",
+        "strict": True,
+        "schema": {
+            "type": "object",
+            "properties": properties,
+            "required": required,
+            "additionalProperties": False}}
+    # Full request body
     body = {
         "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0,
+        "max_tokens": 1024*16,
         "response_format": {
             "type": "json_schema",
-            "json_schema": {
-                "name": "applications_output",
-                "strict": True,
-                "schema": {
-                    "type": "object",
-                    "properties": {
-                        "applications": {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "enum": selection_list},
-                            "minItems": 1,
-                            "description": f"Select as much as possible APPLICATIONS but only those related to the product [{product_name}]"
-                        }
-                    },
-                    "required": ["applications"],
-                    "additionalProperties": False
-                }
-            }
-        }
-    }
-
+            "json_schema": json_schema}}
     return body
-
 
 def PIM_buildBodySelectFunction(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text=''):
     # Define mapping of business lines to industry clusters
@@ -919,7 +917,6 @@ def PIM_buildBodySelectFunction(parsed_text, product_name, manufacturer_name, ls
             "Fortification/Nutraceutical",
             "Humectant",
             "Inclusion",
-            "Other",
             "Preservative",
             "Probiotic/Postbiotic",
             "Protein",
@@ -1191,14 +1188,16 @@ def PIM_buildBodySelectFunction(parsed_text, product_name, manufacturer_name, ls
 
     # SYSTEM PROMPT
     system_prompt = f"""
-        You are a data extraction agent that processes technical documents and extracts information.
-        Based on the provided text and image, Focus only on product [{product_name}] from manufacturer [{manufacturer_name}].   
-        Use the given data combine with your own knowledge to select as much as possible FUNCTIONS but only those related to the product [{product_name}] from the following list:{selection_list}
+    You are an expert data‐flagging assistant for technical product dossiers.
+    Analyze only the provided details for product “{product_name}” from manufacturer “{manufacturer_name}” (parsed_text, any images, and optional searched_text) 
+    and determine, for each function category in the selection list, whether the product exhibits that function.
 
-        Output format:
-        {{
-          "functions": array of string
-        }}
+    Output format:
+    {{
+        'function1': boolean,
+        'function2': boolean,
+        ...
+    }}
     """
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
     messages = [
@@ -1207,40 +1206,30 @@ def PIM_buildBodySelectFunction(parsed_text, product_name, manufacturer_name, ls
         {"role": "user", "content": searched_text}]
     # ADD BASE64 IMAGES IF PROVIDED
     for base64_img in ls_base64:
-        messages.append({
-            "role": "user", "content": [{"type": "image_url",
-                                         "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]
-        })
+        messages.append({"role": "user", 
+                         "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]})
     # CONSTRUCT BODY
+    properties = {name: {"type": "boolean"} for name in selection_list}
+    required   = list(selection_list)
+    json_schema = {
+        "name": "flags_only",
+        "strict": True,
+        "schema": {
+            "type": "object",
+            "properties": properties,
+            "required": required,
+            "additionalProperties": False}}
+    # Full request body
     body = {
         "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0,
+        "max_tokens": 1024*16,
         "response_format": {
             "type": "json_schema",
-            "json_schema": {
-                "name": "functions_output",
-                "strict": True,
-                "schema": {
-                    "type": "object",
-                    "properties": {
-                        "functions": {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "enum": selection_list},
-                            "minItems": 1,
-                            "description": f"Select as much as possible FUNCTIONS but only those related to the product [{product_name}]"
-                        }
-                    },
-                    "required": ["functions"],
-                    "additionalProperties": False
-                }
-            }
-        }
-    }
-
+            "json_schema": json_schema}}
     return body
+
 
 def PIM_buildBodyFindCASNumber(parsed_text, product_name, manufacturer_name, ls_base64, searched_text=''):
     # SYSTEM PROMPT
@@ -1271,6 +1260,7 @@ def PIM_buildBodyFindCASNumber(parsed_text, product_name, manufacturer_name, ls_
         "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0,
+        "max_tokens": 1024*16,
         "response_format": {
             "type": "json_schema",
             "json_schema": {
@@ -1386,6 +1376,7 @@ def PIM_buildBodyFindPhysicalForm(parsed_text, product_name, manufacturer_name, 
         "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0,
+        "max_tokens": 1024*16,
         "response_format": {
             "type": "json_schema",
             "json_schema": {
@@ -1438,6 +1429,7 @@ def PIM_buildBodyGetProductDescription(parsed_text, product_name, manufacturer_n
         "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0,
+        "max_tokens": 1024*16,
         "response_format": {
             "type": "json_schema",
             "json_schema": {
@@ -1492,6 +1484,7 @@ def PIM_buildBodyGetRecommendedDosage(parsed_text, product_name, manufacturer_na
         "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0,
+        "max_tokens": 1024*16,
         "response_format": {
             "type": "json_schema",
             "json_schema": {
@@ -1616,6 +1609,7 @@ def PIM_buildBodySelectCertifications(parsed_text, product_name, manufacturer_na
         "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0,
+        "max_tokens": 1024*16,
         "response_format": {
             "type": "json_schema",
             "json_schema": {
@@ -1750,17 +1744,18 @@ def PIM_buildBodySelectClaims(parsed_text, product_name, manufacturer_name, ls_b
             'Solvent Free Alternatives',
             'VOC Free'
         ] 
-
     # SYSTEM PROMPT
     system_prompt = f"""
-        You are a data extraction agent that processes technical documents and extracts information.
-        Based on the provided text and image, Focus only on product [{product_name}] from manufacturer [{manufacturer_name}].   
-        Use the given data combine with your own knowledge to select relevant and distinct CLAIMS for this product, no duplications, from the following list:{selection_list}
+    You are an expert data‐extraction assistant for technical product dossiers.
+    Analyze only the provided details for product “{product_name}” from manufacturer “{manufacturer_name}” (parsed_text, any images, and optional searched_text) 
+    and identify which of the following claims apply:
 
-        Output format:
-        {{
-          'distinct_claims': array of string
-        }}
+    Output format:
+    {{
+        'claim1': boolean,
+        'claim2': boolean,
+        ...
+    }}
     """
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
     messages = [
@@ -1769,42 +1764,29 @@ def PIM_buildBodySelectClaims(parsed_text, product_name, manufacturer_name, ls_b
         {"role": "user", "content": searched_text}]
     # ADD BASE64 IMAGES IF PROVIDED
     for base64_img in ls_base64:
-        messages.append({
-            "role": "user", "content": [{"type": "image_url",
-                                         "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]
-        })
+        messages.append({"role": "user", 
+                         "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]})
     # CONSTRUCT BODY
+    properties = {name: {"type": "boolean"} for name in selection_list}
+    required   = list(selection_list)
+    json_schema = {
+        "name": "flags_only",
+        "strict": True,
+        "schema": {
+            "type": "object",
+            "properties": properties,
+            "required": required,
+            "additionalProperties": False}}
+    # Full request body
     body = {
         "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0,
-        "max_tokens": 1024,
+        "max_tokens": 1024*16,
         "response_format": {
             "type": "json_schema",
-            "json_schema": {
-                "name": "distinct_claims_output",
-                "strict": True,
-                "schema": {
-                    "type": "object",
-                    "properties": {
-                        "distinct_claims": {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "enum": selection_list},
-                            "minItems": 1,
-                            "description": f"Select relevant and distinct CLAIMS for this product, no duplications"
-                        }
-                    },
-                    "required": ["distinct_claims"],
-                    "additionalProperties": False
-                }
-            }
-        }
-    }
+            "json_schema": json_schema}}
     return body
-
-
 
 def PIM_buildBodySelectHealthBenefits(parsed_text, product_name, manufacturer_name, ls_base64, searched_text=''):
     selection_list = [
@@ -1852,6 +1834,7 @@ def PIM_buildBodySelectHealthBenefits(parsed_text, product_name, manufacturer_na
         "model": "gpt-4.1-mini",
         "messages": messages,
         "temperature": 0,
+        "max_tokens": 1024*16,
         "response_format": {
             "type": "json_schema",
             "json_schema": {

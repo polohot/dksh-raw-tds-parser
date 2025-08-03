@@ -1,9 +1,3 @@
-
-
-
-
-
-
 import streamlit as st
 from streamlit_js_eval import streamlit_js_eval
 import datetime
@@ -33,6 +27,10 @@ st.write("**Client time:**", client_time.strftime("%Y-%m-%d %H:%M:%S.%f"))
 st.write(f"**Difference:** {delta.total_seconds()*1000:.0f} ms")
 
 strShow = '''
+[V0.6-alpha] - 2025-08-03
+- Change Selection from list method to use Flag, instead of multi select for 
+    COMPOSITIONS, APPLICATIONS, FUNCTIONS, CLAIMS
+
 [V0.5-alpha] - 2025-07-30
 - Fix bug for CLAIMS
 - New resource map to this project
@@ -67,4 +65,3 @@ strShow = '''
 st.code(strShow)
 ###############################################################################################################################################################################
 ###############################################################################################################################################################################
-

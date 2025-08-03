@@ -3,6 +3,10 @@
 **Use AI to parser PDF into specific format**
 
 ```
+[V0.6-alpha] - 2025-08-03
+- Change Selection from list method to use Flag, instead of multi select for 
+    COMPOSITIONS, APPLICATIONS, FUNCTIONS, CLAIMS
+
 [V0.5-alpha] - 2025-07-30
 - Fix bug for CLAIMS
 - New resource map to this project

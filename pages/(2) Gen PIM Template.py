@@ -313,16 +313,17 @@ if st.session_state['STEP2']==True:
     st.dataframe(dfPROD.astype(str))
 
     # DEBUG
-    with st.expander("input_dict", expanded=False):
-        st.json(st.session_state['input_dict'])
-    with st.expander("file_dict", expanded=False):
-        st.json(st.session_state['file_dict'])
-    with st.expander("dfPROD", expanded=False):
-        st.dataframe(st.session_state['dfPROD'].astype(str))
+    # with st.expander("input_dict", expanded=False):
+    #     st.json(st.session_state['input_dict'])
+    # with st.expander("file_dict", expanded=False):
+    #     st.json(st.session_state['file_dict'])
+    # with st.expander("dfPROD", expanded=False):
+    #     st.dataframe(st.session_state['dfPROD'].astype(str))
 
     if st.button("Get Structured Data From PDF"):
         st.header('Logs')
         addToLog("### ⏳ <strong>STEP2: GET STRUCTURED FIELDS...</strong> ###", 0)
+        dfPROD['ERRORS'] = 0
         dfPROD['INDUSTRY_CLUSTER'] = ''        
         dfPROD['COMPOSITIONS_WEB_SEARCH_RESPONSE'] = ''  
         dfPROD['COMPOSITIONS_WEB_SEARCH'] = ''  
@@ -334,7 +335,9 @@ if st.session_state['STEP2']==True:
         dfPROD['THIS_PRODUCT_ONLY'] = ''
         dfPROD['COMPOSITIONS_RESPONSE'] = ''
         dfPROD['COMPOSITIONS'] = ''
+        dfPROD['APPLICATIONS_RESPONSE'] = ''
         dfPROD['APPLICATIONS'] = ''
+        dfPROD['FUNCTIONS_RESPONSE'] = ''
         dfPROD['FUNCTIONS'] = ''
         dfPROD['CAS_FROM_DOC'] = ''
         # dfPROD['CAS_WEB_SEARCH'] = ''           # NOT NEEDED NOW
@@ -409,11 +412,17 @@ if st.session_state['STEP2']==True:
                         addToLog(f"❌ GPT Search Compositions - Error: (HTTP {response.status_code})", 2)
                         dfPROD['COMPOSITIONS_WEB_SEARCH_RESPONSE'].iat[i] = response.json()
                         dfPROD['COMPOSITIONS_WEB_SEARCH'].iat[i] = response.json()
+                        dfPROD['ERRORS'].iat[i] += 1
                         break
                 except Exception as e:
-                    addToLog(f"❌ GPT Search Compositions - Error: {str(e)}", 2)
-                    dfPROD['COMPOSITIONS_WEB_SEARCH'].iat[i] = str(e)
-                    break
+                    if 'Unterminated string' in str(e):
+                        addToLog(f"🔄 GPT Search Compositions - Error: Unterminated string - Retrying...", 2) 
+                        continue
+                    else:
+                        addToLog(f"❌ GPT Search Compositions - Error: {str(e)}", 2)
+                        dfPROD['COMPOSITIONS_WEB_SEARCH'].iat[i] = str(e)
+                        dfPROD['ERRORS'].iat[i] += 1
+                        break
 
             ############################
             # APPLICATION - WEB SEARCH #
@@ -448,11 +457,17 @@ if st.session_state['STEP2']==True:
                         addToLog(f"❌ GPT Search Applications - Error: (HTTP {response.status_code})", 2)
                         dfPROD['APPLICATIONS_WEB_SEARCH_RESPONSE'].iat[i] = response.json()
                         dfPROD['APPLICATIONS_WEB_SEARCH'].iat[i] = response.json()
+                        dfPROD['ERRORS'].iat[i] += 1
                         break
                 except Exception as e:
-                    addToLog(f"❌ GPT Search Applications - Error: {str(e)}", 2)
-                    dfPROD['APPLICATIONS_WEB_SEARCH'].iat[i] = str(e)
-                    break    
+                    if 'Unterminated string' in str(e):
+                        addToLog(f"🔄 GPT Search Applications - Error: Unterminated string - Retrying...", 2) 
+                        continue
+                    else:
+                        addToLog(f"❌ GPT Search Applications - Error: {str(e)}", 2)
+                        dfPROD['APPLICATIONS_WEB_SEARCH'].iat[i] = str(e)
+                        dfPROD['ERRORS'].iat[i] += 1
+                        break 
 
             ##########################
             # FUNCTIONS - WEB SEARCH #
@@ -487,11 +502,17 @@ if st.session_state['STEP2']==True:
                         addToLog(f"❌ GPT Search Functions - Error: (HTTP {response.status_code})", 2)
                         dfPROD['FUNCTIONS_WEB_SEARCH_RESPONSE'].iat[i] = response.json()
                         dfPROD['FUNCTIONS_WEB_SEARCH'].iat[i] = response.json()
+                        dfPROD['ERRORS'].iat[i] += 1
                         break
                 except Exception as e:
-                    addToLog(f"❌ GPT Search Functions - Error: {str(e)}", 2)
-                    dfPROD['FUNCTIONS_WEB_SEARCH'].iat[i] = str(e)
-                    break      
+                    if 'Unterminated string' in str(e):
+                        addToLog(f"🔄 GPT Search Functions - Error: Unterminated string - Retrying...", 2) 
+                        continue
+                    else:
+                        addToLog(f"❌ GPT Search Functions - Error: {str(e)}", 2)
+                        dfPROD['FUNCTIONS_WEB_SEARCH'].iat[i] = str(e)
+                        dfPROD['ERRORS'].iat[i] += 1
+                        break     
 
             ######################
             # COMBINE WEB SEARCH #
@@ -528,17 +549,19 @@ if st.session_state['STEP2']==True:
                     else:
                         addToLog(f"❌ Get This Product Only - Error: (HTTP {response.status_code})", 2)
                         dfPROD['THIS_PRODUCT_ONLY'].iat[i] = response.json()
+                        dfPROD['ERRORS'].iat[i] += 1
                         break
                 except Exception as e:
                     addToLog(f"❌ Get This Product Only - Error: {str(e)}", 2)
                     dfPROD['THIS_PRODUCT_ONLY'].iat[i] = str(e)
+                    dfPROD['ERRORS'].iat[i] += 1
                     break
 
             ####################
             # INDUSTRY_CLUSTER #
             ####################
             parsed_text = dfPROD['THIS_PRODUCT_ONLY'].iat[i]
-            ls_base64 = []
+            ls_base64 = file_dict[file_name]['S2_READ_PDF_TO_BASE64']['pages']
             body = PIM_buildBodySelectIndustryCluster(parsed_text, product_name, manufacturer_name, ls_base64, business_line)
             ### CALL API - USING AZURE AI FOUNDARY
             while True:
@@ -559,17 +582,19 @@ if st.session_state['STEP2']==True:
                     else:
                         addToLog(f"❌ Get Industry Cluster - Error: (HTTP {response.status_code})", 2)
                         dfPROD['INDUSTRY_CLUSTER'].iat[i] = response.json()
+                        dfPROD['ERRORS'].iat[i] += 1
                         break
                 except Exception as e:
                     addToLog(f"❌ Get Industry Cluster - Error: {str(e)}", 2)
                     dfPROD['INDUSTRY_CLUSTER'].iat[i] = str(e)
+                    dfPROD['ERRORS'].iat[i] += 1
                     break
 
             ################
-            # COMPOSITIONS #
+            # COMPOSITIONS ##
             ################
             parsed_text = dfPROD['THIS_PRODUCT_ONLY'].iat[i]
-            ls_base64 = []
+            ls_base64 = file_dict[file_name]['S2_READ_PDF_TO_BASE64']['pages']
             searched_text = dfPROD['COMBINED_WEB_SEARCH'].iat[i]
             body = PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text)
             ### CALL API - USING AZURE AI FOUNDARY
@@ -580,10 +605,11 @@ if st.session_state['STEP2']==True:
                                             headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
                                             data=json.dumps(body),
                                             verify=False)  
+                    dfPROD['COMPOSITIONS_RESPONSE'].iat[i] = response.json()
                     if response.status_code == 200:
-                        dfPROD['COMPOSITIONS_RESPONSE'].iat[i] = response.json()
                         rescontent = response.json()['choices'][0]['message']['content']
-                        dfPROD['COMPOSITIONS'].iat[i] = json.loads(rescontent)['compositions']
+                        rescontent = json.loads(rescontent)
+                        dfPROD['COMPOSITIONS'].iat[i] = [k for k, v in rescontent.items() if v]
                         addToLog(f"✅ Get Compositions - {dfPROD['COMPOSITIONS'].iat[i]}", 2)
                         break
                     elif response.status_code in [499, 500, 503]:
@@ -592,17 +618,19 @@ if st.session_state['STEP2']==True:
                     else:
                         addToLog(f"❌ Get Compositions - Error: (HTTP {response.status_code})", 2)
                         dfPROD['COMPOSITIONS'].iat[i] = response.json()
+                        dfPROD['ERRORS'].iat[i] += 1
                         break
                 except Exception as e:
                     addToLog(f"❌ Get Compositions - Error: {str(e)}", 2)
                     dfPROD['COMPOSITIONS'].iat[i] = str(e)
+                    dfPROD['ERRORS'].iat[i] += 1
                     break
 
             ###############
             # APPLICATION #
             ###############
             parsed_text = dfPROD['THIS_PRODUCT_ONLY'].iat[i]
-            ls_base64 = []
+            ls_base64 = file_dict[file_name]['S2_READ_PDF_TO_BASE64']['pages']
             searched_text = dfPROD['COMBINED_WEB_SEARCH'].iat[i]
             body = PIM_buildBodySelectApplication(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text)
             ### CALL API - USING AZURE AI FOUNDARY
@@ -613,9 +641,11 @@ if st.session_state['STEP2']==True:
                                             headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
                                             data=json.dumps(body),
                                             verify=False)  
+                    dfPROD['APPLICATIONS_RESPONSE'].iat[i] = response.json()
                     if response.status_code == 200:
                         rescontent = response.json()['choices'][0]['message']['content']
-                        dfPROD['APPLICATIONS'].iat[i] = json.loads(rescontent)['applications']
+                        rescontent = json.loads(rescontent)
+                        dfPROD['APPLICATIONS'].iat[i] = [k for k, v in rescontent.items() if v]
                         addToLog(f"✅ Get Applications - {dfPROD['APPLICATIONS'].iat[i]}", 2)
                         break
                     elif response.status_code in [499, 500, 503]:
@@ -624,17 +654,19 @@ if st.session_state['STEP2']==True:
                     else:
                         addToLog(f"❌ Get Applications - Error: (HTTP {response.status_code})", 2)
                         dfPROD['APPLICATIONS'].iat[i] = response.json()
+                        dfPROD['ERRORS'].iat[i] += 1
                         break
                 except Exception as e:
                     addToLog(f"❌ Get Applications - Error: {str(e)}", 2)
                     dfPROD['APPLICATIONS'].iat[i] = str(e)
-                    break       
+                    dfPROD['ERRORS'].iat[i] += 1
+                    break
 
             #############
             # FUNCTIONS #
             #############
             parsed_text = dfPROD['THIS_PRODUCT_ONLY'].iat[i]
-            ls_base64 = []
+            ls_base64 = file_dict[file_name]['S2_READ_PDF_TO_BASE64']['pages']
             searched_text = dfPROD['COMBINED_WEB_SEARCH'].iat[i]
             body = PIM_buildBodySelectFunction(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text)
             ### CALL API - USING AZURE AI FOUNDARY
@@ -645,9 +677,11 @@ if st.session_state['STEP2']==True:
                                             headers={"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')},
                                             data=json.dumps(body),
                                             verify=False)  
+                    dfPROD['FUNCTIONS_RESPONSE'].iat[i] = response.json()
                     if response.status_code == 200:
                         rescontent = response.json()['choices'][0]['message']['content']
-                        dfPROD['FUNCTIONS'].iat[i] = json.loads(rescontent)['functions']
+                        rescontent = json.loads(rescontent)
+                        dfPROD['FUNCTIONS'].iat[i] = [k for k, v in rescontent.items() if v]
                         addToLog(f"✅ Get Functions - {dfPROD['FUNCTIONS'].iat[i]}", 2)
                         break
                     elif response.status_code in [499, 500, 503]:
@@ -656,10 +690,12 @@ if st.session_state['STEP2']==True:
                     else:
                         addToLog(f"❌ Get Functions - Error: (HTTP {response.status_code})", 2)
                         dfPROD['FUNCTIONS'].iat[i] = response.json()
+                        dfPROD['ERRORS'].iat[i] += 1
                         break
                 except Exception as e:
                     addToLog(f"❌ Get Functions - Error: {str(e)}", 2)
                     dfPROD['FUNCTIONS'].iat[i] = str(e)
+                    dfPROD['ERRORS'].iat[i] += 1
                     break
 
             ##############################
@@ -687,10 +723,12 @@ if st.session_state['STEP2']==True:
                     else:
                         addToLog(f"❌ Get CAS from Document - Error: (HTTP {response.status_code})", 2)
                         dfPROD['CAS_FROM_DOC'].iat[i] = response.json()
+                        dfPROD['ERRORS'].iat[i] += 1
                         break
                 except Exception as e:
                     addToLog(f"❌ Get CAS from Document - Error: {str(e)}", 2)
                     dfPROD['CAS_FROM_DOC'].iat[i] = str(e)
+                    dfPROD['ERRORS'].iat[i] += 1
                     break  
 
             #################
@@ -719,10 +757,12 @@ if st.session_state['STEP2']==True:
                     else:
                         addToLog(f"❌ Get Physical Form - Error: (HTTP {response.status_code})", 2)
                         dfPROD['PHYSICAL_FORM'].iat[i] = response.json()
+                        dfPROD['ERRORS'].iat[i] += 1
                         break
                 except Exception as e:
                     addToLog(f"❌ Get Physical Form - Error: {str(e)}", 2)
                     dfPROD['PHYSICAL_FORM'].iat[i] = str(e)
+                    dfPROD['ERRORS'].iat[i] += 1
                     break
 
             #######################
@@ -751,10 +791,12 @@ if st.session_state['STEP2']==True:
                     else:
                         addToLog(f"❌ Get Product Description - Error: (HTTP {response.status_code})", 2)
                         dfPROD['PRODUCT_DESCRIPTION'].iat[i] = response.json()
+                        dfPROD['ERRORS'].iat[i] += 1
                         break
                 except Exception as e:
                     addToLog(f"❌ Get Product Description - Error: {str(e)}", 2)
                     dfPROD['PRODUCT_DESCRIPTION'].iat[i] = str(e)
+                    dfPROD['ERRORS'].iat[i] += 1
                     break
 
             ######################
@@ -784,10 +826,12 @@ if st.session_state['STEP2']==True:
                     else:
                         addToLog(f"❌ Get Recommended Dosage - Error: (HTTP {response.status_code})", 2)
                         dfPROD['RECOMMENDED_DOSAGE'].iat[i] = response.json()
+                        dfPROD['ERRORS'].iat[i] += 1
                         break
                 except Exception as e:
                     addToLog(f"❌ Get Recommended Dosage - Error: {str(e)}", 2)
                     dfPROD['RECOMMENDED_DOSAGE'].iat[i] = str(e)
+                    dfPROD['ERRORS'].iat[i] += 1
                     break
 
             ##################
@@ -816,17 +860,19 @@ if st.session_state['STEP2']==True:
                     else:
                         addToLog(f"❌ Get Certifications - Error: (HTTP {response.status_code})", 2)
                         dfPROD['CERTIFICATIONS'].iat[i] = response.json()
+                        dfPROD['ERRORS'].iat[i] += 1
                         break
                 except Exception as e:
                     addToLog(f"❌ Get Certifications - Error: {str(e)}", 2)
                     dfPROD['CERTIFICATIONS'].iat[i] = str(e)
+                    dfPROD['ERRORS'].iat[i] += 1
                     break
 
             ##########
             # CLAIMS #
             ##########
             parsed_text = dfPROD['THIS_PRODUCT_ONLY'].iat[i]
-            ls_base64 = []
+            ls_base64 = file_dict[file_name]['S2_READ_PDF_TO_BASE64']['pages']
             searched_text = dfPROD['COMBINED_WEB_SEARCH'].iat[i]
             body = PIM_buildBodySelectClaims(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text)
             dfPROD['CLAIMS_BODY'].iat[i] = body
@@ -839,10 +885,11 @@ if st.session_state['STEP2']==True:
                                             data=json.dumps(body),
                                             verify=False)  
                     dfPROD['CLAIMS_RESPONSE_CODE'].iat[i] = response.status_code
-                    if response.status_code == 200:                        
-                        dfPROD['CLAIMS_RESPONSE'].iat[i] = response.json()
+                    dfPROD['CLAIMS_RESPONSE'].iat[i] = response.json()
+                    if response.status_code == 200:              
                         rescontent = response.json()['choices'][0]['message']['content']
-                        dfPROD['CLAIMS'].iat[i] = json.loads(rescontent)['distinct_claims']
+                        rescontent = json.loads(rescontent)
+                        dfPROD['CLAIMS'].iat[i] = [k for k, v in rescontent.items() if v]      
                         addToLog(f"✅ Get Claims - {dfPROD['CLAIMS'].iat[i]}", 2)
                         break
                     elif response.status_code in [499, 500, 503]:
@@ -853,17 +900,19 @@ if st.session_state['STEP2']==True:
                         dfPROD['CLAIMS_RESPONSE'].iat[i] = response.json()
                         addToLog(f"❌ Get Claims - Error: (HTTP {response.status_code})", 2)
                         dfPROD['CLAIMS'].iat[i] = response.json()
+                        dfPROD['ERRORS'].iat[i] += 1
                         break
                 except Exception as e:
                     addToLog(f"❌ Get Claims - Error: {str(e)}", 2)
                     dfPROD['CLAIMS'].iat[i] = str(e)
-                    break
+                    dfPROD['ERRORS'].iat[i] += 1
+                    break 
 
             ###############################
             # RECOMMENDED_HEALTH_BENEFITS #
             ###############################
             parsed_text = dfPROD['THIS_PRODUCT_ONLY'].iat[i]
-            ls_base64 = []
+            ls_base64 = file_dict[file_name]['S2_READ_PDF_TO_BASE64']['pages']
             searched_text = dfPROD['COMBINED_WEB_SEARCH'].iat[i]
             if business_line == 'FBI':
                 selection_list = ["Dietary Fiber",
@@ -893,10 +942,12 @@ if st.session_state['STEP2']==True:
                             else:
                                 addToLog(f"❌ Get Health Benefits - Error: (HTTP {response.status_code})", 2)
                                 dfPROD['RECOMMENDED_HEALTH_BENEFITS'].iat[i] = response.json()
+                                dfPROD['ERRORS'].iat[i] += 1
                                 break
                         except Exception as e:
                             addToLog(f"❌ Get Health Benefits - Error: {str(e)}", 2)
                             dfPROD['RECOMMENDED_HEALTH_BENEFITS'].iat[i] = str(e)
+                            dfPROD['ERRORS'].iat[i] += 1
                             break
                 else:
                     addToLog(f"⏭️ Get Health Benefits - Skip - Functions not in list", 2)
@@ -944,7 +995,7 @@ if st.session_state['STEP2']==True:
         st.rerun()
 
 ##########
-# EXPORT #
+# EXPORT ##
 ##########
 if st.session_state['STEP3'] == True:
     # PRINT LOG
