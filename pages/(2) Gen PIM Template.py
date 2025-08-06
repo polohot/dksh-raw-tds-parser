@@ -1013,10 +1013,6 @@ if st.session_state['STEP3'] == True:
         st.markdown(html_log, unsafe_allow_html=True)
 
     # DEBUG
-    aa = st.session_state['dfPROD']
-    aa = aa[aa['ERRORS']==1]
-    aa = aa['COMPOSITIONS_WEB_SEARCH_RESPONSE'].iat[0]
-    st.json(aa)
     # with st.expander("input_dict", expanded=False):
     #     st.json(st.session_state['input_dict'])
     # with st.expander("file_dict", expanded=False):
