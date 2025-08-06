@@ -392,7 +392,7 @@ if st.session_state['STEP2']==True:
                     'web_search_options': {'search_context_size': 'low'},
                     "messages": [{'role': 'user', 
                                 'content': question}],
-                    "max_tokens": 4096}
+                    "max_tokens": 4096*2}
             ### CALL API - USING TUNNEL
             while True:
                 try:
@@ -418,6 +418,9 @@ if st.session_state['STEP2']==True:
                     if 'Unterminated string' in str(e):
                         addToLog(f"🔄 GPT Search Compositions - Error: Unterminated string - Retrying...", 2) 
                         continue
+                    elif 'Expecting value' in str(e):
+                        addToLog(f"🔄 GPT Search Compositions - Error: Expecting value - Retrying...", 2) 
+                        continue
                     else:
                         addToLog(f"❌ GPT Search Compositions - Error: {str(e)}", 2)
                         dfPROD['COMPOSITIONS_WEB_SEARCH'].iat[i] = str(e)
@@ -437,7 +440,7 @@ if st.session_state['STEP2']==True:
                     'web_search_options': {'search_context_size': 'low'},
                     "messages": [{'role': 'user', 
                                   'content': question}],
-                    "max_tokens": 4096}
+                    "max_tokens": 4096*2}
             ### CALL API - USING TUNNEL
             while True:
                 try:
@@ -463,6 +466,9 @@ if st.session_state['STEP2']==True:
                     if 'Unterminated string' in str(e):
                         addToLog(f"🔄 GPT Search Applications - Error: Unterminated string - Retrying...", 2) 
                         continue
+                    elif 'Expecting value' in str(e):
+                        addToLog(f"🔄 GPT Search Applications - Error: Expecting value - Retrying...", 2) 
+                        continue
                     else:
                         addToLog(f"❌ GPT Search Applications - Error: {str(e)}", 2)
                         dfPROD['APPLICATIONS_WEB_SEARCH'].iat[i] = str(e)
@@ -470,7 +476,7 @@ if st.session_state['STEP2']==True:
                         break 
 
             ##########################
-            # FUNCTIONS - WEB SEARCH #
+            # FUNCTIONS - WEB SEARCH ##
             ##########################
             question = f"""
                         Give me as much information as possible about the FUNCTIONS of [{product_name}] utilization in the [{business_line_str}] industries
@@ -482,7 +488,7 @@ if st.session_state['STEP2']==True:
                     'web_search_options': {'search_context_size': 'low'},
                     "messages": [{'role': 'user',
                                   'content': question}],
-                    "max_tokens": 4096}
+                    "max_tokens": 4096*2}
             ### CALL API - USING TUNNEL
             while True:
                 try:
@@ -507,6 +513,9 @@ if st.session_state['STEP2']==True:
                 except Exception as e:
                     if 'Unterminated string' in str(e):
                         addToLog(f"🔄 GPT Search Functions - Error: Unterminated string - Retrying...", 2) 
+                        continue
+                    elif 'Expecting value' in str(e):
+                        addToLog(f"🔄 GPT Search Functions - Error: Expecting value - Retrying...", 2) 
                         continue
                     else:
                         addToLog(f"❌ GPT Search Functions - Error: {str(e)}", 2)
@@ -1004,6 +1013,10 @@ if st.session_state['STEP3'] == True:
         st.markdown(html_log, unsafe_allow_html=True)
 
     # DEBUG
+    aa = st.session_state['dfPROD']
+    aa = aa[aa['ERRORS']==1]
+    aa = aa['COMPOSITIONS_WEB_SEARCH_RESPONSE'].iat[0]
+    st.json(aa)
     # with st.expander("input_dict", expanded=False):
     #     st.json(st.session_state['input_dict'])
     # with st.expander("file_dict", expanded=False):
