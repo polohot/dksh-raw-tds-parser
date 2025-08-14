@@ -324,7 +324,8 @@ if st.session_state['STEP2']==True:
         st.header('Logs')
         addToLog("### ⏳ <strong>STEP2: GET STRUCTURED FIELDS...</strong> ###", 0)
         dfPROD['ERRORS'] = 0
-        dfPROD['INDUSTRY_CLUSTER'] = ''        
+        dfPROD['INDUSTRY_CLUSTER'] = ''     
+        dfPROD['INDUSTRY_CLUSTER_REASON'] = ''   
         dfPROD['COMPOSITIONS_WEB_SEARCH_RESPONSE'] = ''  
         dfPROD['COMPOSITIONS_WEB_SEARCH'] = ''  
         dfPROD['APPLICATIONS_WEB_SEARCH_RESPONSE'] = ''
@@ -583,6 +584,7 @@ if st.session_state['STEP2']==True:
                     if response.status_code == 200:
                         rescontent = response.json()['choices'][0]['message']['content']
                         dfPROD['INDUSTRY_CLUSTER'].iat[i] = json.loads(rescontent)['industry_cluster']
+                        dfPROD['INDUSTRY_CLUSTER_REASON'].iat[i] = json.loads(rescontent)['reason']
                         addToLog(f"✅ Get Industry Cluster - {dfPROD['INDUSTRY_CLUSTER'].iat[i]}", 2)
                         break
                     elif response.status_code in [499, 500, 503]:
@@ -591,11 +593,13 @@ if st.session_state['STEP2']==True:
                     else:
                         addToLog(f"❌ Get Industry Cluster - Error: (HTTP {response.status_code})", 2)
                         dfPROD['INDUSTRY_CLUSTER'].iat[i] = response.json()
+                        dfPROD['INDUSTRY_CLUSTER_REASON'].iat[i] = response.json()
                         dfPROD['ERRORS'].iat[i] += 1
                         break
                 except Exception as e:
                     addToLog(f"❌ Get Industry Cluster - Error: {str(e)}", 2)
                     dfPROD['INDUSTRY_CLUSTER'].iat[i] = str(e)
+                    dfPROD['INDUSTRY_CLUSTER_REASON'].iat[i] = str(e)
                     dfPROD['ERRORS'].iat[i] += 1
                     break
 

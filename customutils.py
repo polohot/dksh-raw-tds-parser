@@ -555,10 +555,12 @@ def PIM_buildBodySelectIndustryCluster(parsed_text, product_name, manufacturer_n
         You are a data extraction agent that processes technical documents and extracts information.
         Based on the provided text and image, Focus only on product [{product_name}] from manufacturer [{manufacturer_name}].   
         Use the given data combine with your own knowledge to determine the INDUSTRY CLUSTER related to the product [{product_name}] from the following list:{selection_list}
+        Also provide reason why you select the INDUSTRY CLUSTER, so that it can be used for further analysis.
 
         Output format:
         {{
-          "industry_cluster": string
+          "industry_cluster": string,
+          "reason": string
         }}
     """
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
@@ -589,10 +591,12 @@ def PIM_buildBodySelectIndustryCluster(parsed_text, product_name, manufacturer_n
                         "industry_cluster": {
                             "type": "string",
                             "enum": selection_list,
-                            "description": f"Select INDUSTRY CLUSTER related to the product [{product_name}]"
-                        }
+                            "description": f"Select INDUSTRY CLUSTER related to the product [{product_name}]"},
+                        'reason': {
+                            "type": "string",
+                            "description": "Reason why you select the INDUSTRY CLUSTER"}
                     },
-                    "required": ["industry_cluster"],
+                    "required": ["industry_cluster", "reason"],
                     "additionalProperties": False
                 }
             }
