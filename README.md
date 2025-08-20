@@ -3,6 +3,9 @@
 **Use AI to parser PDF into specific format**
 
 ```
+[V0.7-alpha] - 2025-08-20
+- Adding page "(3) Gen PIM Template - No Search.py" - remove search function
+
 [V0.6-alpha] - 2025-08-03
 - Change Selection from list method to use Flag, instead of multi select for 
     COMPOSITIONS, APPLICATIONS, FUNCTIONS, CLAIMS

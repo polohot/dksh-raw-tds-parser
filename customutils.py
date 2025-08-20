@@ -486,6 +486,8 @@ def buildCompositionOutputBody(parsed_text, product_name, manufacturer_name, ls_
 ###############################################################################################################################################################################
 ###############################################################################################################################################################################
 ###############################################################################################################################################################################
+# FOR (2) Gen PIM Template.py #
+###############################
 
 def PIM_buildBodyGetProductInfo(parsed_text, product_name, manufacturer_name, ls_base64, searched_text=''):
     # SYSTEM PROMPT
@@ -495,6 +497,7 @@ def PIM_buildBodyGetProductInfo(parsed_text, product_name, manufacturer_name, ls
         Some time the given data will have multiple products, but you only need to focus on [{product_name}].
         Do not do summarization on the text, Just pull the raw data.
         If you found image related to the product, parse the image data as much detail as possible and include it in the output.
+        Output in markdown format.
     """
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
     messages = [
@@ -517,7 +520,7 @@ def PIM_buildBodyGetProductInfo(parsed_text, product_name, manufacturer_name, ls
         }
     return body
 
-def PIM_buildBodySelectIndustryCluster(parsed_text, product_name, manufacturer_name, ls_base64, business_line):
+def PIM_buildBodySelectIndustryCluster(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text=''):
     # Define mapping of business lines to industry clusters
     if business_line == 'FBI':
         selection_list = [
@@ -566,8 +569,8 @@ def PIM_buildBodySelectIndustryCluster(parsed_text, product_name, manufacturer_n
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
     messages = [
         {"role": "system", "content": system_prompt},
-        {"role": "user","content": parsed_text}
-    ]
+        {"role": "user","content": parsed_text},
+        {"role": "user", "content": searched_text}]
     # ADD BASE64 IMAGES IF PROVIDED
     for base64_img in ls_base64:
         messages.append({
@@ -605,21 +608,7 @@ def PIM_buildBodySelectIndustryCluster(parsed_text, product_name, manufacturer_n
     return body    
 
 def PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text=''):
-    # Define mapping of business lines to industry clusters
-    if business_line == 'FBI':
-        selection_list = [
-            "Plant (Vegetal)",
-            "Animal",
-            "Microbial, Fungal (yeast, bacteria)",
-            "Algal, Marine",
-            "Mineral, Inorganic",
-            "Synthetic, Chemically Manufactured",
-            "Fermentation, Biotech-Derived",
-            "Semi-Synthetic, Modified Natural",
-            "Nature-Identical (chemically equivalent to natural)",
-            "Upcycled, Recovered Food Streams",
-            "Processing Aid, Carrier (solvents, anticaking agents, fillers)"]
-    elif business_line == 'PCI':
+    if business_line == 'PCI':
         selection_list = [
             "Animal",
             "Biomolecule/Micro-organisms",
@@ -627,79 +616,99 @@ def PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name,
             "Mineral",
             "Synthetic",
             "Vegetal"]
-    elif business_line == 'PHI':
-        selection_list = [
-            "Plant, Herbal",
-            "Animal-Derived",
-            "Microbial, Fungal (yeast, bacteria, molds)",
-            "Marine, Algal",
-            "Mineral, Inorganic",
-            "Synthetic Small Molecule (chemically manufactured)",
-            "Semi-Synthetic, Modified Natural",
-            "Biotech, Biologic (recombinant proteins, vaccines, cells, tissues)",
-            "Cell-Derived, Tissue-Derived (human, animal)",
-            "Gene-Based, Nucleic Acid-Based (mRNA, DNA, oligonucleotides)",
-            "Radiochemical, Isotope-Labeled",
-            "Polymeric Excipient, Synthetic Polymer (e.g., PEG, PVP)",
-            "Fixed-Dose, Combination Product Blend"]
-    elif business_line == 'SCI':
-        selection_list = [
-            "Petrochemical, Hydrocarbon-Derived",
-            "Bio-based, Renewable",
-            "Microbial, Biotech-Derived",
-            "Inorganic, Mineral",
-            "Organic Synthetic (non-polymeric)",
-            "Polymer, Resin, Elastomer",
-            "Silicone, Organosilicon",
-            "Fluorinated, Halogenated",
-            "Metal, Organometallic, Catalyst",
-            "Formulated Blend, Mixture",
-            "CO₂, Carbon-Capture-Derived",
-            "Recycled, Reclaimed, By-product Stream",
-            "Ionic Liquid, Deep Eutectic Solvent",
-            "Electrochemically Produced, Battery-Grade Material"]
-    # SYSTEM PROMPT
-    system_prompt = f"""
-    You are an expert data‐flagging assistant for technical product dossiers. 
-    Your task is to analyze only the details provided for product “{product_name}” from manufacturer “{manufacturer_name}” (including text and any images) 
-    and determine, for each composition category in the selection list, whether the product may contain substances from that category.
+        # SYSTEM PROMPT
+        system_prompt = f"""
+        You are an expert data‐flagging assistant for technical product dossiers. 
+        Your task is to analyze only the details provided for product “{product_name}” from manufacturer “{manufacturer_name}” (including text and any images) 
+        and determine, for each composition category in the selection list, whether the product may contain substances from that category.
 
-    Output format:
-    {{
-        'composition1': boolean,
-        'composition2': boolean,
-        ...
-    }}
-    """
-    # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user","content": parsed_text},
-        {"role": "user", "content": searched_text}]
-    # ADD BASE64 IMAGES IF PROVIDED
-    for base64_img in ls_base64:
-        messages.append({"role": "user", 
-                         "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]})
-    # CONSTRUCT BODY
-    properties = {name: {"type": "boolean"} for name in selection_list}
-    required   = list(selection_list)
-    json_schema = {
-        "name": "flags_only",
-        "strict": True,
-        "schema": {
-            "type": "object",
-            "properties": properties,
-            "required": required,
-            "additionalProperties": False}}
-    # Full request body
-    body = {
-        "model": "gpt-4.1-mini",
-        "messages": messages,
-        "temperature": 0,
-        "max_tokens": 1024*16,
-        "response_format": {
-            "type": "json_schema",
-            "json_schema": json_schema}}
+        Output format:
+        {{
+            'composition1': boolean,
+            'composition2': boolean,
+            ...
+        }}
+        """
+        # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user","content": parsed_text},
+            {"role": "user", "content": searched_text}]
+        # ADD BASE64 IMAGES IF PROVIDED
+        for base64_img in ls_base64:
+            messages.append({"role": "user", 
+                            "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]})
+        # CONSTRUCT BODY
+        properties = {name: {"type": "boolean"} for name in selection_list}
+        required   = list(selection_list)
+        json_schema = {
+            "name": "flags_only",
+            "strict": True,
+            "schema": {
+                "type": "object",
+                "properties": properties,
+                "required": required,
+                "additionalProperties": False}}
+        # Full request body
+        body = {
+            "model": "gpt-4.1-mini",
+            "messages": messages,
+            "temperature": 0,
+            "max_tokens": 1024*16,
+            "response_format": {
+                "type": "json_schema",
+                "json_schema": json_schema}}
+    else:
+        # SYSTEM PROMPT
+        system_prompt = f"""
+        You are an expert data‐flagging assistant for technical product dossiers. 
+        Your task is to analyze only the details provided for product “{product_name}” from manufacturer “{manufacturer_name}” (including text and any images) 
+        and determine and list out the composition/ingredients of this product.
+
+        Output format:
+        {{
+            "compositions": array of objects
+        }}
+        """
+        # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user","content": parsed_text},
+            {"role": "user", "content": searched_text}]
+        # ADD BASE64 IMAGES IF PROVIDED
+        for base64_img in ls_base64:
+            messages.append({
+                "role": "user", "content": [{"type": "image_url",
+                                            "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]
+            })
+        # CONSTRUCT BODY
+        body = {
+            "model": "gpt-4.1-mini",
+            "messages": messages,
+            "temperature": 0,
+            "max_tokens": 1024*16,
+            "response_format": {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "compositions_output",
+                    "strict": True,
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "compositions": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"},
+                                "minItems": 1,
+                                "description": f"Select as much as possible unique COMPOSITIONS/INGREDIENTS but only those related to the product [{product_name}]"}
+                        },
+                        "required": ["compositions"],
+                        "additionalProperties": False
+                    }
+                }
+            }
+        }
+
     return body
 
 def PIM_buildBodySelectApplication(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text=''):
@@ -1359,7 +1368,8 @@ def PIM_buildBodyFindPhysicalForm(parsed_text, product_name, manufacturer_name, 
 
         Output format:
         {{
-          "physical_form": string
+          "physical_form": string,
+          "reason": string
         }}
     """
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
@@ -1392,15 +1402,18 @@ def PIM_buildBodyFindPhysicalForm(parsed_text, product_name, manufacturer_name, 
                         "physical_form": {
                             "type": "string",
                             "enum": selection_list,
-                            "description": f"Select PHYSICAL_FORM of the product [{product_name}]. If none is found, output 'N/A'."
-                        }
+                            "description": f"Select PHYSICAL_FORM of the product [{product_name}]. If none is found, output 'N/A'."},
+                        "reason": {
+                            "type": "string",
+                            "description": "Reason why you select the PHYSICAL_FORM"}
                     },
-                    "required": ["physical_form"],
+                    "required": ["physical_form","reason"],
                     "additionalProperties": False
                 }
             }
         }
     }
+
     return body
 
 def PIM_buildBodyGetProductDescription(parsed_text, product_name, manufacturer_name, ls_base64, searched_text=''):
@@ -1465,11 +1478,14 @@ def PIM_buildBodyGetRecommendedDosage(parsed_text, product_name, manufacturer_na
         You are a data extraction agent that processes technical documents and extracts information.
         Based on the provided text and images, focus only on product [{product_name}] from manufacturer [{manufacturer_name}].
         Try to find any recommended dosage instructions mentioned in the content. This may include dosage amount, units, dosage frequency, or administration route.
+        Do not include any labels, section headers, or explanatory phrases such as "example", "usage", "incorporation", etc.
+        Output only the clean dosage text as it appears, preserving context + dosage together.
         If none is found, output "N/A".
 
         Output format:
         {{
-          "recommended_dosage": string
+          "recommended_dosage": string,
+          "reason": string
         }}
     """
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
@@ -1499,10 +1515,12 @@ def PIM_buildBodyGetRecommendedDosage(parsed_text, product_name, manufacturer_na
                     "properties": {
                         "recommended_dosage": {
                             "type": "string",
-                            "description": "The recommended dosage found in the document, or 'N/A' if none is present"
-                        }
+                            "description": "The recommended dosage found in the document, or 'N/A' if none is present"},
+                        "reason": {
+                            "type": "string",
+                            "description": "The reason for the recommended dosage, or 'N/A' if none is present"}
                     },
-                    "required": ["recommended_dosage"],
+                    "required": ["recommended_dosage","reason"],
                     "additionalProperties": False
                 }
             }
@@ -1594,7 +1612,8 @@ def PIM_buildBodySelectCertifications(parsed_text, product_name, manufacturer_na
 
         Output format:
         {{
-          "certifications": array of string
+          "certifications": array of string,
+          'reason': string
         }}
     """
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
@@ -1628,10 +1647,12 @@ def PIM_buildBodySelectCertifications(parsed_text, product_name, manufacturer_na
                                 "type": "string",
                                 "enum": selection_list},
                             "minItems": 1,
-                            "description": f"Select as much as possible CERTIFICATIONS but only those related to the product [{product_name}]"
-                        }
+                            "description": f"Select as much as possible CERTIFICATIONS but only those related to the product [{product_name}]"},
+                        "reason": {
+                            "type": "string",
+                            "description": "Explain why you are selecting the specified certifications"}
                     },
-                    "required": ["certifications"],
+                    "required": ["certifications","reason"],
                     "additionalProperties": False
                 }
             }
@@ -1819,7 +1840,8 @@ def PIM_buildBodySelectHealthBenefits(parsed_text, product_name, manufacturer_na
 
         Output format:
         {{
-          "rec_health_benefits": array of string
+          "rec_health_benefits": array of string,
+          "reason": string
         }}
     """
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
@@ -1853,10 +1875,120 @@ def PIM_buildBodySelectHealthBenefits(parsed_text, product_name, manufacturer_na
                                 "type": "string",
                                 "enum": selection_list},
                             "minItems": 1,
-                            "description": f"Select as much as possible RECOMMENDED_HEALTH_BENEFITS but only those related to the product [{product_name}]"
+                            "description": f"Select as much as possible RECOMMENDED_HEALTH_BENEFITS but only those related to the product [{product_name}]"},
+                        "reason": {
+                            "type": "string",
+                            "description": f"Explain why do you select the health benefits are recommended for the product [{product_name}]"
                         }
                     },
-                    "required": ["rec_health_benefits"],
+                    "required": ["rec_health_benefits", "reason"],
+                    "additionalProperties": False
+                }
+            }
+        }
+    }
+    return body
+
+###############################################################################################################################################################################
+###############################################################################################################################################################################
+###############################################################################################################################################################################
+###############################################################################################################################################################################
+###############################################################################################################################################################################
+# FOR (3) Gen PIM SFDC API.py #
+###############################
+import json
+import requests
+
+def addToLog(text: str, indent=0):
+    # generate current timestamp
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    html = (
+        f'<div>'
+        f'  <span>[{timestamp}]</span>'
+        f'  <span style="margin-left: {indent}rem;">{text}</span>'
+        f'</div>')
+    st.markdown(html, unsafe_allow_html=True)
+    st.session_state['HTML_LOG'].append(html)
+
+def customCallAPI(url, body, headers={}, params={}, log_prefix='', show_answer=False):
+    while True:
+        try:
+            response = requests.post(
+                url, 
+                headers=headers, 
+                data=json.dumps(body),
+                params=params,
+                verify=False)
+            if response.status_code == 200:                
+                response = response.json()
+                try:
+                    rescontent = response['choices'][0]['message']['content']
+                    rescontent = json.loads(rescontent)
+                    if show_answer==True:
+                        addToLog(f"✅ {log_prefix} - Success - {rescontent}", 2)
+                    else:
+                        addToLog(f"✅ {log_prefix} - Success", 2)
+                    return 0, response, rescontent
+                except:
+                    try:
+                        rescontent = response['choices'][0]['message']['content']
+                        if show_answer==True:
+                            addToLog(f"✅ {log_prefix} - Success - {rescontent}", 2)
+                        else:
+                            addToLog(f"✅ {log_prefix} - Success", 2)
+                        return 0, response, rescontent
+                    except Exception as e1:
+                        addToLog(f"❌ {log_prefix} - Error: {str(e1)}", 2)
+                        return 1, response, {'error':str(e1)}     
+            elif response.status_code in [499, 500, 503]:
+                addToLog(f"🔄 {log_prefix} - Error: (HTTP {response.status_code}) - Retrying...", 2)
+                continue
+            else:
+                addToLog(f"❌ {log_prefix} - Error: (HTTP {response.status_code})", 2)
+                return 1, response, response
+        except Exception as e2:
+            addToLog(f"❌ {log_prefix} - Error: {str(e2)}", 2)
+            return 1, {'error':str(e2)}, {'error':str(e2)}
+            
+def PIM_buildBodyGetManufacturerOrSupplier(parsed_text, product_name, ls_base64):
+    # SYSTEM PROMPT
+    system_prompt = f"""
+    You are a data extraction agent that processes technical documents and extracts information.
+    Based on the provided text and images, focus only on product [{product_name}] to find its manufacturer or supplier name.
+    Some time the given data will have multiple manufacturer or supplier, but you only need to focus on product [{product_name}].
+    """
+    # BUILD THE MESSAGE FOR THE STRUCTURED OUTPUT REQUEST
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": parsed_text}]
+    # ADD BASE64 IMAGES IF PROVIDED
+    for base64_img in ls_base64:
+        messages.append({
+            "role": "user", "content": [{"type": "image_url",
+                                         "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]})
+    # CONSTRUCT BODY
+    body = {
+        "model": "gpt-4.1-mini",
+        "messages": messages,
+        "temperature": 0,
+        "max_tokens": 1024*16,
+        "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+                "name": "manufacturer_or_supplier_output",
+                "strict": True,
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "manufacturer_or_supplier": {
+                            "type": "string",
+                            "description": f"Give the manufacturer or supplier name. Focus on product [{product_name}]. No explanation"},
+                        'reason': {
+                            "type": "string",
+                            "description": f"Reason why you select this manufacturer or supplier for this product [{product_name}]"
+                        }
+                    },
+                    "required": ["manufacturer_or_supplier", "reason"],
                     "additionalProperties": False
                 }
             }

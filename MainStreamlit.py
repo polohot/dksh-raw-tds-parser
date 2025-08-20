@@ -27,6 +27,9 @@ st.write("**Client time:**", client_time.strftime("%Y-%m-%d %H:%M:%S.%f"))
 st.write(f"**Difference:** {delta.total_seconds()*1000:.0f} ms")
 
 strShow = '''
+[V0.7-alpha] - 2025-08-20
+- Adding page "(3) Gen PIM Template - No Search.py" - remove search function
+
 [V0.6-alpha] - 2025-08-03
 - Change Selection from list method to use Flag, instead of multi select for 
     COMPOSITIONS, APPLICATIONS, FUNCTIONS, CLAIMS
