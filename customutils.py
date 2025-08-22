@@ -621,12 +621,14 @@ def PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name,
         You are an expert data‐flagging assistant for technical product dossiers. 
         Your task is to analyze only the details provided for product “{product_name}” from manufacturer “{manufacturer_name}” (including text and any images) 
         and determine, for each composition category in the selection list, whether the product may contain substances from that category.
+        Also give reason or example why you select each of the function.
 
         Output format:
         {{
-            'composition1': boolean,
-            'composition2': boolean,
+            "composition1": boolean,
+            "composition2": boolean,
             ...
+            "reason": string
         }}
         """
         # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
@@ -637,10 +639,11 @@ def PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name,
         # ADD BASE64 IMAGES IF PROVIDED
         for base64_img in ls_base64:
             messages.append({"role": "user", 
-                            "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]})
+                            "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]})            
         # CONSTRUCT BODY
-        properties = {name: {"type": "boolean"} for name in selection_list}
-        required   = list(selection_list)
+        properties = {name: {"type": "boolean", "description": f"True if the product includes {name} as composition/ingredients"} for name in selection_list}
+        properties['reason'] = {"type": "string", "description": "Give reason or example why you select each of the compositions/ingredients"}
+        required   = list(selection_list) + ['reason']
         json_schema = {
             "name": "flags_only",
             "strict": True,
@@ -664,10 +667,12 @@ def PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name,
         You are an expert data‐flagging assistant for technical product dossiers. 
         Your task is to analyze only the details provided for product “{product_name}” from manufacturer “{manufacturer_name}” (including text and any images) 
         and determine and list out the composition/ingredients of this product.
+        Also give reason or example why you select each of the composition/ingredients.
 
         Output format:
         {{
-            "compositions": array of objects
+            "compositions": array of objects,
+            "reason": string
         }}
         """
         # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
@@ -700,9 +705,12 @@ def PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name,
                                 "items": {
                                     "type": "string"},
                                 "minItems": 1,
-                                "description": f"Select as much as possible unique COMPOSITIONS/INGREDIENTS but only those related to the product [{product_name}]"}
+                                "description": f"Select as much as possible unique COMPOSITIONS/INGREDIENTS but only those related to the product [{product_name}]"},
+                            "reason": {
+                                "type": "string",
+                                "description": "Give reason or example why you select each of the compositions/ingredients"}
                         },
-                        "required": ["compositions"],
+                        "required": ["compositions","reason"],
                         "additionalProperties": False
                     }
                 }
@@ -865,12 +873,14 @@ def PIM_buildBodySelectApplication(parsed_text, product_name, manufacturer_name,
     You are an expert data‐flagging assistant for technical product dossiers.
     Analyze only the details provided for product “{product_name}” from manufacturer “{manufacturer_name}” (including parsed text, any images, and optional searched text) 
     and determine, for each application category in the selection list, whether the product is related to that application.
+    Also give reason or example why you select each of the application.
 
     Output format:
     {{
-        'application1': boolean,
-        'application2': boolean,
+        "application1": boolean,
+        "application2": boolean,
         ...
+        "reason": string
     }}
     """
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
@@ -883,8 +893,9 @@ def PIM_buildBodySelectApplication(parsed_text, product_name, manufacturer_name,
         messages.append({"role": "user", 
                          "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]})
     # CONSTRUCT BODY
-    properties = {name: {"type": "boolean"} for name in selection_list}
-    required   = list(selection_list)
+    properties = {name: {"type": "boolean", "description": f"True if the product includes {name} as application"} for name in selection_list}
+    properties['reason'] = {"type": "string", "description": "Give reason or example why you select each of the applications"}
+    required   = list(selection_list) + ['reason']
     json_schema = {
         "name": "flags_only",
         "strict": True,
@@ -1204,12 +1215,14 @@ def PIM_buildBodySelectFunction(parsed_text, product_name, manufacturer_name, ls
     You are an expert data‐flagging assistant for technical product dossiers.
     Analyze only the provided details for product “{product_name}” from manufacturer “{manufacturer_name}” (parsed_text, any images, and optional searched_text) 
     and determine, for each function category in the selection list, whether the product exhibits that function.
+    Also give reason or example why you select each of the function.
 
     Output format:
     {{
-        'function1': boolean,
-        'function2': boolean,
+        "function1": boolean,
+        "function2": boolean,
         ...
+        "reason": string
     }}
     """
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
@@ -1222,8 +1235,9 @@ def PIM_buildBodySelectFunction(parsed_text, product_name, manufacturer_name, ls
         messages.append({"role": "user", 
                          "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]})
     # CONSTRUCT BODY
-    properties = {name: {"type": "boolean"} for name in selection_list}
-    required   = list(selection_list)
+    properties = {name: {"type": "boolean", "description": f"True if the product exhibits {name} as the function"} for name in selection_list}
+    properties['reason'] = {"type": "string", "description": "Give reason or example why you select each of the functions"}
+    required   = list(selection_list) + ['reason']
     json_schema = {
         "name": "flags_only",
         "strict": True,
@@ -1773,13 +1787,15 @@ def PIM_buildBodySelectClaims(parsed_text, product_name, manufacturer_name, ls_b
     system_prompt = f"""
     You are an expert data‐extraction assistant for technical product dossiers.
     Analyze only the provided details for product “{product_name}” from manufacturer “{manufacturer_name}” (parsed_text, any images, and optional searched_text) 
-    and identify which of the following claims apply:
+    and identify which of the following claims apply.
+    Also give reason or example why you select each of the claims.
 
     Output format:
     {{
-        'claim1': boolean,
-        'claim2': boolean,
+        "claim1": boolean,
+        "claim2": boolean,
         ...
+        "reason": string
     }}
     """
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
@@ -1792,8 +1808,9 @@ def PIM_buildBodySelectClaims(parsed_text, product_name, manufacturer_name, ls_b
         messages.append({"role": "user", 
                          "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]})
     # CONSTRUCT BODY
-    properties = {name: {"type": "boolean"} for name in selection_list}
-    required   = list(selection_list)
+    properties = {name: {"type": "boolean", "description": f"True if the product claims to exhibits {name}"} for name in selection_list}
+    properties['reason'] = {"type": "string", "description": "Give reason or example why you select each of the claims"}
+    required   = list(selection_list) + ['reason']
     json_schema = {
         "name": "flags_only",
         "strict": True,
@@ -1801,7 +1818,7 @@ def PIM_buildBodySelectClaims(parsed_text, product_name, manufacturer_name, ls_b
             "type": "object",
             "properties": properties,
             "required": required,
-            "additionalProperties": False}}
+            "additionalProperties": False}} 
     # Full request body
     body = {
         "model": "gpt-4.1-mini",
@@ -1995,3 +2012,406 @@ def PIM_buildBodyGetManufacturerOrSupplier(parsed_text, product_name, ls_base64)
         }
     }
     return body
+
+
+
+###############################################################################################################################################################################
+###############################################################################################################################################################################
+###############################################################################################################################################################################
+###############################################################################################################################################################################
+###############################################################################################################################################################################
+# FOR API V1 #
+##############
+
+import os
+import tempfile
+import shutil
+import fitz
+from PIL import Image
+import base64
+import io
+from fastapi import FastAPI, File, Form, UploadFile, HTTPException
+
+def v1_saveUploadFilesTemporarly(inputListDocumentation):
+    # Save uploaded files temporarily
+    lsTempFile = []
+    for file in inputListDocumentation:
+        suffix = os.path.splitext(file.filename)[-1]
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+            shutil.copyfileobj(file.file, tmp)
+            tmpdict = {"filename": file.filename, "temp_path": tmp.name}
+            lsTempFile.append(tmpdict)
+    return lsTempFile
+
+def v1_parsePDF(lsTempFile):
+    lsParsedText = []
+    for tempFile in lsTempFile:
+        try:
+            markdownText = azureDocumentIntelligenceParsePDF(tempFile['temp_path'], os.getenv('AZURE_DOCUMENT_INTELLIGENCE_API_KEY'))
+            markdownText = f"TEXT_FROM_FILE_NAME:{tempFile['filename']} \n\n" + markdownText
+            lsParsedText.append(markdownText)
+        except:
+            pass
+    return lsParsedText
+
+def v1_readPDFToBase64(lsTempFile):
+    lsBase64 = []
+    for tempFile in lsTempFile:
+        try:
+            doc = fitz.open(tempFile['temp_path'])
+            for page_number in range(len(doc)):
+                try:
+                    page = doc.load_page(page_number)
+                    pix = page.get_pixmap(dpi=150)
+                    img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+                    buffered = io.BytesIO()
+                    img.save(buffered, format="PNG")
+                    img_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
+                    lsBase64.append(img_base64)
+                except:
+                    pass
+        except:
+            pass
+    return lsBase64
+
+def v1_addFieldsMainDict(mainDict):
+    mainDict['gpt_manufacturer_or_supplier_answer'] = None
+    mainDict['gpt_manufacturer_or_supplier_reason'] = None
+    mainDict['gpt_composition_search_answer'] = None
+    mainDict['gpt_function_search_answer'] = None
+    mainDict['gpt_application_search_answer'] = None
+    mainDict['gpt_combined_web_search'] = None
+    mainDict['gpt_text_of_this_product_only_answer'] = None
+    mainDict['gpt_select_industry_cluster_answer'] = None
+    mainDict['gpt_select_industry_cluster_reason'] = None
+    mainDict['gpt_select_compositions_answer'] = None
+    mainDict['gpt_select_compositions_reason'] = None
+    mainDict['gpt_select_functions_answer'] = None
+    mainDict['gpt_select_functions_reason'] = None
+    mainDict['gpt_select_applications_answer'] = None
+    mainDict['gpt_select_applications_reason'] = None
+    mainDict['gpt_cas_from_doc_answer'] = None
+    mainDict['gpt_physical_form_answer'] = None
+    mainDict['gpt_physical_form_reason'] = None
+    mainDict['gpt_gen_product_description'] = None
+    mainDict['gpt_recommended_dosage_answer'] = None
+    mainDict['gpt_recommended_dosage_reason'] = None
+    mainDict['gpt_certifications_answer'] = None
+    mainDict['gpt_certifications_reason'] = None
+    mainDict['gpt_claims_answer'] = None
+    mainDict['gpt_claims_reason'] = None
+    mainDict['gpt_health_benefits_answer'] = None
+    mainDict['gpt_health_benefits_reason'] = None
+    return mainDict
+
+def v1_customCallAPI(url, body, headers={}, params={}):
+    while True:
+        try:
+            response = requests.post(
+                url, 
+                headers=headers, 
+                data=json.dumps(body),
+                params=params,
+                verify=False)
+            if response.status_code == 200:                
+                response = response.json()
+                try:
+                    rescontent = response['choices'][0]['message']['content']
+                    rescontent = json.loads(rescontent)
+                    return 0, response, rescontent
+                except:
+                    try:
+                        rescontent = response['choices'][0]['message']['content']
+                        return 0, response, rescontent
+                    except Exception as e1:
+                        return 1, response, {'error':str(e1)}     
+            elif response.status_code in [499, 500, 503]:
+                continue
+            else:
+                return 1, response, response
+        except Exception as e2:
+            return 1, {'error':str(e2)}, {'error':str(e2)}
+        
+def v1_getManufacturerOrSupplier(mainDict):
+    # CALL API
+    body = PIM_buildBodyGetManufacturerOrSupplier(mainDict['parsedText'], mainDict['inputProductName'], mainDict['lsBase64'])  
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
+    # SAVE RESULT
+    if api_error == 0: return rescontent['manufacturer_or_supplier'], rescontent['reason'] 
+    else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_getManufacturerOrSupplier')
+
+def v1_searchComposition(mainDict):
+    if mainDict['inputWebSearch']==True:
+        # BUILD BODY + CALL API
+        inputProductName = mainDict['inputProductName']
+        gpt_manufacturer_or_supplier_answer = mainDict['gpt_manufacturer_or_supplier_answer']
+        question = f"""
+        What are the COMPOSITIONS of [{inputProductName}] from manufacturer [{gpt_manufacturer_or_supplier_answer}], like what is it made from? or the raw material used?
+        If there is no information available, Just return "No information available on Internet", do not list any composition, ingredient, or raw material.
+        If there is information avaliable, list the composition,ingredient, or raw material used in the product.
+        Use exact product name [{inputProductName}] and manufacturer name [{gpt_manufacturer_or_supplier_answer}] in the search.
+        """
+        body = {"model": "gpt-4o-mini-search-preview",
+                'web_search_options': {'search_context_size': 'low'},
+                "messages": [{'role': 'user', 
+                            'content': question}],
+                "max_tokens": 4096*2}
+        url = "https://ancient-almeda-personal-personal-22e19704.koyeb.app/openai"
+        params = {"apikey": os.getenv('OPENAI_API_KEY')}
+        api_error, response, rescontent = v1_customCallAPI(url, body, headers={}, params=params)
+        # SAVE RESULT
+        if api_error == 0: return rescontent
+        else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_searchComposition')
+    else: return ''
+
+def v1_searchFunction(mainDict):
+    if mainDict['inputWebSearch']==True:
+        # BUILD BODY + CALL API
+        inputProductName = mainDict['inputProductName']
+        businessLineStr = mainDict['businessLineStr']
+        question = f"""
+        Give me as much information as possible about the FUNCTIONS of [{inputProductName}] utilization in the [{businessLineStr}] industries
+        If there is no information available, Just return "No information available on Internet"
+        If there is information avaliable, then output data.
+        Use exact product name [{inputProductName}] in the search.
+        """
+        body = {"model": "gpt-4o-mini-search-preview",
+                'web_search_options': {'search_context_size': 'low'},
+                "messages": [{'role': 'user', 
+                            'content': question}],
+                "max_tokens": 4096*2}
+        url = "https://ancient-almeda-personal-personal-22e19704.koyeb.app/openai"
+        params = {"apikey": os.getenv('OPENAI_API_KEY')}
+        api_error, response, rescontent = v1_customCallAPI(url, body, headers={}, params=params)
+        # SAVE RESULT
+        if api_error == 0: return rescontent
+        else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_searchFunction')
+    else: return ''
+
+def v1_searchApplication(mainDict):
+    if mainDict['inputWebSearch']==True:
+        # BUILD BODY + CALL API
+        inputProductName = mainDict['inputProductName']
+        businessLineStr = mainDict['businessLineStr']
+        question = f"""
+        Give me as much information as possible about the APPLICATIONS of [{inputProductName}] utilization in the [{businessLineStr}] industries
+        If there is no information available, Just return "No information available on Internet"
+        If there is information avaliable, then output data.
+        Use exact product name [{inputProductName}] in the search.
+        """
+        body = {"model": "gpt-4o-mini-search-preview",
+                'web_search_options': {'search_context_size': 'low'},
+                "messages": [{'role': 'user', 
+                            'content': question}],
+                "max_tokens": 4096*2}
+        url = "https://ancient-almeda-personal-personal-22e19704.koyeb.app/openai"
+        params = {"apikey": os.getenv('OPENAI_API_KEY')}
+        api_error, response, rescontent = v1_customCallAPI(url, body, headers={}, params=params)
+        # SAVE RESULT
+        if api_error == 0: return rescontent
+        else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_searchApplication')
+    else: return ''
+
+def v1_combineWebSearch(mainDict):
+    if mainDict['inputWebSearch']==True:
+        searched_text = ''
+        searched_text += '### COMPOSITIONS WEB SEARCH RESULTS ###\n'
+        searched_text += mainDict['gpt_composition_search_answer'] + '\n\n\n'
+        searched_text += '### FUNCTIONS WEB_SEARCH RESULTS ###\n'
+        searched_text += mainDict['gpt_function_search_answer'] + '\n\n\n'
+        searched_text += '### APPLICATIONS WEB_SEARCH RESULTS ###\n'
+        searched_text += mainDict['gpt_application_search_answer'] + '\n\n\n'
+        return searched_text
+    else:
+        return ''
+
+def v1_getTextOfThisProductOnly(mainDict):
+    # CALL API
+    body = PIM_buildBodyGetProductInfo(mainDict['parsedText'], 
+                                       mainDict['inputProductName'], 
+                                       mainDict['gpt_manufacturer_or_supplier_answer'], 
+                                       mainDict['lsBase64'], 
+                                       mainDict['gpt_combined_web_search'])
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
+    # SAVE RESULT
+    if api_error == 0: return str(rescontent)
+    else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_getTextOfThisProductOnly')
+
+def v1_selectIndustryCluster(mainDict):
+    # CALL API
+    body = PIM_buildBodySelectIndustryCluster(mainDict['gpt_text_of_this_product_only_answer'], 
+                                              mainDict['inputProductName'],
+                                              mainDict['gpt_manufacturer_or_supplier_answer'],
+                                              mainDict['lsBase64'],
+                                              mainDict['inputBusinessLine'],
+                                              mainDict['gpt_combined_web_search'])
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
+    # SAVE RESULT
+    if api_error == 0: return rescontent['industry_cluster'], rescontent['reason']
+    else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_selectIndustryCluster')
+
+def v1_selectCompositions(mainDict):
+    # CALL API
+    body = PIM_buildBodySelectComposition(mainDict['gpt_text_of_this_product_only_answer'], 
+                                          mainDict['inputProductName'],
+                                          mainDict['gpt_manufacturer_or_supplier_answer'],
+                                          mainDict['lsBase64'],
+                                          mainDict['inputBusinessLine'],
+                                          mainDict['gpt_combined_web_search'])
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
+    # SAVE RESULT
+    if api_error == 0:
+        if mainDict['inputBusinessLine'] == 'PCI': return [k for k, v in rescontent.items() if v is True], rescontent['reason']
+        else: return rescontent['compositions'], rescontent['reason']
+    else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_selectCompositions')
+
+def v1_selectFunctions(mainDict):
+    # CALL API
+    body = PIM_buildBodySelectFunction(mainDict['gpt_text_of_this_product_only_answer'], 
+                                       mainDict['inputProductName'], 
+                                       mainDict['gpt_manufacturer_or_supplier_answer'], 
+                                       mainDict['lsBase64'], 
+                                       mainDict['inputBusinessLine'], 
+                                       mainDict['gpt_combined_web_search'])
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
+    # SAVE RESULT
+    if api_error == 0: return [k for k, v in rescontent.items() if v is True], rescontent['reason']
+    else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_selectFunctions')
+
+def v1_selectApplications(mainDict):
+    # CALL API
+    body = PIM_buildBodySelectApplication(mainDict['gpt_text_of_this_product_only_answer'], 
+                                          mainDict['inputProductName'], 
+                                          mainDict['gpt_manufacturer_or_supplier_answer'], 
+                                          mainDict['lsBase64'], 
+                                          mainDict['inputBusinessLine'], 
+                                          mainDict['gpt_combined_web_search'])
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
+    # SAVE RESULT
+    if api_error == 0: return [k for k, v in rescontent.items() if v is True], rescontent['reason']
+    else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_selectApplications')
+
+def v1_findCASNumber(mainDict):
+    # CALL API
+    body = PIM_buildBodyFindCASNumber(mainDict['gpt_text_of_this_product_only_answer'], 
+                                      mainDict['inputProductName'], 
+                                      mainDict['gpt_manufacturer_or_supplier_answer'], 
+                                      mainDict['lsBase64'], 
+                                      mainDict['gpt_combined_web_search'])
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
+    # SAVE RESULT
+    if api_error == 0: return rescontent['cas_number']
+    else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_findCASNumber')
+
+def v1_findPhysicalForm(mainDict):
+    # CALL API
+    body = PIM_buildBodyFindPhysicalForm(mainDict['gpt_text_of_this_product_only_answer'], 
+                                         mainDict['inputProductName'], 
+                                         mainDict['gpt_manufacturer_or_supplier_answer'], 
+                                         mainDict['lsBase64'], 
+                                         mainDict['inputBusinessLine'], 
+                                         mainDict['gpt_combined_web_search'])
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
+    # SAVE RESULT
+    if api_error == 0: return rescontent['physical_form'], rescontent['reason']
+    else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_findPhysicalForm')
+
+
+def v1_genProductDescription(mainDict):
+    # CALL API
+    body = PIM_buildBodyGetProductDescription(mainDict['gpt_text_of_this_product_only_answer'], 
+                                              mainDict['inputProductName'], 
+                                              mainDict['gpt_manufacturer_or_supplier_answer'], 
+                                              mainDict['lsBase64'], 
+                                              mainDict['gpt_combined_web_search'])
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
+    # SAVE RESULT
+    if api_error == 0: return rescontent['product_description']
+    else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_genProductDescription')
+
+def v1_getRecommendedDosage(mainDict):
+    # CALL API
+    body = PIM_buildBodyGetRecommendedDosage(mainDict['gpt_text_of_this_product_only_answer'], 
+                                             mainDict['inputProductName'], 
+                                             mainDict['gpt_manufacturer_or_supplier_answer'], 
+                                             mainDict['lsBase64'], 
+                                             mainDict['gpt_combined_web_search'])
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
+    # SAVE RESULT
+    if api_error == 0: return rescontent['recommended_dosage'], rescontent['reason']
+    else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_getRecommendedDosage')
+
+def v1_selectCertifications(mainDict):
+    # CALL API
+    body = PIM_buildBodySelectCertifications(mainDict['gpt_text_of_this_product_only_answer'], 
+                                             mainDict['inputProductName'], 
+                                             mainDict['gpt_manufacturer_or_supplier_answer'], 
+                                             mainDict['lsBase64'], 
+                                             mainDict['inputBusinessLine'], 
+                                             mainDict['gpt_combined_web_search'])
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
+    # SAVE RESULT
+    if api_error == 0: return rescontent['certifications'], rescontent['reason']
+    else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_selectCertifications')
+
+def v1_selectClaims(mainDict):
+    # CALL API
+    body = PIM_buildBodySelectClaims(mainDict['gpt_text_of_this_product_only_answer'], 
+                                     mainDict['inputProductName'], 
+                                     mainDict['gpt_manufacturer_or_supplier_answer'], 
+                                     mainDict['lsBase64'], 
+                                     mainDict['inputBusinessLine'], 
+                                     mainDict['gpt_combined_web_search'])
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
+    # SAVE RESULT
+    if api_error == 0: return [k for k, v in rescontent.items() if v is True], rescontent['reason']
+    else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_selectClaims')
+
+def v1_selectHealthBenefits(mainDict):
+    if mainDict['inputBusinessLine']=='FBI':
+        selection_list = ["Dietary Fiber",
+                          "Food Culture",
+                          "Fortification/Nutraceutical",
+                          "Probiotic/Postbiotic",
+                          "Protein"]
+        lsFunctionsStr = str(mainDict['gpt_select_functions_answer'])
+        if any(item in lsFunctionsStr for item in selection_list):
+            # CALL API
+            body = PIM_buildBodySelectHealthBenefits(mainDict['gpt_text_of_this_product_only_answer'], 
+                                                        mainDict['inputProductName'], 
+                                                        mainDict['gpt_manufacturer_or_supplier_answer'], 
+                                                        mainDict['lsBase64'], 
+                                                        mainDict['gpt_combined_web_search'])
+            url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+            headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+            api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
+            # SAVE RESULT
+            if api_error == 0: return rescontent['rec_health_benefits'], rescontent['reason']
+            else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_selectHealthBenefits')
+        else:
+            return None, None
+    return None, None
