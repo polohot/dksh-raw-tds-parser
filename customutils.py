@@ -878,8 +878,9 @@ def PIM_buildBodySelectApplication(parsed_text, product_name, manufacturer_name,
     # SYSTEM PROMPT
     system_prompt = f"""
     You are an expert data‐flagging assistant for technical product dossiers.
-    Analyze only the details provided for product “{product_name}” from manufacturer “{manufacturer_name}” (including parsed text, any images, and optional searched text) 
-    and determine, for each application category in the selection list, whether the product is related to that application.
+    Analyze only the details provided for product “{product_name}” from manufacturer “{manufacturer_name}” (including parsed text, any images, and optional searched text).
+    The product name might be the specific brand-name, in that case, you can determine the application from the ingredients/composition instead.
+    Use the given documentation combine with your knowledge to determine, for each application category in the selection list, whether the product is related to that application.
     Also give reason or example why you select each of the application.
 
     Output format:
