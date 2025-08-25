@@ -3,6 +3,9 @@
 **Use AI to parser PDF into specific format**
 
 ```
+[V0.8-alpha] - 2025-08-25
+- Adding MainAPI.py for API UAT
+
 [V0.7-alpha] - 2025-08-20
 - Adding page "(3) Gen PIM Template - No Search.py" - remove search function
 

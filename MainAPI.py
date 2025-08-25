@@ -50,6 +50,83 @@ async def func3() -> int:
 # HELPER - ACTUAL #
 ###################
 
+async def v1_run_stage3_parallel(mainDict):
+    """Run Stage 3 search functions in parallel using threads."""
+    comp_task = asyncio.to_thread(v1_searchComposition, mainDict)
+    func_task = asyncio.to_thread(v1_searchFunction, mainDict)
+    appl_task = asyncio.to_thread(v1_searchApplication, mainDict)
+    comp_res, func_res, appl_res = await asyncio.gather(
+        comp_task, func_task, appl_task, return_exceptions=True
+    )
+    # Normalize exceptions into empty strings (or handle differently if you prefer)
+    if isinstance(comp_res, Exception): comp_res = ''
+    if isinstance(func_res, Exception): func_res = ''
+    if isinstance(appl_res, Exception): appl_res = ''
+    return comp_res, func_res, appl_res
+
+
+async def run_stage5_parallel(mainDict):
+    """Run Stage 5 extraction functions in parallel using threads."""
+    tasks = await asyncio.gather(
+        asyncio.to_thread(v1_selectIndustryCluster, mainDict),
+        asyncio.to_thread(v1_selectCompositions, mainDict),
+        asyncio.to_thread(v1_selectFunctions, mainDict),
+        asyncio.to_thread(v1_selectApplications, mainDict),
+        asyncio.to_thread(v1_findCASNumber, mainDict),
+        asyncio.to_thread(v1_findPhysicalForm, mainDict),
+        asyncio.to_thread(v1_genProductDescription, mainDict),
+        asyncio.to_thread(v1_getRecommendedDosage, mainDict),
+        asyncio.to_thread(v1_selectCertifications, mainDict),
+        asyncio.to_thread(v1_selectClaims, mainDict),
+        asyncio.to_thread(v1_selectHealthBenefits, mainDict),
+        return_exceptions=True)
+
+    # Unpack and normalize exceptions
+    (
+        industry_cluster,
+        compositions,
+        functions,
+        applications,
+        cas_number,
+        physical_form,
+        product_description,
+        recommended_dosage,
+        certifications,
+        claims,
+        health_benefits,
+    ) = tasks
+
+    def safe_unpack(val, n=2):
+        if isinstance(val, Exception):
+            return ("", "") if n == 2 else ""
+        return val
+
+    # Unpack properly (functions that return tuple vs single value)
+    industry_cluster = safe_unpack(industry_cluster, 2)
+    compositions     = safe_unpack(compositions, 2)
+    functions        = safe_unpack(functions, 2)
+    applications     = safe_unpack(applications, 2)
+    cas_number       = safe_unpack(cas_number, 1)
+    physical_form    = safe_unpack(physical_form, 2)
+    product_description = safe_unpack(product_description, 1)
+    recommended_dosage  = safe_unpack(recommended_dosage, 2)
+    certifications      = safe_unpack(certifications, 2)
+    claims              = safe_unpack(claims, 2)
+    health_benefits     = safe_unpack(health_benefits, 2)
+
+    return (
+        industry_cluster,
+        compositions,
+        functions,
+        applications,
+        cas_number,
+        physical_form,
+        product_description,
+        recommended_dosage,
+        certifications,
+        claims,
+        health_benefits
+    )
 
 
 
@@ -73,73 +150,89 @@ async def wait_parallel():
     time1, time2, time3 = await asyncio.gather(func1(), func2(), func3())
     return {"time1": time1, "time2": time2, "time3": time3}
 
-@app.post("/v1_parse_pim_fields_series")
-async def v1_parse_pim_fields_series(
+@app.post("/v1_parse_pim_fields")
+async def v1_parse_pim_fields(
     inputProductName: Annotated[str, Form(...)],
     inputBusinessLine: Annotated[str, Form(...)],
     inputListDocumentation: Annotated[List[UploadFile], File(...)],
     inputWebSearch: Annotated[bool, Form(...)],
-    inputSecret1: Annotated[str, Form(...)]):
+    inputParallel: Annotated[bool, Form(...)],
+    inputOpenAIAPIKey: Annotated[str, Form(...)]):
+    try:
+        # TIME START
+        time_start = datetime.datetime.now()
 
-    if inputSecret1 != os.getenv('CUSTOM_SECRET1'):
-        raise HTTPException(status_code=403, detail="Forbidden")
-    else:
-        try:
-            # TIME START
-            timeStart = datetime.datetime.now()
+        ####################
+        # STAGE 0 - SERIES #
+        ####################
+        # SAVE UPLOADED FIELS TEMPORARILY
+        stg_lsTempFile = v1_saveUploadFilesTemporarly(inputListDocumentation)
+        # BUSINESS LINE
+        if inputBusinessLine == 'FBI': stg_businessLineStr = "Food & Beverage"
+        elif inputBusinessLine == 'PCI': stg_businessLineStr = "Personal Care"
+        elif inputBusinessLine == 'PHI': stg_businessLineStr = "Pharma & Healthcare"
+        elif inputBusinessLine == 'SCI': stg_businessLineStr = "Specialty Chemicals"
+        # INIT DICT
+        mainDict = {
+            'inputProductName': inputProductName,
+            'inputBusinessLine': inputBusinessLine,
+            'inputListDocumentation': inputListDocumentation,
+            'inputWebSearch': inputWebSearch,
+            'inputParallel': inputParallel,
+            'inputOpenAIAPIKey': inputOpenAIAPIKey,
+            'stg_businessLineStr': stg_businessLineStr,
+            'stg_lsTempFile': stg_lsTempFile}
+        # PARSED_TO_TEXT
+        stg_lsParsedText = v1_parsePDF(stg_lsTempFile)
+        mainDict['stg_lsParsedText'] = stg_lsParsedText
+        mainDict['stg_parsedText'] = "\n\n".join(stg_lsParsedText)
+        # READ_PDF_TO_BASE64
+        stg_lsBase64 = v1_readPDFToBase64(stg_lsTempFile)
+        mainDict['stg_lsBase64'] = stg_lsBase64
 
-            ####################
-            # STAGE 0 - SERIES #
-            ####################
-            # SAVE UPLOADED FIELS TEMPORARILY
-            lsTempFile = v1_saveUploadFilesTemporarly(inputListDocumentation)
-            # BUSINESS LINE
-            if inputBusinessLine == 'FBI': businessLineStr = "Food & Beverage"
-            elif inputBusinessLine == 'PCI': businessLineStr = "Personal Care"
-            elif inputBusinessLine == 'PHI': businessLineStr = "Pharma & Healthcare"
-            elif inputBusinessLine == 'SCI': businessLineStr = "Specialty Chemicals"
-            # INIT DICT
-            mainDict = {
-                'inputProductName': inputProductName,
-                'inputBusinessLine': inputBusinessLine,            
-                'businessLineStr': businessLineStr,
-                'inputListDocumentation': inputListDocumentation,
-                'inputWebSearch': inputWebSearch,
-                'lsTempFile': lsTempFile}
+        ####################
+        # STAGE 1 - SERIES #
+        ####################
+        mainDict = v1_addFieldsMainDict(mainDict)
+        mainDict['gpt_manufacturer_or_supplier_answer'], mainDict['gpt_manufacturer_or_supplier_reason'] = v1_getManufacturerOrSupplier(mainDict)
 
-            ######################
-            # STAGE 1 - PARALLEL #
-            ######################
-            # PARSED_TO_TEXT
-            lsParsedText = v1_parsePDF(lsTempFile)
-            mainDict['lsParsedText'] = lsParsedText
-            mainDict['parsedText'] = "\n\n".join(lsParsedText)
-            # READ_PDF_TO_BASE64
-            lsBase64 = v1_readPDFToBase64(lsTempFile)
-            mainDict['lsBase64'] = lsBase64
-
-            ####################
-            # STAGE 2 - SERIES #
-            ####################
-            mainDict = v1_addFieldsMainDict(mainDict)
-            mainDict['gpt_manufacturer_or_supplier_answer'], mainDict['gpt_manufacturer_or_supplier_reason'] = v1_getManufacturerOrSupplier(mainDict)
-
-            ######################
-            # STAGE 3 - PARALLEL #
-            ######################
+        ######################
+        # STAGE 3 - PARALLEL #
+        ######################
+        if mainDict['inputParallel'] == True:
+            comp_res, func_res, appl_res = await v1_run_stage3_parallel(mainDict)
+            mainDict['gpt_composition_search_answer'] = comp_res
+            mainDict['gpt_function_search_answer']   = func_res
+            mainDict['gpt_application_search_answer'] = appl_res
+        else:
             mainDict['gpt_composition_search_answer'] = v1_searchComposition(mainDict)
             mainDict['gpt_function_search_answer'] = v1_searchFunction(mainDict)
             mainDict['gpt_application_search_answer'] = v1_searchApplication(mainDict)
 
-            ####################
-            # STAGE 4 - SERIES #
-            ####################        
-            mainDict['gpt_combined_web_search'] = v1_combineWebSearch(mainDict)
-            mainDict['gpt_text_of_this_product_only_answer'] = v1_getTextOfThisProductOnly(mainDict)
+        # ####################
+        # # STAGE 4 - SERIES #
+        # ####################        
+        mainDict['gpt_combined_web_search'] = v1_combineWebSearch(mainDict)
+        mainDict['gpt_text_of_this_product_only_answer'] = v1_getTextOfThisProductOnly(mainDict)
 
-            ######################
-            # STAGE 5 - PARALLEL #
-            ######################
+        # ######################
+        # # STAGE 5 - PARALLEL #
+        # ######################
+        if mainDict['inputParallel'] == True:
+            (
+                (mainDict['gpt_select_industry_cluster_answer'], mainDict['gpt_select_industry_cluster_reason']),
+                (mainDict['gpt_select_compositions_answer'], mainDict['gpt_select_compositions_reason']),
+                (mainDict['gpt_select_functions_answer'], mainDict['gpt_select_functions_reason']),
+                (mainDict['gpt_select_applications_answer'], mainDict['gpt_select_applications_reason']),
+                mainDict['gpt_cas_from_doc_answer'],
+                (mainDict['gpt_physical_form_answer'], mainDict['gpt_physical_form_reason']),
+                mainDict['gpt_gen_product_description'],
+                (mainDict['gpt_recommended_dosage_answer'], mainDict['gpt_recommended_dosage_reason']),
+                (mainDict['gpt_certifications_answer'], mainDict['gpt_certifications_reason']),
+                (mainDict['gpt_claims_answer'], mainDict['gpt_claims_reason']),
+                (mainDict['gpt_health_benefits_answer'], mainDict['gpt_health_benefits_reason']),
+            ) = await run_stage5_parallel(mainDict)
+        else:
             mainDict['gpt_select_industry_cluster_answer'], mainDict['gpt_select_industry_cluster_reason'] = v1_selectIndustryCluster(mainDict)
             mainDict['gpt_select_compositions_answer'], mainDict['gpt_select_compositions_reason'] = v1_selectCompositions(mainDict)
             mainDict['gpt_select_functions_answer'], mainDict['gpt_select_functions_reason'] = v1_selectFunctions(mainDict)
@@ -152,19 +245,20 @@ async def v1_parse_pim_fields_series(
             mainDict['gpt_claims_answer'], mainDict['gpt_claims_reason'] = v1_selectClaims(mainDict)
             mainDict['gpt_health_benefits_answer'], mainDict['gpt_health_benefits_reason'] = v1_selectHealthBenefits(mainDict)
 
-            # TIME_END
-            timeEnd = datetime.datetime.now()
-            mainDict['timeStart'] = timeStart
-            mainDict['timeEnd'] = timeEnd
-            mainDict['timeDuration'] = mainDict['timeEnd'] - mainDict['timeStart']
+        # FINAL
+        time_end = datetime.datetime.now()
+        mainDict['time_start'] = time_start
+        mainDict['time_end'] = time_end
+        mainDict['time_duration'] = mainDict['time_end'] - mainDict['time_start']
+        mainDict['stg_lsTempFile'] = 'HIDDEN'
+        mainDict['stg_lsParsedText'] = 'HIDDEN'
+        mainDict['stg_parsedText'] = 'HIDDEN'
+        mainDict['stg_lsBase64'] = 'HIDDEN'
+        mainDict['gpt_text_of_this_product_only_answer'] = 'HIDDEN'
+        return mainDict
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-            # TMP
-            mainDict['inputListDocumentation'] = None
-            mainDict['lsParsedText'] = None
-            mainDict['parsedText'] = None
-            mainDict['lsBase64'] = None
-            mainDict['gpt_text_of_this_product_only_answer'] = None
 
-            return mainDict
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+# @app.post("/v1_parse_pim_fields_parallel")
+# async def v1_parse_pim_fields_parallel(

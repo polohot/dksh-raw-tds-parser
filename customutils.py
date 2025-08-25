@@ -492,11 +492,18 @@ def buildCompositionOutputBody(parsed_text, product_name, manufacturer_name, ls_
 def PIM_buildBodyGetProductInfo(parsed_text, product_name, manufacturer_name, ls_base64, searched_text=''):
     # SYSTEM PROMPT
     system_prompt = f"""
+        # INSTRUCTION #
         You are a data extraction agent that processes technical documents and extracts information.
         Based on the provided text and images, focus only on product [{product_name}] from manufacturer [{manufacturer_name}].
         Some time the given data will have multiple products, but you only need to focus on [{product_name}].
-        Do not do summarization on the text, Just pull the raw data.
+        Do not do summarization on the text, we need the full raw data of this product.
         If you found image related to the product, parse the image data as much detail as possible and include it in the output.
+
+        # IMPORTANT NOTE #
+        This text will be the representation of the whole document for this product to input to the next llm step, 
+        so make sure the data is complete and accurate.
+
+        # OUTPUT FORMAT #
         Output in markdown format.
     """
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
@@ -2043,20 +2050,20 @@ def v1_saveUploadFilesTemporarly(inputListDocumentation):
             lsTempFile.append(tmpdict)
     return lsTempFile
 
-def v1_parsePDF(lsTempFile):
-    lsParsedText = []
-    for tempFile in lsTempFile:
+def v1_parsePDF(stg_lsTempFile):
+    stg_lsParsedText = []
+    for tempFile in stg_lsTempFile:
         try:
             markdownText = azureDocumentIntelligenceParsePDF(tempFile['temp_path'], os.getenv('AZURE_DOCUMENT_INTELLIGENCE_API_KEY'))
             markdownText = f"TEXT_FROM_FILE_NAME:{tempFile['filename']} \n\n" + markdownText
-            lsParsedText.append(markdownText)
+            stg_lsParsedText.append(markdownText)
         except:
             pass
-    return lsParsedText
+    return stg_lsParsedText
 
-def v1_readPDFToBase64(lsTempFile):
-    lsBase64 = []
-    for tempFile in lsTempFile:
+def v1_readPDFToBase64(stg_lsTempFile):
+    stg_lsBase64 = []
+    for tempFile in stg_lsTempFile:
         try:
             doc = fitz.open(tempFile['temp_path'])
             for page_number in range(len(doc)):
@@ -2067,12 +2074,12 @@ def v1_readPDFToBase64(lsTempFile):
                     buffered = io.BytesIO()
                     img.save(buffered, format="PNG")
                     img_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
-                    lsBase64.append(img_base64)
+                    stg_lsBase64.append(img_base64)
                 except:
                     pass
         except:
             pass
-    return lsBase64
+    return stg_lsBase64
 
 def v1_addFieldsMainDict(mainDict):
     mainDict['gpt_manufacturer_or_supplier_answer'] = None
@@ -2133,14 +2140,18 @@ def v1_customCallAPI(url, body, headers={}, params={}):
             return 1, {'error':str(e2)}, {'error':str(e2)}
         
 def v1_getManufacturerOrSupplier(mainDict):
+    stg_parsedText = mainDict['stg_parsedText']
+    inputProductName = mainDict['inputProductName']
+    stg_lsBase64 = []
     # CALL API
-    body = PIM_buildBodyGetManufacturerOrSupplier(mainDict['parsedText'], mainDict['inputProductName'], mainDict['lsBase64'])  
+    body = PIM_buildBodyGetManufacturerOrSupplier(stg_parsedText, inputProductName, stg_lsBase64)  
     url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
     headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
     api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
     # SAVE RESULT
     if api_error == 0: return rescontent['manufacturer_or_supplier'], rescontent['reason'] 
-    else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_getManufacturerOrSupplier')
+    else: return response, response
+    #else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_getManufacturerOrSupplier')
 
 def v1_searchComposition(mainDict):
     if mainDict['inputWebSearch']==True:
@@ -2170,9 +2181,9 @@ def v1_searchFunction(mainDict):
     if mainDict['inputWebSearch']==True:
         # BUILD BODY + CALL API
         inputProductName = mainDict['inputProductName']
-        businessLineStr = mainDict['businessLineStr']
+        stg_businessLineStr = mainDict['stg_businessLineStr']
         question = f"""
-        Give me as much information as possible about the FUNCTIONS of [{inputProductName}] utilization in the [{businessLineStr}] industries
+        Give me as much information as possible about the FUNCTIONS of [{inputProductName}] utilization in the [{stg_businessLineStr}] industries
         If there is no information available, Just return "No information available on Internet"
         If there is information avaliable, then output data.
         Use exact product name [{inputProductName}] in the search.
@@ -2194,9 +2205,9 @@ def v1_searchApplication(mainDict):
     if mainDict['inputWebSearch']==True:
         # BUILD BODY + CALL API
         inputProductName = mainDict['inputProductName']
-        businessLineStr = mainDict['businessLineStr']
+        stg_businessLineStr = mainDict['stg_businessLineStr']
         question = f"""
-        Give me as much information as possible about the APPLICATIONS of [{inputProductName}] utilization in the [{businessLineStr}] industries
+        Give me as much information as possible about the APPLICATIONS of [{inputProductName}] utilization in the [{stg_businessLineStr}] industries
         If there is no information available, Just return "No information available on Internet"
         If there is information avaliable, then output data.
         Use exact product name [{inputProductName}] in the search.
@@ -2229,10 +2240,10 @@ def v1_combineWebSearch(mainDict):
 
 def v1_getTextOfThisProductOnly(mainDict):
     # CALL API
-    body = PIM_buildBodyGetProductInfo(mainDict['parsedText'], 
+    body = PIM_buildBodyGetProductInfo(mainDict['stg_parsedText'], 
                                        mainDict['inputProductName'], 
                                        mainDict['gpt_manufacturer_or_supplier_answer'], 
-                                       mainDict['lsBase64'], 
+                                       mainDict['stg_lsBase64'], 
                                        mainDict['gpt_combined_web_search'])
     url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
     headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
@@ -2243,10 +2254,11 @@ def v1_getTextOfThisProductOnly(mainDict):
 
 def v1_selectIndustryCluster(mainDict):
     # CALL API
+    lsBase64 = []
     body = PIM_buildBodySelectIndustryCluster(mainDict['gpt_text_of_this_product_only_answer'], 
                                               mainDict['inputProductName'],
                                               mainDict['gpt_manufacturer_or_supplier_answer'],
-                                              mainDict['lsBase64'],
+                                              lsBase64,
                                               mainDict['inputBusinessLine'],
                                               mainDict['gpt_combined_web_search'])
     url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
@@ -2258,10 +2270,11 @@ def v1_selectIndustryCluster(mainDict):
 
 def v1_selectCompositions(mainDict):
     # CALL API
+    lsBase64 = []
     body = PIM_buildBodySelectComposition(mainDict['gpt_text_of_this_product_only_answer'], 
                                           mainDict['inputProductName'],
                                           mainDict['gpt_manufacturer_or_supplier_answer'],
-                                          mainDict['lsBase64'],
+                                          lsBase64,
                                           mainDict['inputBusinessLine'],
                                           mainDict['gpt_combined_web_search'])
     url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
@@ -2275,10 +2288,11 @@ def v1_selectCompositions(mainDict):
 
 def v1_selectFunctions(mainDict):
     # CALL API
+    lsBase64 = []
     body = PIM_buildBodySelectFunction(mainDict['gpt_text_of_this_product_only_answer'], 
                                        mainDict['inputProductName'], 
                                        mainDict['gpt_manufacturer_or_supplier_answer'], 
-                                       mainDict['lsBase64'], 
+                                       lsBase64, 
                                        mainDict['inputBusinessLine'], 
                                        mainDict['gpt_combined_web_search'])
     url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
@@ -2290,10 +2304,11 @@ def v1_selectFunctions(mainDict):
 
 def v1_selectApplications(mainDict):
     # CALL API
+    lsBase64 = []
     body = PIM_buildBodySelectApplication(mainDict['gpt_text_of_this_product_only_answer'], 
                                           mainDict['inputProductName'], 
                                           mainDict['gpt_manufacturer_or_supplier_answer'], 
-                                          mainDict['lsBase64'], 
+                                          lsBase64, 
                                           mainDict['inputBusinessLine'], 
                                           mainDict['gpt_combined_web_search'])
     url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
@@ -2305,10 +2320,11 @@ def v1_selectApplications(mainDict):
 
 def v1_findCASNumber(mainDict):
     # CALL API
+    lsBase64 = []
     body = PIM_buildBodyFindCASNumber(mainDict['gpt_text_of_this_product_only_answer'], 
                                       mainDict['inputProductName'], 
                                       mainDict['gpt_manufacturer_or_supplier_answer'], 
-                                      mainDict['lsBase64'], 
+                                      lsBase64, 
                                       mainDict['gpt_combined_web_search'])
     url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
     headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
@@ -2319,10 +2335,11 @@ def v1_findCASNumber(mainDict):
 
 def v1_findPhysicalForm(mainDict):
     # CALL API
+    lsBase64 = []
     body = PIM_buildBodyFindPhysicalForm(mainDict['gpt_text_of_this_product_only_answer'], 
                                          mainDict['inputProductName'], 
                                          mainDict['gpt_manufacturer_or_supplier_answer'], 
-                                         mainDict['lsBase64'], 
+                                         lsBase64, 
                                          mainDict['inputBusinessLine'], 
                                          mainDict['gpt_combined_web_search'])
     url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
@@ -2335,10 +2352,11 @@ def v1_findPhysicalForm(mainDict):
 
 def v1_genProductDescription(mainDict):
     # CALL API
+    lsBase64 = []
     body = PIM_buildBodyGetProductDescription(mainDict['gpt_text_of_this_product_only_answer'], 
                                               mainDict['inputProductName'], 
                                               mainDict['gpt_manufacturer_or_supplier_answer'], 
-                                              mainDict['lsBase64'], 
+                                              lsBase64, 
                                               mainDict['gpt_combined_web_search'])
     url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
     headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
@@ -2349,10 +2367,11 @@ def v1_genProductDescription(mainDict):
 
 def v1_getRecommendedDosage(mainDict):
     # CALL API
+    lsBase64 = []
     body = PIM_buildBodyGetRecommendedDosage(mainDict['gpt_text_of_this_product_only_answer'], 
                                              mainDict['inputProductName'], 
                                              mainDict['gpt_manufacturer_or_supplier_answer'], 
-                                             mainDict['lsBase64'], 
+                                             lsBase64, 
                                              mainDict['gpt_combined_web_search'])
     url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
     headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
@@ -2363,10 +2382,11 @@ def v1_getRecommendedDosage(mainDict):
 
 def v1_selectCertifications(mainDict):
     # CALL API
+    lsBase64 = []
     body = PIM_buildBodySelectCertifications(mainDict['gpt_text_of_this_product_only_answer'], 
                                              mainDict['inputProductName'], 
                                              mainDict['gpt_manufacturer_or_supplier_answer'], 
-                                             mainDict['lsBase64'], 
+                                             lsBase64, 
                                              mainDict['inputBusinessLine'], 
                                              mainDict['gpt_combined_web_search'])
     url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
@@ -2378,10 +2398,11 @@ def v1_selectCertifications(mainDict):
 
 def v1_selectClaims(mainDict):
     # CALL API
+    lsBase64 = []
     body = PIM_buildBodySelectClaims(mainDict['gpt_text_of_this_product_only_answer'], 
                                      mainDict['inputProductName'], 
                                      mainDict['gpt_manufacturer_or_supplier_answer'], 
-                                     mainDict['lsBase64'], 
+                                     lsBase64, 
                                      mainDict['inputBusinessLine'], 
                                      mainDict['gpt_combined_web_search'])
     url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
@@ -2401,11 +2422,12 @@ def v1_selectHealthBenefits(mainDict):
         lsFunctionsStr = str(mainDict['gpt_select_functions_answer'])
         if any(item in lsFunctionsStr for item in selection_list):
             # CALL API
+            lsBase64 = []
             body = PIM_buildBodySelectHealthBenefits(mainDict['gpt_text_of_this_product_only_answer'], 
-                                                        mainDict['inputProductName'], 
-                                                        mainDict['gpt_manufacturer_or_supplier_answer'], 
-                                                        mainDict['lsBase64'], 
-                                                        mainDict['gpt_combined_web_search'])
+                                                     mainDict['inputProductName'], 
+                                                     mainDict['gpt_manufacturer_or_supplier_answer'], 
+                                                     lsBase64, 
+                                                     mainDict['gpt_combined_web_search'])
             url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
             headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
             api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
