@@ -2146,12 +2146,12 @@ def v1_getManufacturerOrSupplier(mainDict):
     stg_lsBase64 = []
     # CALL API
     body = PIM_buildBodyGetManufacturerOrSupplier(stg_parsedText, inputProductName, stg_lsBase64)  
-    headers = {"Content-Type": "application/json", "api-key": mainDict['inputAzureOpenAIAPIKey']}
-    api_error, response, rescontent = v1_customCallAPI(mainDict['inputAzureOpenAIURL'], body, headers=headers)
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
     # SAVE RESULT
     if api_error == 0: return rescontent['manufacturer_or_supplier'], rescontent['reason'] 
-    else: return response, response
-    #else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_getManufacturerOrSupplier')
+    else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_getManufacturerOrSupplier')
 
 def v1_searchComposition(mainDict):
     if mainDict['inputWebSearch']==True:
@@ -2245,8 +2245,9 @@ def v1_getTextOfThisProductOnly(mainDict):
                                        mainDict['gpt_manufacturer_or_supplier_answer'], 
                                        mainDict['stg_lsBase64'], 
                                        mainDict['gpt_combined_web_search'])
-    headers = {"Content-Type": "application/json", "api-key": mainDict['inputAzureOpenAIAPIKey']}
-    api_error, response, rescontent = v1_customCallAPI(mainDict['inputAzureOpenAIURL'], body, headers=headers)
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
     # SAVE RESULT
     if api_error == 0: return str(rescontent)
     else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_getTextOfThisProductOnly')
@@ -2260,8 +2261,9 @@ def v1_selectIndustryCluster(mainDict):
                                               lsBase64,
                                               mainDict['inputBusinessLine'],
                                               mainDict['gpt_combined_web_search'])
-    headers = {"Content-Type": "application/json", "api-key": mainDict['inputAzureOpenAIAPIKey']}
-    api_error, response, rescontent = v1_customCallAPI(mainDict['inputAzureOpenAIURL'], body, headers=headers)
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
     # SAVE RESULT
     if api_error == 0: return rescontent['industry_cluster'], rescontent['reason']
     else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_selectIndustryCluster')
@@ -2275,8 +2277,9 @@ def v1_selectCompositions(mainDict):
                                           lsBase64,
                                           mainDict['inputBusinessLine'],
                                           mainDict['gpt_combined_web_search'])
-    headers = {"Content-Type": "application/json", "api-key": mainDict['inputAzureOpenAIAPIKey']}
-    api_error, response, rescontent = v1_customCallAPI(mainDict['inputAzureOpenAIURL'], body, headers=headers)
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
     # SAVE RESULT
     if api_error == 0:
         if mainDict['inputBusinessLine'] == 'PCI': return [k for k, v in rescontent.items() if v is True], rescontent['reason']
@@ -2292,8 +2295,9 @@ def v1_selectFunctions(mainDict):
                                        lsBase64, 
                                        mainDict['inputBusinessLine'], 
                                        mainDict['gpt_combined_web_search'])
-    headers = {"Content-Type": "application/json", "api-key": mainDict['inputAzureOpenAIAPIKey']}
-    api_error, response, rescontent = v1_customCallAPI(mainDict['inputAzureOpenAIURL'], body, headers=headers)
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
     # SAVE RESULT
     if api_error == 0: return [k for k, v in rescontent.items() if v is True], rescontent['reason']
     else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_selectFunctions')
@@ -2307,8 +2311,9 @@ def v1_selectApplications(mainDict):
                                           lsBase64, 
                                           mainDict['inputBusinessLine'], 
                                           mainDict['gpt_combined_web_search'])
-    headers = {"Content-Type": "application/json", "api-key": mainDict['inputAzureOpenAIAPIKey']}
-    api_error, response, rescontent = v1_customCallAPI(mainDict['inputAzureOpenAIURL'], body, headers=headers)
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
     # SAVE RESULT
     if api_error == 0: return [k for k, v in rescontent.items() if v is True], rescontent['reason']
     else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_selectApplications')
@@ -2321,8 +2326,9 @@ def v1_findCASNumber(mainDict):
                                       mainDict['gpt_manufacturer_or_supplier_answer'], 
                                       lsBase64, 
                                       mainDict['gpt_combined_web_search'])
-    headers = {"Content-Type": "application/json", "api-key": mainDict['inputAzureOpenAIAPIKey']}
-    api_error, response, rescontent = v1_customCallAPI(mainDict['inputAzureOpenAIURL'], body, headers=headers)
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
     # SAVE RESULT
     if api_error == 0: return rescontent['cas_number']
     else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_findCASNumber')
@@ -2336,8 +2342,9 @@ def v1_findPhysicalForm(mainDict):
                                          lsBase64, 
                                          mainDict['inputBusinessLine'], 
                                          mainDict['gpt_combined_web_search'])
-    headers = {"Content-Type": "application/json", "api-key": mainDict['inputAzureOpenAIAPIKey']}
-    api_error, response, rescontent = v1_customCallAPI(mainDict['inputAzureOpenAIURL'], body, headers=headers)
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
     # SAVE RESULT
     if api_error == 0: return rescontent['physical_form'], rescontent['reason']
     else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_findPhysicalForm')
@@ -2351,8 +2358,9 @@ def v1_genProductDescription(mainDict):
                                               mainDict['gpt_manufacturer_or_supplier_answer'], 
                                               lsBase64, 
                                               mainDict['gpt_combined_web_search'])
-    headers = {"Content-Type": "application/json", "api-key": mainDict['inputAzureOpenAIAPIKey']}
-    api_error, response, rescontent = v1_customCallAPI(mainDict['inputAzureOpenAIURL'], body, headers=headers)
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
     # SAVE RESULT
     if api_error == 0: return rescontent['product_description']
     else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_genProductDescription')
@@ -2365,8 +2373,9 @@ def v1_getRecommendedDosage(mainDict):
                                              mainDict['gpt_manufacturer_or_supplier_answer'], 
                                              lsBase64, 
                                              mainDict['gpt_combined_web_search'])
-    headers = {"Content-Type": "application/json", "api-key": mainDict['inputAzureOpenAIAPIKey']}
-    api_error, response, rescontent = v1_customCallAPI(mainDict['inputAzureOpenAIURL'], body, headers=headers)
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
     # SAVE RESULT
     if api_error == 0: return rescontent['recommended_dosage'], rescontent['reason']
     else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_getRecommendedDosage')
@@ -2380,8 +2389,9 @@ def v1_selectCertifications(mainDict):
                                              lsBase64, 
                                              mainDict['inputBusinessLine'], 
                                              mainDict['gpt_combined_web_search'])
-    headers = {"Content-Type": "application/json", "api-key": mainDict['inputAzureOpenAIAPIKey']}
-    api_error, response, rescontent = v1_customCallAPI(mainDict['inputAzureOpenAIURL'], body, headers=headers)
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
     # SAVE RESULT
     if api_error == 0: return rescontent['certifications'], rescontent['reason']
     else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_selectCertifications')
@@ -2395,8 +2405,9 @@ def v1_selectClaims(mainDict):
                                      lsBase64, 
                                      mainDict['inputBusinessLine'], 
                                      mainDict['gpt_combined_web_search'])
-    headers = {"Content-Type": "application/json", "api-key": mainDict['inputAzureOpenAIAPIKey']}
-    api_error, response, rescontent = v1_customCallAPI(mainDict['inputAzureOpenAIURL'], body, headers=headers)
+    url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+    headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+    api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
     # SAVE RESULT
     if api_error == 0: return [k for k, v in rescontent.items() if v is True], rescontent['reason']
     else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_selectClaims')
@@ -2417,8 +2428,9 @@ def v1_selectHealthBenefits(mainDict):
                                                      mainDict['gpt_manufacturer_or_supplier_answer'], 
                                                      lsBase64, 
                                                      mainDict['gpt_combined_web_search'])
-            headers = {"Content-Type": "application/json", "api-key": mainDict['inputAzureOpenAIAPIKey']}
-            api_error, response, rescontent = v1_customCallAPI(mainDict['inputAzureOpenAIURL'], body, headers=headers)
+            url = "https://azure-ai-services-main01.cognitiveservices.azure.com/openai/deployments/azure-ai-services-gpt-4.1-mini-dksh-raw-tds-parser/chat/completions?api-version=2025-01-01-preview"
+            headers = {"Content-Type": "application/json", "api-key": os.getenv('AZURE_OPENAI_KEY')}
+            api_error, response, rescontent = v1_customCallAPI(url, body, headers=headers)
             # SAVE RESULT
             if api_error == 0: return rescontent['rec_health_benefits'], rescontent['reason']
             else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_selectHealthBenefits')
