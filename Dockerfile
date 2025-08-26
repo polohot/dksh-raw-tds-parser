@@ -8,6 +8,7 @@ WORKDIR /app
 COPY requirements.txt .
 
 # Install dependencies
+RUN pip install --upgrade pip
 RUN pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org --no-cache-dir -r requirements.txt
 
 # Copy the rest of the app
