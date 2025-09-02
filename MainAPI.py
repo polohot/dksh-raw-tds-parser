@@ -262,4 +262,4 @@ async def v1_parse_pim_fields(
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
     else:
-        raise HTTPException(status_code=999, detail='Authentication Failed')
+        return HTTPException(status_code=401)

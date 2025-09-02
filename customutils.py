@@ -627,7 +627,8 @@ def PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name,
         system_prompt = f"""
         You are an expert data‐flagging assistant for technical product dossiers. 
         Your task is to analyze only the details provided for product “{product_name}” from manufacturer “{manufacturer_name}” (including text and any images) 
-        and determine, for each composition category in the selection list, whether the product may contain substances from that category.
+        and determine, for each composition category in the selection list, 
+        whether the product composition/ingredients may contain substances from that category.
         Also give reason or example why you select each of the function.
 
         Output format:
@@ -648,7 +649,7 @@ def PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name,
             messages.append({"role": "user", 
                             "content": [{"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_img}"}}]})            
         # CONSTRUCT BODY
-        properties = {name: {"type": "boolean", "description": f"True if the product includes {name} as composition/ingredients"} for name in selection_list}
+        properties = {name: {"type": "boolean", "description": f"True if any of the the composition/ingredients has source the is from {name} category"} for name in selection_list}
         properties['reason'] = {"type": "string", "description": "Give reason or example why you select each of the compositions/ingredients"}
         required   = list(selection_list) + ['reason']
         json_schema = {
@@ -2049,6 +2050,37 @@ def v1_saveUploadFilesTemporarly(inputListDocumentation):
             shutil.copyfileobj(file.file, tmp)
             tmpdict = {"filename": file.filename, "temp_path": tmp.name}
             lsTempFile.append(tmpdict)
+    return lsTempFile
+
+def v1_saveUploadFilesTemporarlyb64(inputListDocumentation):
+    """
+    inputListDocumentation: List[str] of Base64 PDFs in *data URL* form:
+      "data:application/pdf;base64,JVBERi0xLjcKJcTl8uXr..."
+    Returns: List[{"filename": <str>, "temp_path": <str>}]
+    """
+    DATA_URL_RE = re.compile(r"^data:application/pdf;base64,(?P<b64>.+)$", re.IGNORECASE | re.DOTALL)
+    lsTempFile = []
+    for idx, item in enumerate(inputListDocumentation, start=1):
+        s = (item or "").strip()
+        m = DATA_URL_RE.match(s)
+        if not m:
+            raise ValueError(
+                f"Item {idx} is not in required format: "
+                f"must start with 'data:application/pdf;base64,'")
+        b64_payload = m.group("b64")
+        try:
+            raw = base64.b64decode(b64_payload, validate=True)
+        except Exception:
+            raise ValueError(f"Invalid Base64 payload at index {idx-1}.")
+        # Ensure it's really a PDF
+        if not raw.startswith(b"%PDF"):
+            raise ValueError(f"Decoded content at index {idx-1} is not a PDF (missing %PDF header).")
+        # Save to temp file
+        fd, tmp_path = tempfile.mkstemp(prefix="pim_", suffix=".pdf")
+        with os.fdopen(fd, "wb") as f:
+            f.write(raw)
+        filename = f"upload_{idx}.pdf"
+        lsTempFile.append({"filename": filename, "temp_path": tmp_path})
     return lsTempFile
 
 def v1_parsePDF(stg_lsTempFile):
