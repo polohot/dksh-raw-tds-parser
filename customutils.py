@@ -622,7 +622,8 @@ def PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name,
             "Derived Natural",
             "Mineral",
             "Synthetic",
-            "Vegetal"]
+            "Vegetal",
+            ""]
         # SYSTEM PROMPT
         system_prompt = f"""
         You are an expert data‐flagging assistant for technical product dossiers. 
@@ -676,6 +677,7 @@ def PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name,
         Your task is to analyze only the details provided for product “{product_name}” from manufacturer “{manufacturer_name}” (including text and any images) 
         and determine and list out the composition/ingredients of this product.
         Also give reason or example why you select each of the composition/ingredients.
+        If this is about food, This is not about Nutrition.
 
         Output format:
         {{
@@ -710,9 +712,7 @@ def PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name,
                         "properties": {
                             "compositions": {
                                 "type": "array",
-                                "items": {
-                                    "type": "string"},
-                                "minItems": 1,
+                                "items": {"type": "string"},
                                 "description": f"Select as much as possible unique COMPOSITIONS/INGREDIENTS but only those related to the product [{product_name}]"},
                             "reason": {
                                 "type": "string",
@@ -1338,7 +1338,8 @@ def PIM_buildBodyFindPhysicalForm(parsed_text, product_name, manufacturer_name, 
             "Paste",
             "Pieces",
             "Powder",
-            "Suspension"]
+            "Suspension",
+            ""]
     elif business_line == 'PCI':
         selection_list = [
             "Bead",
@@ -1357,7 +1358,8 @@ def PIM_buildBodyFindPhysicalForm(parsed_text, product_name, manufacturer_name, 
             "Powder",
             "Sponge",
             "Suspension",
-            "Wax"]
+            "Wax",
+            ""]
     elif business_line == 'PHI':
         selection_list = [
             "Solid",
@@ -1373,7 +1375,8 @@ def PIM_buildBodyFindPhysicalForm(parsed_text, product_name, manufacturer_name, 
             "Powder",
             "Semi-Solid",
             "Suspension",
-            "Fiber & Stainless Steel"]
+            "Fiber & Stainless Steel",
+            ""]
     elif business_line == 'SCI':
         selection_list = [
             "Dispersion",
@@ -1382,12 +1385,13 @@ def PIM_buildBodyFindPhysicalForm(parsed_text, product_name, manufacturer_name, 
             "Micronized powder",
             "Nano powder",
             "Paste",
-            "Solid"]
+            "Solid",
+            ""]
     # SYSTEM PROMPT
     system_prompt = f"""
         You are a data extraction agent that processes technical documents and extracts information.
         Based on the provided text and images, focus only on product [{product_name}] from manufacturer [{manufacturer_name}].
-        Select the correct PHYSICAL_FORM of this specific product. If none is found, output "N/A".
+        Select the correct PHYSICAL_FORM of this specific product. If none is found, output "".
 
         Output format:
         {{
@@ -1666,10 +1670,7 @@ def PIM_buildBodySelectCertifications(parsed_text, product_name, manufacturer_na
                     "properties": {
                         "certifications": {
                             "type": "array",
-                            "items": {
-                                "type": "string",
-                                "enum": selection_list},
-                            "minItems": 1,
+                            "items": {"type": "string","enum": selection_list},
                             "description": f"Select as much as possible CERTIFICATIONS but only those related to the product [{product_name}]"},
                         "reason": {
                             "type": "string",
