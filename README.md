@@ -3,6 +3,9 @@
 **Use AI to parser PDF into specific format**
 
 ```
+[V0.9-alpha] - 2025-09-10
+- Modify FBI to strictly follow the given document, for generation for FBI to check again
+
 [V0.8-alpha] - 2025-08-25
 - Adding MainAPI.py for API UAT
 

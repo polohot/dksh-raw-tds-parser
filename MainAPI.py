@@ -217,9 +217,9 @@ async def v1_parse_pim_fields(
             mainDict['gpt_combined_web_search'] = v1_combineWebSearch(mainDict)
             mainDict['gpt_text_of_this_product_only_answer'] = v1_getTextOfThisProductOnly(mainDict)
 
-            # ######################
-            # # STAGE 5 - PARALLEL #
-            # ######################
+            ######################
+            # STAGE 5 - PARALLEL #
+            ######################
             if mainDict['inputParallel'] == True:
                 (
                     (mainDict['gpt_select_industry_cluster_answer'], mainDict['gpt_select_industry_cluster_reason']),

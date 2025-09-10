@@ -27,6 +27,9 @@ st.write("**Client time:**", client_time.strftime("%Y-%m-%d %H:%M:%S.%f"))
 st.write(f"**Difference:** {delta.total_seconds()*1000:.0f} ms")
 
 strShow = '''
+[V0.9-alpha] - 2025-09-10
+- Modify FBI to strictly follow the given document, for generation for FBI to check again
+
 [V0.8-alpha] - 2025-08-25
 - Adding MainAPI.py for API UAT
 

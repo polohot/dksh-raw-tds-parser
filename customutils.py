@@ -1,26 +1,26 @@
-# import streamlit as st
-# from streamlit_js_eval import streamlit_js_eval
-# import datetime
+import streamlit as st
+from streamlit_js_eval import streamlit_js_eval
+import datetime
 
-# def get_time_difference(key: str = "client_ts") -> float:
-#     """
-#     Returns the difference between server time and client time in milliseconds.
-#     Internally handles the “waiting for browser” case by showing a message
-#     and stopping the app until a value arrives.
-#     """
-#     # Capture server timestamp immediately
-#     server_time = datetime.datetime.now()
-#     # Trigger the JS call to get client‐side epoch ms
-#     client_ts_ms = streamlit_js_eval(js_expressions="Date.now()", key=key)
-#     # If JS hasn’t returned yet, show a message and halt execution
-#     if client_ts_ms is None:
-#         st.info("⏳ Waiting for browser timestamp…")
-#         st.stop()
-#     # Convert back to a datetime and compute the delta
-#     client_time = datetime.datetime.fromtimestamp(client_ts_ms / 1000.0)
-#     delta = server_time - client_time
-#     # Return offset in milliseconds
-#     return delta.total_seconds() * 1000
+def get_time_difference(key: str = "client_ts") -> float:
+    """
+    Returns the difference between server time and client time in milliseconds.
+    Internally handles the “waiting for browser” case by showing a message
+    and stopping the app until a value arrives.
+    """
+    # Capture server timestamp immediately
+    server_time = datetime.datetime.now()
+    # Trigger the JS call to get client‐side epoch ms
+    client_ts_ms = streamlit_js_eval(js_expressions="Date.now()", key=key)
+    # If JS hasn’t returned yet, show a message and halt execution
+    if client_ts_ms is None:
+        st.info("⏳ Waiting for browser timestamp…")
+        st.stop()
+    # Convert back to a datetime and compute the delta
+    client_time = datetime.datetime.fromtimestamp(client_ts_ms / 1000.0)
+    delta = server_time - client_time
+    # Return offset in milliseconds
+    return delta.total_seconds() * 1000
 
 ###############################################################################################################################################################################
 ###############################################################################################################################################################################
@@ -677,14 +677,18 @@ def PIM_buildBodySelectComposition(parsed_text, product_name, manufacturer_name,
         Your task is to analyze only the details provided for product “{product_name}” from manufacturer “{manufacturer_name}” (including text and any images) 
         and determine and list out the composition/ingredients of this product.
         Also give reason or example why you select each of the composition/ingredients.
-        If this is about food, This is not about Nutrition.
 
         Output format:
         {{
             "compositions": array of objects,
             "reason": string
         }}
+
         """
+        # BL SPECIFIC
+        if business_line == 'FBI':
+            system_prompt += 'This is not about Nutrition \n'
+            system_prompt += 'Only select composition/ingredients from the given data, no guessing \n'
         # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
         messages = [
             {"role": "system", "content": system_prompt},
@@ -891,7 +895,11 @@ def PIM_buildBodySelectApplication(parsed_text, product_name, manufacturer_name,
         ...
         "reason": string
     }}
+
     """
+    # BL SPECIFIC
+    if business_line == 'FBI':
+        system_prompt += 'Only select application that is really found to be related to the the given data, no guessing \n'
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
     messages = [
         {"role": "system", "content": system_prompt},
@@ -1233,7 +1241,11 @@ def PIM_buildBodySelectFunction(parsed_text, product_name, manufacturer_name, ls
         ...
         "reason": string
     }}
+
     """
+    # BL SPECIFIC
+    if business_line == 'FBI':
+        system_prompt += 'Only select functions that is really found to be related to the the given data, no guessing \n'
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
     messages = [
         {"role": "system", "content": system_prompt},
@@ -1443,20 +1455,24 @@ def PIM_buildBodyFindPhysicalForm(parsed_text, product_name, manufacturer_name, 
 
     return body
 
-def PIM_buildBodyGetProductDescription(parsed_text, product_name, manufacturer_name, ls_base64, searched_text=''):
+def PIM_buildBodyGetProductDescription(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text=''):
     # SYSTEM PROMPT
     system_prompt = f"""
-        You are a data extraction agent that processes technical documents and extracts information.
-        Based on the provided text and images, focus only on product [{product_name}] from manufacturer [{manufacturer_name}].
-        The Description should begin with the product name and be at least 400 characters in length.
-        The Description may include information such as the product’s physical form and composition. 
-        It can also highlight the product’s strengths, potential benefits, and relevant applications.
+    You are a data extraction agent that processes technical documents and extracts information.
+    Based on the provided text and images, focus only on product [{product_name}] from manufacturer [{manufacturer_name}].
+    The Description should begin with the product name and be at least 400 characters in length.
+    The Description may include information such as the product’s physical form and composition. 
+    It can also highlight the product’s strengths, potential benefits, and relevant applications.
 
-        Output format:
-        {{
-          "product_description": string
-        }}
+    Output format:
+    {{
+        "product_description": string
+    }}
+
     """
+    # BL SPECIFIC
+    if business_line == 'FBI':
+        system_prompt += 'Only write description from the given data, no guessing \n'
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
     messages = [
         {"role": "system", "content": system_prompt},
@@ -1499,22 +1515,26 @@ def PIM_buildBodyGetProductDescription(parsed_text, product_name, manufacturer_n
     }
     return body
 
-def PIM_buildBodyGetRecommendedDosage(parsed_text, product_name, manufacturer_name, ls_base64, searched_text=''):
+def PIM_buildBodyGetRecommendedDosage(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text=''):
     # SYSTEM PROMPT
     system_prompt = f"""
-        You are a data extraction agent that processes technical documents and extracts information.
-        Based on the provided text and images, focus only on product [{product_name}] from manufacturer [{manufacturer_name}].
-        Try to find any recommended dosage instructions mentioned in the content. This may include dosage amount, units, dosage frequency, or administration route.
-        Do not include any labels, section headers, or explanatory phrases such as "example", "usage", "incorporation", etc.
-        Output only the clean dosage text as it appears, preserving context + dosage together.
-        If none is found, output "N/A".
+    You are a data extraction agent that processes technical documents and extracts information.
+    Based on the provided text and images, focus only on product [{product_name}] from manufacturer [{manufacturer_name}].
+    Try to find any recommended dosage instructions mentioned in the content. This may include dosage amount, units, dosage frequency, or administration route.
+    Do not include any labels, section headers, or explanatory phrases such as "example", "usage", "incorporation", etc.
+    Output only the clean dosage text as it appears, preserving context + dosage together.
+    If none is found, output "N/A".
 
-        Output format:
-        {{
-          "recommended_dosage": string,
-          "reason": string
-        }}
+    Output format:
+    {{
+        "recommended_dosage": string,
+        "reason": string
+    }}
+
     """
+    # BL SPECIFIC
+    if business_line == 'FBI':
+        system_prompt += 'Only take recommended dosage value from the given data, no guessing \n'
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
     messages = [
         {"role": "system", "content": system_prompt},
@@ -1633,16 +1653,20 @@ def PIM_buildBodySelectCertifications(parsed_text, product_name, manufacturer_na
 
     # SYSTEM PROMPT
     system_prompt = f"""
-        You are a data extraction agent that processes technical documents and extracts information.
-        Based on the provided text and image, Focus only on product [{product_name}] from manufacturer [{manufacturer_name}].   
-        Select as much as possible CERTIFICATIONS but only those related to the product [{product_name}] from the following list:{selection_list}
+    You are a data extraction agent that processes technical documents and extracts information.
+    Based on the provided text and image, Focus only on product [{product_name}] from manufacturer [{manufacturer_name}].   
+    Select as much as possible CERTIFICATIONS but only those related to the product [{product_name}] from the following list:{selection_list}
 
-        Output format:
-        {{
-          "certifications": array of string,
-          'reason': string
-        }}
+    Output format:
+    {{
+        "certifications": array of string,
+        'reason': string
+    }}
+
     """
+    # BL SPECIFIC
+    if business_line == 'FBI':
+        system_prompt += 'Only select Certifications found in the given data, no guessing \n'
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
     messages = [
         {"role": "system", "content": system_prompt},
@@ -1807,7 +1831,11 @@ def PIM_buildBodySelectClaims(parsed_text, product_name, manufacturer_name, ls_b
         ...
         "reason": string
     }}
+
     """
+    # BL SPECIFIC
+    if business_line == 'FBI':
+        system_prompt += 'Only select claims that is really found to be related to the the given data, no guessing \n'
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
     messages = [
         {"role": "system", "content": system_prompt},
@@ -1861,15 +1889,17 @@ def PIM_buildBodySelectHealthBenefits(parsed_text, product_name, manufacturer_na
         "Women and Men wellness"]
     # SYSTEM PROMPT
     system_prompt = f"""
-        You are a data extraction agent that processes technical documents and extracts information.
-        Based on the provided text and image, Focus only on product [{product_name}] from manufacturer [{manufacturer_name}].   
-        Use the given data combine with your own knowledge to select as much as possible RECOMMENDED_HEALTH_BENEFITS but only those related to the product [{product_name}] from the following list:{selection_list}
+    You are a data extraction agent that processes technical documents and extracts information.
+    Based on the provided text and image, Focus only on product [{product_name}] from manufacturer [{manufacturer_name}].   
+    Use the given data combine with your own knowledge to select as much as possible RECOMMENDED_HEALTH_BENEFITS but only those related to the product [{product_name}] from the following list:{selection_list}
 
-        Output format:
-        {{
-          "rec_health_benefits": array of string,
-          "reason": string
-        }}
+    Output format:
+    {{
+        "rec_health_benefits": array of string,
+        "reason": string
+    }}
+
+    Only select health benefits really found to be related to the the given data, no guessing
     """
     # BUILD THE MESSAGES FOR THE STRUCTURED OUTPUT REQUEST
     messages = [
@@ -2033,6 +2063,7 @@ def PIM_buildBodyGetManufacturerOrSupplier(parsed_text, product_name, ls_base64)
 # FOR API V1 #
 ##############
 
+import types
 import os
 import tempfile
 import shutil

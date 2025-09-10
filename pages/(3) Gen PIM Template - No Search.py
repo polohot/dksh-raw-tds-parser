@@ -809,8 +809,9 @@ if st.session_state['STEP2']==True:
             product_name = dfPROD.iloc[i]['PRODUCT_NAME']
             manufacturer_name = dfPROD.iloc[i]['SUPPLIER_NAME']
             ls_base64 = file_dict[file_name]['S2_READ_PDF_TO_BASE64']['pages']
+            business_line = input_dict['business_line']
             searched_text = ''
-            body = PIM_buildBodyGetProductDescription(parsed_text, product_name, manufacturer_name, ls_base64, searched_text)
+            body = PIM_buildBodyGetProductDescription(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text)
             ### CALL API - USING AZURE AI FOUNDARY
             while True:
                 try:
@@ -845,8 +846,9 @@ if st.session_state['STEP2']==True:
             product_name = dfPROD.iloc[i]['PRODUCT_NAME']
             manufacturer_name = dfPROD.iloc[i]['SUPPLIER_NAME']
             ls_base64 = file_dict[file_name]['S2_READ_PDF_TO_BASE64']['pages']
+            business_line = input_dict['business_line']
             searched_text = ''
-            body = PIM_buildBodyGetRecommendedDosage(parsed_text, product_name, manufacturer_name, ls_base64, searched_text)
+            body = PIM_buildBodyGetRecommendedDosage(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text)
             ### CALL API - USING AZURE AI FOUNDARY
             while True:
                 try:
