@@ -3,9 +3,6 @@
 **Use AI to parser PDF into specific format**
 
 ```
-[V1.0-beta] - 2025-10-14
-- For internal testing
-
 [V0.9-alpha] - 2025-09-10
 - Modify FBI to strictly follow the given document, for generation for FBI to check again
 
