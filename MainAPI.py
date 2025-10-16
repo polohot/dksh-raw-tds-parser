@@ -50,83 +50,83 @@ async def func3() -> int:
 # HELPER - ACTUAL #
 ###################
 
-# async def v1_run_stage3_parallel(mainDict):
-#     """Run Stage 3 search functions in parallel using threads."""
-#     comp_task = asyncio.to_thread(v1_searchComposition, mainDict)
-#     func_task = asyncio.to_thread(v1_searchFunction, mainDict)
-#     appl_task = asyncio.to_thread(v1_searchApplication, mainDict)
-#     comp_res, func_res, appl_res = await asyncio.gather(
-#         comp_task, func_task, appl_task, return_exceptions=True
-#     )
-#     # Normalize exceptions into empty strings (or handle differently if you prefer)
-#     if isinstance(comp_res, Exception): comp_res = ''
-#     if isinstance(func_res, Exception): func_res = ''
-#     if isinstance(appl_res, Exception): appl_res = ''
-#     return comp_res, func_res, appl_res
+async def v1_run_stage3_parallel(mainDict):
+    """Run Stage 3 search functions in parallel using threads."""
+    comp_task = asyncio.to_thread(v1_searchComposition, mainDict)
+    func_task = asyncio.to_thread(v1_searchFunction, mainDict)
+    appl_task = asyncio.to_thread(v1_searchApplication, mainDict)
+    comp_res, func_res, appl_res = await asyncio.gather(
+        comp_task, func_task, appl_task, return_exceptions=True
+    )
+    # Normalize exceptions into empty strings (or handle differently if you prefer)
+    if isinstance(comp_res, Exception): comp_res = ''
+    if isinstance(func_res, Exception): func_res = ''
+    if isinstance(appl_res, Exception): appl_res = ''
+    return comp_res, func_res, appl_res
 
 
-# async def run_stage5_parallel(mainDict):
-#     """Run Stage 5 extraction functions in parallel using threads."""
-#     tasks = await asyncio.gather(
-#         asyncio.to_thread(v1_selectIndustryCluster, mainDict),
-#         asyncio.to_thread(v1_selectCompositions, mainDict),
-#         asyncio.to_thread(v1_selectFunctions, mainDict),
-#         asyncio.to_thread(v1_selectApplications, mainDict),
-#         asyncio.to_thread(v1_findCASNumber, mainDict),
-#         asyncio.to_thread(v1_findPhysicalForm, mainDict),
-#         asyncio.to_thread(v1_genProductDescription, mainDict),
-#         asyncio.to_thread(v1_getRecommendedDosage, mainDict),
-#         asyncio.to_thread(v1_selectCertifications, mainDict),
-#         asyncio.to_thread(v1_selectClaims, mainDict),
-#         asyncio.to_thread(v1_selectHealthBenefits, mainDict),
-#         return_exceptions=True)
+async def run_stage5_parallel(mainDict):
+    """Run Stage 5 extraction functions in parallel using threads."""
+    tasks = await asyncio.gather(
+        asyncio.to_thread(v1_selectIndustryCluster, mainDict),
+        asyncio.to_thread(v1_selectCompositions, mainDict),
+        asyncio.to_thread(v1_selectFunctions, mainDict),
+        asyncio.to_thread(v1_selectApplications, mainDict),
+        asyncio.to_thread(v1_findCASNumber, mainDict),
+        asyncio.to_thread(v1_findPhysicalForm, mainDict),
+        asyncio.to_thread(v1_genProductDescription, mainDict),
+        asyncio.to_thread(v1_getRecommendedDosage, mainDict),
+        asyncio.to_thread(v1_selectCertifications, mainDict),
+        asyncio.to_thread(v1_selectClaims, mainDict),
+        asyncio.to_thread(v1_selectHealthBenefits, mainDict),
+        return_exceptions=True)
 
-#     # Unpack and normalize exceptions
-#     (
-#         industry_cluster,
-#         compositions,
-#         functions,
-#         applications,
-#         cas_number,
-#         physical_form,
-#         product_description,
-#         recommended_dosage,
-#         certifications,
-#         claims,
-#         health_benefits,
-#     ) = tasks
+    # Unpack and normalize exceptions
+    (
+        industry_cluster,
+        compositions,
+        functions,
+        applications,
+        cas_number,
+        physical_form,
+        product_description,
+        recommended_dosage,
+        certifications,
+        claims,
+        health_benefits,
+    ) = tasks
 
-#     def safe_unpack(val, n=2):
-#         if isinstance(val, Exception):
-#             return ("", "") if n == 2 else ""
-#         return val
+    def safe_unpack(val, n=2):
+        if isinstance(val, Exception):
+            return ("", "") if n == 2 else ""
+        return val
 
-#     # Unpack properly (functions that return tuple vs single value)
-#     industry_cluster = safe_unpack(industry_cluster, 2)
-#     compositions     = safe_unpack(compositions, 2)
-#     functions        = safe_unpack(functions, 2)
-#     applications     = safe_unpack(applications, 2)
-#     cas_number       = safe_unpack(cas_number, 1)
-#     physical_form    = safe_unpack(physical_form, 2)
-#     product_description = safe_unpack(product_description, 1)
-#     recommended_dosage  = safe_unpack(recommended_dosage, 2)
-#     certifications      = safe_unpack(certifications, 2)
-#     claims              = safe_unpack(claims, 2)
-#     health_benefits     = safe_unpack(health_benefits, 2)
+    # Unpack properly (functions that return tuple vs single value)
+    industry_cluster = safe_unpack(industry_cluster, 2)
+    compositions     = safe_unpack(compositions, 2)
+    functions        = safe_unpack(functions, 2)
+    applications     = safe_unpack(applications, 2)
+    cas_number       = safe_unpack(cas_number, 2)
+    physical_form    = safe_unpack(physical_form, 2)
+    product_description = safe_unpack(product_description, 1)
+    recommended_dosage  = safe_unpack(recommended_dosage, 2)
+    certifications      = safe_unpack(certifications, 2)
+    claims              = safe_unpack(claims, 2)
+    health_benefits     = safe_unpack(health_benefits, 2)
 
-#     return (
-#         industry_cluster,
-#         compositions,
-#         functions,
-#         applications,
-#         cas_number,
-#         physical_form,
-#         product_description,
-#         recommended_dosage,
-#         certifications,
-#         claims,
-#         health_benefits
-#     )
+    return (
+        industry_cluster,
+        compositions,
+        functions,
+        applications,
+        cas_number,
+        physical_form,
+        product_description,
+        recommended_dosage,
+        certifications,
+        claims,
+        health_benefits
+    )
 
 
 
@@ -150,8 +150,37 @@ async def wait_parallel():
     time1, time2, time3 = await asyncio.gather(func1(), func2(), func3())
     return {"time1": time1, "time2": time2, "time3": time3}
 
-# ACTIMALT LIQUID REGULAR
-# FBI
+@app.post("/v1_get_products_and_suppliers")
+async def v1_get_products_and_suppliers(
+    inputListDocumentation: Annotated[List[UploadFile], File(...)],
+    inputSecret: Annotated[str, Form(...)]):
+
+    if str(inputSecret) == os.getenv('CUSTOM_SECRET1'):
+        # INIT FILES
+        stg_lsTempFile = v1_saveUploadFilesTemporarly(inputListDocumentation)
+        mainDict = {
+            'inputListDocumentation': inputListDocumentation,
+            'inputSecret': inputSecret,
+            'stg_lsTempFile': stg_lsTempFile}
+        # PARSED_TO_TEXT
+        stg_lsParsedText = v1_parsePDF(stg_lsTempFile)
+        mainDict['stg_lsParsedText'] = stg_lsParsedText
+        mainDict['stg_parsedText'] = "\n\n".join(stg_lsParsedText)
+        # READ_PDF_TO_BASE64
+        stg_lsBase64 = v1_readPDFToBase64(stg_lsTempFile)
+        mainDict['stg_lsBase64'] = stg_lsBase64
+        # GET PRODUCTS AND SUPPLIERS
+        mainDict['products_and_suppliers'] = v1_getProductNameAndSupplierFromTextAndImage(mainDict)
+        # FINALIZE
+        mainDict['inputListDocumentation'] = 'HIDDEN'
+        mainDict['inputSecret'] = 'HIDDEN'
+        mainDict['stg_lsTempFile'] = 'HIDDEN'
+        mainDict['stg_lsParsedText'] = 'HIDDEN'
+        mainDict['stg_parsedText'] = 'HIDDEN'
+        mainDict['stg_lsBase64'] = 'HIDDEN'
+        return mainDict
+    else:
+        return HTTPException(status_code=401)
 
 @app.post("/v1_parse_pim_fields")
 async def v1_parse_pim_fields(
@@ -201,54 +230,55 @@ async def v1_parse_pim_fields(
             mainDict = v1_addFieldsMainDict(mainDict)
             mainDict['gpt_manufacturer_or_supplier_answer'], mainDict['gpt_manufacturer_or_supplier_reason'] = v1_getManufacturerOrSupplier(mainDict)
 
-            # ######################
-            # # STAGE 3 - PARALLEL #
-            # ######################
-            # if mainDict['inputParallel'] == True:
-            #     comp_res, func_res, appl_res = await v1_run_stage3_parallel(mainDict)
-            #     mainDict['gpt_composition_search_answer'] = comp_res
-            #     mainDict['gpt_function_search_answer']   = func_res
-            #     mainDict['gpt_application_search_answer'] = appl_res
-            # else:
-            #     mainDict['gpt_composition_search_answer'] = v1_searchComposition(mainDict)
-            #     mainDict['gpt_function_search_answer'] = v1_searchFunction(mainDict)
-            #     mainDict['gpt_application_search_answer'] = v1_searchApplication(mainDict)
+            ######################
+            # STAGE 3 - PARALLEL #
+            ######################
+            if mainDict['inputParallel'] == True:
+                comp_res, func_res, appl_res = await v1_run_stage3_parallel(mainDict)
+                mainDict['gpt_composition_search_answer'] = comp_res
+                mainDict['gpt_function_search_answer']   = func_res
+                mainDict['gpt_application_search_answer'] = appl_res
+            else:
+                mainDict['gpt_composition_search_answer'] = v1_searchComposition(mainDict)
+                mainDict['gpt_function_search_answer'] = v1_searchFunction(mainDict)
+                mainDict['gpt_application_search_answer'] = v1_searchApplication(mainDict)
 
-            # ####################
-            # # STAGE 4 - SERIES #
-            # ####################        
-            # mainDict['gpt_combined_web_search'] = v1_combineWebSearch(mainDict)
-            # mainDict['gpt_text_of_this_product_only_answer'] = v1_getTextOfThisProductOnly(mainDict)
+            ####################
+            # STAGE 4 - SERIES #
+            ####################        
+            mainDict['gpt_combined_web_search'] = v1_combineWebSearch(mainDict)
+            mainDict['gpt_text_of_this_product_only_answer'] = v1_getTextOfThisProductOnly(mainDict)
 
-            # ######################
-            # # STAGE 5 - PARALLEL #
-            # ######################
-            # if mainDict['inputParallel'] == True:
-            #     (
-            #         (mainDict['gpt_select_industry_cluster_answer'], mainDict['gpt_select_industry_cluster_reason']),
-            #         (mainDict['gpt_select_compositions_answer'], mainDict['gpt_select_compositions_reason']),
-            #         (mainDict['gpt_select_functions_answer'], mainDict['gpt_select_functions_reason']),
-            #         (mainDict['gpt_select_applications_answer'], mainDict['gpt_select_applications_reason']),
-            #         mainDict['gpt_cas_from_doc_answer'],
-            #         (mainDict['gpt_physical_form_answer'], mainDict['gpt_physical_form_reason']),
-            #         mainDict['gpt_gen_product_description'],
-            #         (mainDict['gpt_recommended_dosage_answer'], mainDict['gpt_recommended_dosage_reason']),
-            #         (mainDict['gpt_certifications_answer'], mainDict['gpt_certifications_reason']),
-            #         (mainDict['gpt_claims_answer'], mainDict['gpt_claims_reason']),
-            #         (mainDict['gpt_health_benefits_answer'], mainDict['gpt_health_benefits_reason']),
-            #     ) = await run_stage5_parallel(mainDict)
-            # else:
-            #     mainDict['gpt_select_industry_cluster_answer'], mainDict['gpt_select_industry_cluster_reason'] = v1_selectIndustryCluster(mainDict)
-            #     mainDict['gpt_select_compositions_answer'], mainDict['gpt_select_compositions_reason'] = v1_selectCompositions(mainDict)
-            #     mainDict['gpt_select_functions_answer'], mainDict['gpt_select_functions_reason'] = v1_selectFunctions(mainDict)
-            #     mainDict['gpt_select_applications_answer'], mainDict['gpt_select_applications_reason'] = v1_selectApplications(mainDict)        
-            #     mainDict['gpt_cas_from_doc_answer'] = v1_findCASNumber(mainDict)
-            #     mainDict['gpt_physical_form_answer'], mainDict['gpt_physical_form_reason'] = v1_findPhysicalForm(mainDict)
-            #     mainDict['gpt_gen_product_description'] = v1_genProductDescription(mainDict)
-            #     mainDict['gpt_recommended_dosage_answer'], mainDict['gpt_recommended_dosage_reason'] = v1_getRecommendedDosage(mainDict)
-            #     mainDict['gpt_certifications_answer'], mainDict['gpt_certifications_reason'] = v1_selectCertifications(mainDict)
-            #     mainDict['gpt_claims_answer'], mainDict['gpt_claims_reason'] = v1_selectClaims(mainDict)
-            #     mainDict['gpt_health_benefits_answer'], mainDict['gpt_health_benefits_reason'] = v1_selectHealthBenefits(mainDict)
+            ######################
+            # STAGE 5 - PARALLEL #
+            ######################
+            if mainDict['inputParallel'] == True:
+                pass
+                (
+                    (mainDict['gpt_select_industry_cluster_answer'], mainDict['gpt_select_industry_cluster_reason']),
+                    (mainDict['gpt_select_compositions_answer'], mainDict['gpt_select_compositions_reason']),
+                    (mainDict['gpt_select_functions_answer'], mainDict['gpt_select_functions_reason']),
+                    (mainDict['gpt_select_applications_answer'], mainDict['gpt_select_applications_reason']),
+                    (mainDict['gpt_cas_from_doc_answer'], mainDict['gpt_cas_from_doc_reason']),
+                    (mainDict['gpt_physical_form_answer'], mainDict['gpt_physical_form_reason']),
+                    mainDict['gpt_gen_product_description'],
+                    (mainDict['gpt_recommended_dosage_answer'], mainDict['gpt_recommended_dosage_reason']),
+                    (mainDict['gpt_certifications_answer'], mainDict['gpt_certifications_reason']),
+                    (mainDict['gpt_claims_answer'], mainDict['gpt_claims_reason']),
+                    (mainDict['gpt_health_benefits_answer'], mainDict['gpt_health_benefits_reason']),
+                ) = await run_stage5_parallel(mainDict)
+            else:
+                mainDict['gpt_select_industry_cluster_answer'], mainDict['gpt_select_industry_cluster_reason'] = v1_selectIndustryCluster(mainDict)
+                mainDict['gpt_select_compositions_answer'], mainDict['gpt_select_compositions_reason'] = v1_selectCompositions(mainDict)
+                mainDict['gpt_select_functions_answer'], mainDict['gpt_select_functions_reason'] = v1_selectFunctions(mainDict)
+                mainDict['gpt_select_applications_answer'], mainDict['gpt_select_applications_reason'] = v1_selectApplications(mainDict)        
+                mainDict['gpt_cas_from_doc_answer'], mainDict['gpt_cas_from_doc_reason'] = v1_findCASNumber(mainDict)
+                mainDict['gpt_physical_form_answer'], mainDict['gpt_physical_form_reason'] = v1_findPhysicalForm(mainDict)
+                mainDict['gpt_gen_product_description'] = v1_genProductDescription(mainDict)
+                mainDict['gpt_recommended_dosage_answer'], mainDict['gpt_recommended_dosage_reason'] = v1_getRecommendedDosage(mainDict)
+                mainDict['gpt_certifications_answer'], mainDict['gpt_certifications_reason'] = v1_selectCertifications(mainDict)
+                mainDict['gpt_claims_answer'], mainDict['gpt_claims_reason'] = v1_selectClaims(mainDict)
+                mainDict['gpt_health_benefits_answer'], mainDict['gpt_health_benefits_reason'] = v1_selectHealthBenefits(mainDict)
 
             # FINAL
             time_end = datetime.datetime.now()
