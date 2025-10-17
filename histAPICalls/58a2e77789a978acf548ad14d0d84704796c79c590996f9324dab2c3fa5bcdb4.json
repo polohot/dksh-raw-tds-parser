@@ -1,0 +1,73 @@
+{
+    "inputProductName": "FAMB279 N&A BROWN SUGAR TYPE FL",
+    "inputBusinessLine": "FBI",
+    "inputListDocumentation": "HIDDEN",
+    "inputSecret": "HIDDEN",
+    "inputWebSearch": false,
+    "inputParallel": true,
+    "stg_businessLineStr": "Food & Beverage",
+    "stg_lsTempFile": "HIDDEN",
+    "stg_hashinputProductName": "7c2f2d95c9297d8c9ba192814479f62ace26a538a3fdf7097808630f6b04d467",
+    "stg_hashinputBusinessLine": "c6cd4cf936fd5ad884ed4c278d147982124a6b7df27d95ddf58cd7a60660664c",
+    "stg_hashinputListDocumentation": "85521b465059d92457164c9057c54b31b38e8cdb7d5be00cfef95469d828f407",
+    "stg_hashCombined": "58a2e77789a978acf548ad14d0d84704796c79c590996f9324dab2c3fa5bcdb4",
+    "stg_lsParsedText": "HIDDEN",
+    "stg_parsedText": "HIDDEN",
+    "stg_lsBase64": "HIDDEN",
+    "gpt_manufacturer_or_supplier_answer": "WILD Flavors, Inc.",
+    "gpt_manufacturer_or_supplier_reason": "The product specification document for FAMB279 N&A BROWN SUGAR TYPE FL clearly lists the supplier name as WILD Flavors, Inc. with address 1261 Pacific Ave, Erlanger, KY 41018. This is mentioned on page 1 of the document under 'SUPPLIER NAME' and repeated multiple times throughout the specification.",
+    "gpt_composition_search_answer": "",
+    "gpt_function_search_answer": "",
+    "gpt_application_search_answer": "",
+    "gpt_combined_web_search": "",
+    "gpt_text_of_this_product_only_answer": "HIDDEN",
+    "gpt_select_industry_cluster_answer": [
+        "Beverage & Dairy",
+        "Confectionery & Bakery",
+        "Processed Food & Food Service"
+    ],
+    "gpt_select_industry_cluster_reason": "Selected Beverage & Dairy, Confectionery & Bakery, and Processed Food & Food Service because the product is a brown sugar type flavoring intended for use in food products, which commonly includes beverages, bakery items, and processed foods as indicated by the general usage and ingredient profile. There is no mention or indication of use in Food Supplements & Nutrition in the document.",
+    "gpt_select_compositions_answer": [
+        "Gum Arabic",
+        "Maltodextrin",
+        "Nature Identical Flavor",
+        "Dextrose from Genetically Modified Corn",
+        "Silicon Dioxide",
+        "Propylene Glycol",
+        "Glycerine",
+        "Caramel Color from Genetically Modified Corn",
+        "Sulfites"
+    ],
+    "gpt_select_compositions_reason": "Selected all listed ingredients because they are explicitly mentioned under the 'Ingredients' section of the product specification for FAMB279 N&A BROWN SUGAR TYPE FL.",
+    "gpt_select_functions_answer": [
+        "Anti-Caking Agent",
+        "Carrier & Bulking Agent",
+        "Colour & Colour Retention Agent",
+        "Flavouring & Flavour Modulation",
+        "Humectant",
+        "Sweetener"
+    ],
+    "gpt_select_functions_reason": "Selected Anti-Caking Agent because Silicon Dioxide is listed as an ingredient, commonly used as an anti-caking agent. Selected Carrier & Bulking Agent because Maltodextrin and Gum Arabic are present, which are typical carrier and bulking agents. Selected Colour & Colour Retention Agent because Caramel Color is included as an ingredient. Selected Flavouring & Flavour Modulation because the product is described as a flavor with 'Nature Identical Flavor' and 'Maple Brown Sugar' aroma/flavor. Selected Humectant because Propylene Glycol and Glycerine are included, which are known humectants. Selected Sweetener because Dextrose and Brown Sugar type flavor imply sweetening function.",
+    "gpt_select_applications_answer": [
+        "Processed Food"
+    ],
+    "gpt_select_applications_reason": "Selected Processed Food because the product is described as a flavoring ingredient (brown sugar type flavor) intended for use in food products, which aligns with processed food applications. No specific mention or indication of use in beverages, bakery, confectionery, or other listed categories is provided in the document.",
+    "gpt_cas_from_doc_answer": "N/A",
+    "gpt_cas_from_doc_reason": "The document for product FAMB279 N&A BROWN SUGAR TYPE FL from WILD Flavors, Inc. does not mention any CAS Registry Number.",
+    "gpt_physical_form_answer": "Powder",
+    "gpt_physical_form_reason": "Selected Powder because the document specifies the appearance as 'Light Brown/Tan Powder' under Physical and Chemical Specifications.",
+    "gpt_gen_product_description": "FAMB279 N&A BROWN SUGAR TYPE FL from WILD Flavors, Inc. is a light brown/tan powder with a maple brown sugar aroma and flavor. It contains ingredients like gum arabic, maltodextrin, nature identical flavor, and caramel color. This flavor powder has low moisture content and fine granulation, making it suitable for food applications requiring a natural brown sugar taste with consistent quality and safety.",
+    "gpt_recommended_dosage_answer": "N/A",
+    "gpt_recommended_dosage_reason": "No recommended dosage instructions are mentioned in the provided document for FAMB279 N&A BROWN SUGAR TYPE FL from WILD Flavors, Inc.",
+    "gpt_certifications_answer": [
+        "GRAS, FEMAGRAS"
+    ],
+    "gpt_certifications_reason": "Selected GRAS, FEMAGRAS because the document states that all flavor ingredients are listed as generally recognized as safe in a reliable published industry association (FEMA) list, and/or are approved for use in a regulation of the U.S. Food and Drug Administration. No other certifications are mentioned in the document.",
+    "gpt_claims_answer": [],
+    "gpt_claims_reason": "No mention of bio-fermentation, meat or dairy alternatives, natural or ethically sourced claims, resource or energy optimization, sustainable food waste reduction, or upcycled ingredients in the provided product specification.",
+    "gpt_health_benefits_answer": null,
+    "gpt_health_benefits_reason": null,
+    "time_start": "2025-10-17 14:47:31.553270",
+    "time_end": "2025-10-17 14:48:07.897754",
+    "time_duration": "36.344484"
+}

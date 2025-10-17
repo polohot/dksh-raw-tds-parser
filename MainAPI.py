@@ -12,6 +12,7 @@ import base64
 import datetime
 import hashlib
 import time
+import anyio
 from PIL import Image
 
 # urllib3
@@ -157,6 +158,48 @@ async def wait_series():
 async def wait_parallel():
     time1, time2, time3 = await asyncio.gather(func1(), func2(), func3())
     return {"time1": time1, "time2": time2, "time3": time3}
+    
+@app.post("/v1_histAPICalls_count")
+async def v1_histAPICalls_count():
+    try:
+        def _count() -> int:
+            # Stream over entries (no big list in memory), count only regular files
+            with os.scandir('histAPICalls/') as it:
+                return sum(1 for e in it if e.is_file())
+
+        count_files = await anyio.to_thread.run_sync(_count)
+        return {"count_histAPICalls": count_files}
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"Directory not found: histAPICalls/")
+    except OSError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/v1_histAPICalls_list")
+async def v1_histAPICalls_list():
+    try:
+        def _list_files() -> List[str]:
+            with os.scandir('histAPICalls/') as it:
+                return [entry.name.rsplit('.', 1)[0] for entry in it if entry.is_file() and entry.name.endswith('.json')]
+
+        list_files = await anyio.to_thread.run_sync(_list_files)
+        return {"list_histAPICalls": list_files}
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"Directory not found: histAPICalls/")
+    except OSError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/v1_histAPICalls_delete")
+async def v1_histAPICalls_delete(
+    stg_hashCombined: Annotated[str, Form(...)]):
+    try:
+        filepath = f"histAPICalls/{stg_hashCombined}.json"
+        if os.path.isfile(filepath):
+            await anyio.to_thread.run_sync(os.remove, filepath)
+            return {"detail": f"File {stg_hashCombined}.json removed successfully."}
+        else:
+            raise HTTPException(status_code=404, detail=f"File not found: {stg_hashCombined}.json")
+    except OSError as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/v1_get_products_and_suppliers")
 async def v1_get_products_and_suppliers(

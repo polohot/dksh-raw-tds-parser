@@ -3,11 +3,18 @@
 **Use AI to parser PDF into specific format**
 
 ```
+[V1.11-beta] - 2025-10-17
+- Add multiple hash functions
+---- /v1_histAPICalls_count
+---- /v1_histAPICalls_list
+---- /v1_histAPICalls_delete
+
 [V1.10-beta] - 2025-10-17
 - Fix exact call dont get same result
 - Now exact call get exact same result
 
 [V1.0-beta] - 2025-10-14
+- All BL strictly follow given document
 - For internal testing
 
 [V0.9-alpha] - 2025-09-10
