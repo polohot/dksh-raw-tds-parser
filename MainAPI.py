@@ -188,6 +188,22 @@ async def v1_histAPICalls_list():
     except OSError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/v1_histAPICalls_read")
+async def v1_histAPICalls_read(
+    stg_hashCombined: Annotated[str, Form(...)]):
+    try:
+        filepath = f"histAPICalls/{stg_hashCombined}.json"
+        if os.path.isfile(filepath):
+            def _read_file() -> dict:
+                with open(filepath, "r", encoding="utf-8") as file:
+                    return json.load(file)
+            file_content = await anyio.to_thread.run_sync(_read_file)
+            return file_content
+        else:
+            raise HTTPException(status_code=404, detail=f"File not found: {stg_hashCombined}.json")
+    except OSError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/v1_histAPICalls_delete")
 async def v1_histAPICalls_delete(
     stg_hashCombined: Annotated[str, Form(...)]):

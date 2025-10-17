@@ -5,9 +5,10 @@
 ```
 [V1.11-beta] - 2025-10-17
 - Add multiple hash functions
----- /v1_histAPICalls_count
----- /v1_histAPICalls_list
----- /v1_histAPICalls_delete
+    /v1_histAPICalls_count
+    /v1_histAPICalls_list
+    /v1_histAPICalls_read
+    /v1_histAPICalls_delete
 
 [V1.10-beta] - 2025-10-17
 - Fix exact call dont get same result
