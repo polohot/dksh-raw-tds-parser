@@ -3,6 +3,9 @@
 **Use AI to parser PDF into specific format**
 
 ```
+[V1.12-beta] - 2025-10-17
+- v1_selectHealthBenefits change to either output blank list or list with object
+
 [V1.11-beta] - 2025-10-17
 - Add multiple hash functions
     /v1_histAPICalls_count

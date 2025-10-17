@@ -2109,5 +2109,5 @@ def v1_selectHealthBenefits(mainDict):
             if api_error == 0: return [k for k, v in rescontent.items() if v is True], rescontent['reason']
             else: raise HTTPException(status_code=response.status_code, detail='Critical Error: v1_selectHealthBenefits')
         else:
-            return None, None
-    return None, None
+            return [], "No applicable health benefits because product functions not in the required list (Dietary Fiber, Food Culture, Fortification/Nutraceutical, Probiotic/Postbiotic, Protein)"
+    return [], "Only applicable for FBI business line"
