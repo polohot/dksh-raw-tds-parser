@@ -1,3 +1,4 @@
+# general
 from fastapi import FastAPI, File, Form, UploadFile, HTTPException
 from typing import List, Annotated
 import asyncio
@@ -9,15 +10,22 @@ import fitz
 import io
 import base64
 import datetime
+import hashlib
+import time
 from PIL import Image
+
+# urllib3
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 # Azure AI Document Intelligence
 from azure.core.credentials import AzureKeyCredential
 from azure.ai.documentintelligence import DocumentIntelligenceClient
+
 # Load environment variables
 from dotenv import load_dotenv
 load_dotenv()
+
 # Custom Utils
 from customutils import *
 
@@ -216,6 +224,32 @@ async def v1_parse_pim_fields(
                 'inputParallel': inputParallel,
                 'stg_businessLineStr': stg_businessLineStr,
                 'stg_lsTempFile': stg_lsTempFile}
+            
+            ###########################
+            # STAGE 1 - CHECK HISTORY #
+            ###########################
+            # CHECK HASH
+            mainDict['stg_hashinputProductName'] = hashlib.sha256(inputProductName.encode()).hexdigest()
+            mainDict['stg_hashinputBusinessLine'] = hashlib.sha256(inputBusinessLine.encode()).hexdigest()
+            lsdoc = [str(x) for x in inputListDocumentation]
+            lsdoc.sort()
+            mainDict['stg_hashinputListDocumentation'] = hashlib.sha256("".join(lsdoc).encode()).hexdigest()
+            hashCombined = hashlib.sha256((mainDict['stg_hashinputProductName'] + mainDict['stg_hashinputBusinessLine'] + mainDict['stg_hashinputListDocumentation']).encode()).hexdigest()
+            mainDict['stg_hashCombined'] = hashCombined
+            # LOAD FROM HIST IF EXISTS
+            if os.path.isfile(os.path.join('histAPICalls/', hashCombined + '.json')):
+                with open(os.path.join('histAPICalls/', hashCombined + '.json'), "r", encoding="utf-8") as file:
+                    mainDict = json.load(file)
+                time.sleep(20)
+                time_end = datetime.datetime.now()
+                mainDict['time_start'] = str(time_start)
+                mainDict['time_end'] = str(time_end)
+                mainDict['time_duration'] = str((time_end - time_start).total_seconds())    
+                return mainDict
+            
+            ####################
+            # STAGE 2 - SERIES #
+            ####################
             # PARSED_TO_TEXT
             stg_lsParsedText = v1_parsePDF(stg_lsTempFile)
             mainDict['stg_lsParsedText'] = stg_lsParsedText
@@ -223,10 +257,7 @@ async def v1_parse_pim_fields(
             # READ_PDF_TO_BASE64
             stg_lsBase64 = v1_readPDFToBase64(stg_lsTempFile)
             mainDict['stg_lsBase64'] = stg_lsBase64
-
-            ####################
-            # STAGE 1 - SERIES #
-            ####################
+            # GET MGF/SUPPLIER
             mainDict = v1_addFieldsMainDict(mainDict)
             mainDict['gpt_manufacturer_or_supplier_answer'], mainDict['gpt_manufacturer_or_supplier_reason'] = v1_getManufacturerOrSupplier(mainDict)
 
@@ -280,17 +311,30 @@ async def v1_parse_pim_fields(
                 mainDict['gpt_claims_answer'], mainDict['gpt_claims_reason'] = v1_selectClaims(mainDict)
                 mainDict['gpt_health_benefits_answer'], mainDict['gpt_health_benefits_reason'] = v1_selectHealthBenefits(mainDict)
 
-            # FINAL
+            ##############################
+            # STAGE 6 - HIDE SOME FIELDS #
+            ##############################
             time_end = datetime.datetime.now()
-            mainDict['time_start'] = time_start
-            mainDict['time_end'] = time_end
-            mainDict['time_duration'] = mainDict['time_end'] - mainDict['time_start']
+            mainDict['time_start'] = str(time_start)
+            mainDict['time_end'] = str(time_end)
+            mainDict['time_duration'] = str((time_end - time_start).total_seconds())
+            mainDict['inputListDocumentation'] = 'HIDDEN'
             mainDict['inputSecret'] = 'HIDDEN'
             mainDict['stg_lsTempFile'] = 'HIDDEN'
             mainDict['stg_lsParsedText'] = 'HIDDEN'
             mainDict['stg_parsedText'] = 'HIDDEN'
             mainDict['stg_lsBase64'] = 'HIDDEN'
             mainDict['gpt_text_of_this_product_only_answer'] = 'HIDDEN'
+
+            #######################
+            # STAGE 7 - SAVE HASH #
+            #######################
+            filepath = f"histAPICalls/{mainDict['stg_hashCombined']}.json"
+            with open(filepath, "w", encoding="utf-8") as file:
+                json.dump(mainDict, file, indent=4, 
+                        ensure_ascii=False,   # Keep all non-ASCII characters readable
+                        skipkeys=True)        # Skip any keys that aren't valid JSON types
+
             return mainDict
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))

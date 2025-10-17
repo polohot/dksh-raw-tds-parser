@@ -3,6 +3,10 @@
 **Use AI to parser PDF into specific format**
 
 ```
+[V1.10-beta] - 2025-10-17
+- Fix exact call dont get same result
+- Now exact call get exact same result
+
 [V1.0-beta] - 2025-10-14
 - For internal testing
 
