@@ -3,10 +3,6 @@
 **Use AI to parser PDF into specific format**
 
 ```
-[V1.20-beta] - 2025-10-27
-- Add end point "v1_parse_pim_fields_b64"
-    Allow input as base64 string inplace of PDF files
-
 [V1.12-beta] - 2025-10-17
 - v1_selectHealthBenefits change to either output blank list or list with object
 

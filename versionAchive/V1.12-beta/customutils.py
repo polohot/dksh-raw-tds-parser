@@ -7,7 +7,6 @@ import io
 import base64
 import requests
 import json
-import hashlib
 from fastapi import HTTPException, Form
 from typing import Annotated
 
@@ -1736,29 +1735,6 @@ def v1_saveUploadFilesTemporarly(inputListDocumentation):
             lsTempFile.append(tmpdict)
     return lsTempFile
 
-def v1_saveUploadFilesTemporarlyB64(inputListDocumentationB64):
-    if not inputListDocumentationB64:
-        return []
-    # Sort input list by Base64 string length (ascending)
-    sorted_b64_list = sorted(inputListDocumentationB64, key=len)
-    lsTempFile = []
-    for b64data in sorted_b64_list:
-        if not b64data:
-            continue  # skip empty strings
-        # Generate deterministic hash-based filename
-        hash_name = hashlib.sha256(b64data.encode("utf-8")).hexdigest()
-        filename = f"{hash_name}.pdf"
-        # Decode Base64 and write to temp directory
-        pdf_bytes = base64.b64decode(b64data)
-        temp_path = os.path.join(tempfile.gettempdir(), filename)
-        with open(temp_path, "wb") as tmp:
-            tmp.write(pdf_bytes)
-        lsTempFile.append({
-            "filename": filename,
-            "temp_path": temp_path
-        })
-    return lsTempFile
-
 def v1_parsePDF(stg_lsTempFile):
     stg_lsParsedText = []
     for tempFile in stg_lsTempFile:
@@ -2135,18 +2111,3 @@ def v1_selectHealthBenefits(mainDict):
         else:
             return [], "No applicable health benefits because product functions not in the required list (Dietary Fiber, Food Culture, Fortification/Nutraceutical, Probiotic/Postbiotic, Protein)"
     return [], "Only applicable for FBI business line"
-
-###############################################################################################################################################################################
-###############################################################################################################################################################################
-###############################################################################################################################################################################
-###############################################################################################################################################################################
-###############################################################################################################################################################################
-
-def pdf_to_base64(pdf_path):
-    with open(pdf_path, "rb") as pdf_file:
-        encoded_string = base64.b64encode(pdf_file.read()).decode("utf-8")
-    return encoded_string
-
-def base64_to_pdf(b64_string, output_path):
-    with open(output_path, "wb") as pdf_file:
-        pdf_file.write(base64.b64decode(b64_string))

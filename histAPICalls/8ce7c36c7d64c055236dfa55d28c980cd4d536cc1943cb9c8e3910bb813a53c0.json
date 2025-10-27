@@ -1,0 +1,67 @@
+{
+    "inputProductName": "Acerola juice concentrate, clarified R=64-68",
+    "inputBusinessLine": "FBI",
+    "inputListDocumentation": "HIDDEN",
+    "inputSecret": "HIDDEN",
+    "inputWebSearch": false,
+    "inputParallel": true,
+    "stg_businessLineStr": "Food & Beverage",
+    "stg_lsTempFile": "HIDDEN",
+    "stg_hashinputProductName": "67600597f70eae26bf11d41a855507ab5b47f93d671c739a7e06acc054c3b2ed",
+    "stg_hashinputBusinessLine": "c6cd4cf936fd5ad884ed4c278d147982124a6b7df27d95ddf58cd7a60660664c",
+    "stg_hashinputListDocumentation": "1cb11b0335c28310eb0cd7a810bce44a7f4afce90719b127910241e24edf118a",
+    "stg_hashCombined": "8ce7c36c7d64c055236dfa55d28c980cd4d536cc1943cb9c8e3910bb813a53c0",
+    "stg_lsParsedText": "HIDDEN",
+    "stg_parsedText": "HIDDEN",
+    "stg_lsBase64": "HIDDEN",
+    "gpt_manufacturer_or_supplier_answer": "SVZ Tomaszow Sp. z o.o.",
+    "gpt_manufacturer_or_supplier_reason": "The product specification for Acerola juice concentrate, clarified R=64-68 lists SVZ Tomaszow Sp. z o.o. as the approved supplier, including their contact details and company information.",
+    "gpt_composition_search_answer": "",
+    "gpt_function_search_answer": "",
+    "gpt_application_search_answer": "",
+    "gpt_combined_web_search": "",
+    "gpt_text_of_this_product_only_answer": "HIDDEN",
+    "gpt_select_industry_cluster_answer": [
+        "Beverage & Dairy",
+        "Food Supplements & Nutrition"
+    ],
+    "gpt_select_industry_cluster_reason": "Selected Beverage & Dairy because acerola juice concentrate is a typical ingredient used in beverages, supported by its description as a juice concentrate with specific Brix and pH values indicating suitability for drink formulations. Selected Food Supplements & Nutrition because the high vitamin C content (6000-8000 mg/kg) and the nature of acerola as a nutrient-rich fruit concentrate align with use in nutritional supplements. No mention or indication in the document supports use in Confectionery & Bakery or Processed Food & Food Service categories.",
+    "gpt_select_compositions_answer": [
+        "Fruit juice",
+        "Vitamins",
+        "Acids"
+    ],
+    "gpt_select_compositions_reason": "Selected 'Fruit juice' because the product is described as juice concentrate made from acerolas. Selected 'Vitamins' because the document specifies Vitamin C content (6000 - 8000 mg/kg). Selected 'Acids' because the chemical standard includes acidity measured as malic acid (6.0 - 10.0 g/100g).",
+    "gpt_select_functions_answer": [
+        "Acidity Regulator",
+        "Antioxidant",
+        "Colour & Colour Retention Agent",
+        "Flavouring & Flavour Modulation",
+        "Fortification/Nutraceutical",
+        "Sweetener"
+    ],
+    "gpt_select_functions_reason": "Selected Acidity Regulator because the product has a specified pH range (2.7 - 3.5) and acidity as malic acid (6.0 - 10.0 g/100g). Selected Antioxidant and Fortification/Nutraceutical because the product contains high Vitamin C content (6000 - 8000 mg/kg), which is a known antioxidant and nutraceutical component. Selected Colour & Colour Retention Agent because the product description includes colour properties (orange, yellow) indicating its role in colour. Selected Flavouring & Flavour Modulation because the product has defined flavour and taste characteristics (aromatic, typical acerola, sweet, acidic). Selected Sweetener because the taste is described as sweet and acidic, indicating natural sweetness from the concentrate. Other functions are not selected as there is no mention or indication of those functions in the document.",
+    "gpt_select_applications_answer": [
+        "Beverage",
+        "Fruit & Vegetables"
+    ],
+    "gpt_select_applications_reason": "Selected Beverage because the product is a juice concentrate made from acerola, which is typically used in beverages. Selected Fruit & Vegetables because the product is derived from acerola fruit as stated in the ingredients and product description. No other applications are mentioned or implied in the document.",
+    "gpt_cas_from_doc_answer": "N/A",
+    "gpt_cas_from_doc_reason": "The document provides detailed product specifications for Acerola juice concentrate, clarified R=64-68 from SVZ Tomaszow Sp. z o.o., but does not mention any CAS Registry Number.",
+    "gpt_physical_form_answer": "Liquid",
+    "gpt_physical_form_reason": "Selected Liquid because the product is described as a juice concentrate that is filtered, concentrated, and packed, and the storage condition is specified as frozen, indicating a liquid form.",
+    "gpt_gen_product_description": "Acerola juice concentrate, clarified R=64-68 from SVZ Tomaszow Sp. z o.o. is a filtered and concentrated juice made from mature acerola fruits. It features a high Brix value between 64 and 68, a pH of 2.7 to 3.5, and retains significant vitamin C content (6000-8000 mg/kg). The concentrate has an aromatic, sweet, and acidic flavor with an orange-yellow color, making it suitable for nutritional and flavor applications. It is microbiologically safe and complies with pesticide regulations, recommended to be stored frozen with a shelf life of 24 months.",
+    "gpt_recommended_dosage_answer": "N/A",
+    "gpt_recommended_dosage_reason": "No recommended dosage instructions are mentioned in the provided document for Acerola juice concentrate, clarified R=64-68 from SVZ Tomaszow Sp. z o.o.",
+    "gpt_certifications_answer": [],
+    "gpt_certifications_reason": "No certifications from the specified list are explicitly mentioned in the document for Acerola juice concentrate, clarified R=64-68 by SVZ Tomaszow Sp. z o.o. The document only mentions 'Approved Supplier (IRMA)' and 'SGS Certified', which are not part of the requested certification list.",
+    "gpt_claims_answer": [
+        "Natural & Ethically Sourced"
+    ],
+    "gpt_claims_reason": "Selected Natural & Ethically Sourced because the product is made from sound and mature acerolas, indicating natural raw materials, and it is an Approved Supplier (IRMA) which relates to ethical sourcing standards. No mention of bio-fermentation, meat/dairy alternatives, resource optimization, food waste reduction, or upcycling in the document.",
+    "gpt_health_benefits_answer": [],
+    "gpt_health_benefits_reason": "No applicable health benefits because product functions not in the required list (Dietary Fiber, Food Culture, Fortification/Nutraceutical, Probiotic/Postbiotic, Protein)",
+    "time_start": "2025-10-27 14:21:08.729481",
+    "time_end": "2025-10-27 14:21:48.452261",
+    "time_duration": "39.72278"
+}

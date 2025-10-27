@@ -1,0 +1,62 @@
+{
+    "inputProductName": "Accelerzyme CPG BF",
+    "inputBusinessLine": "FBI",
+    "inputListDocumentation": "HIDDEN",
+    "inputSecret": "HIDDEN",
+    "inputWebSearch": false,
+    "inputParallel": true,
+    "stg_businessLineStr": "Food & Beverage",
+    "stg_lsTempFile": "HIDDEN",
+    "stg_hashinputProductName": "ea241bd2e7dee1c1166df60eae5699e87c226322d6cab51e435eeaeb45ca4ae5",
+    "stg_hashinputBusinessLine": "c6cd4cf936fd5ad884ed4c278d147982124a6b7df27d95ddf58cd7a60660664c",
+    "stg_hashinputListDocumentation": "26e14c12b37edae7bf0658029a96dc9d77fdace16f403ce2633eb4a18ba1a742",
+    "stg_hashCombined": "b0eb1859a40a0fe291741494869173079a12d9cd077b98653b4d0b2a6d1a2b55",
+    "stg_lsParsedText": "HIDDEN",
+    "stg_parsedText": "HIDDEN",
+    "stg_lsBase64": "HIDDEN",
+    "gpt_manufacturer_or_supplier_answer": "DSM Food Specialties B.V.",
+    "gpt_manufacturer_or_supplier_reason": "The product specification sheet for Accelerzyme CPG BF includes contact information and addresses for DSM Food Specialties B.V., indicating they are the manufacturer or supplier. The document header and footer also prominently display the DSM brand and website (www.dsm.com/foodandbeverages), confirming DSM as the responsible company for this product.",
+    "gpt_composition_search_answer": "",
+    "gpt_function_search_answer": "",
+    "gpt_application_search_answer": "",
+    "gpt_combined_web_search": "",
+    "gpt_text_of_this_product_only_answer": "HIDDEN",
+    "gpt_select_industry_cluster_answer": [],
+    "gpt_select_industry_cluster_reason": "No specific mention or indication in the document that Accelerzyme CPG BF is used in Beverage & Dairy, Confectionery & Bakery, Food Supplements & Nutrition, or Processed Food & Food Service industries. The document only describes the enzyme's characteristics, safety, and regulatory compliance without linking it to any particular food industry cluster.",
+    "gpt_select_compositions_answer": [
+        "Proteins/Enzymes",
+        "Glycerol",
+        "Heavy Metals"
+    ],
+    "gpt_select_compositions_reason": "Selected Proteins/Enzymes because the product is described as a liquid carboxypeptidase (protease) preparation derived from Aspergillus niger. Selected Glycerol because the composition lists glycerol at 54% typical value. Selected Heavy Metals because the physical and chemical specifications include limits for lead, arsenic, mercury, cadmium, and total heavy metals.",
+    "gpt_select_functions_answer": [
+        "Food Enzyme"
+    ],
+    "gpt_select_functions_reason": "Selected Food Enzyme because the product is described as a liquid carboxypeptidase (protease) preparation derived from Aspergillus niger, indicating its enzymatic function. No other functions such as acidity regulation, preservation, or emulsification are mentioned in the document.",
+    "gpt_select_applications_answer": [],
+    "gpt_select_applications_reason": "No specific application or food product use is mentioned in the document for Accelerzyme CPG BF. The document only describes the enzyme preparation, its composition, physical-chemical and microbiological specifications, and storage conditions without linking it to any particular food application category.",
+    "gpt_cas_from_doc_answer": "N/A",
+    "gpt_cas_from_doc_reason": "The provided product specification sheet for Accelerzyme CPG BF from DSM Food Specialties B.V. does not mention any CAS Registry Number.",
+    "gpt_physical_form_answer": "Liquid",
+    "gpt_physical_form_reason": "Selected Liquid because the product description states that Accelerzyme CPG BF is a liquid carboxypeptidase preparation and the composition lists enzyme solution and glycerol, indicating a liquid form.",
+    "gpt_gen_product_description": "Accelerzyme CPG BF is a liquid carboxypeptidase enzyme preparation derived from Aspergillus niger, presented as a green, clear to opalescent solution. It contains over 50% glycerol and offers high protease activity, making it suitable for vegan and vegetarian applications. The product is kosher and halal approved, with strict microbiological and heavy metal controls, ensuring safety and quality for food industry use.",
+    "gpt_recommended_dosage_answer": "N/A",
+    "gpt_recommended_dosage_reason": "No recommended dosage instructions are mentioned in the provided document for Accelerzyme CPG BF from DSM Food Specialties B.V.",
+    "gpt_certifications_answer": [
+        "ISO",
+        "CODEX, JECFA",
+        "HALAL, JAKIM, MUI",
+        "Kosher",
+        "Vegan"
+    ],
+    "gpt_certifications_reason": "Selected ISO because the document mentions analytical methods derived from international standardized methods like ISO. Selected CODEX, JECFA because the product complies with general specifications published in the Food Chemicals Codex and by JECFA. Selected HALAL, JAKIM, MUI because the product is explicitly stated as Halal approved. Selected Kosher because the product is explicitly stated as Kosher approved. Selected Vegan because the product is explicitly stated as suitable for vegans.",
+    "gpt_claims_answer": [
+        "Bio-Fermentation"
+    ],
+    "gpt_claims_reason": "Selected Bio-Fermentation because the product is derived from a selected strain of Aspergillus niger and involves biotechnological techniques for gene overexpression, indicating a bio-fermentation process. No mention of meat & dairy alternative, natural & ethically sourced, resource & energy optimization, sustainable food waste reduction, or upcycled claims in the document.",
+    "gpt_health_benefits_answer": [],
+    "gpt_health_benefits_reason": "No applicable health benefits because product functions not in the required list (Dietary Fiber, Food Culture, Fortification/Nutraceutical, Probiotic/Postbiotic, Protein)",
+    "time_start": "2025-10-27 14:21:48.466275",
+    "time_end": "2025-10-27 14:22:18.804359",
+    "time_duration": "30.338084"
+}

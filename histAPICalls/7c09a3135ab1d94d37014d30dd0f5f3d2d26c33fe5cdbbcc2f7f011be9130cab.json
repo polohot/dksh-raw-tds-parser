@@ -1,0 +1,60 @@
+{
+    "inputProductName": "ACTIMALT LIQUID REGULAR",
+    "inputBusinessLine": "FBI",
+    "inputListDocumentation": "HIDDEN",
+    "inputSecret": "HIDDEN",
+    "inputWebSearch": false,
+    "inputParallel": true,
+    "stg_businessLineStr": "Food & Beverage",
+    "stg_lsTempFile": "HIDDEN",
+    "stg_hashinputProductName": "d76a894df91bcc7a7ed5729d1656ed1d0ac030c4413752c5cd3b087247390179",
+    "stg_hashinputBusinessLine": "c6cd4cf936fd5ad884ed4c278d147982124a6b7df27d95ddf58cd7a60660664c",
+    "stg_hashinputListDocumentation": "be3639300a4b67065baa46e1c34ded032d7edafb1adf28fd07c0fda0ac9f16d8",
+    "stg_hashCombined": "7c09a3135ab1d94d37014d30dd0f5f3d2d26c33fe5cdbbcc2f7f011be9130cab",
+    "stg_lsParsedText": "HIDDEN",
+    "stg_parsedText": "HIDDEN",
+    "stg_lsBase64": "HIDDEN",
+    "gpt_manufacturer_or_supplier_answer": "Muntons",
+    "gpt_manufacturer_or_supplier_reason": "The product specification document for ACTIMALT LIQUID REGULAR is branded with 'Muntons' at the top, indicating that Muntons is the manufacturer or supplier of this product.",
+    "gpt_composition_search_answer": "",
+    "gpt_function_search_answer": "",
+    "gpt_application_search_answer": "",
+    "gpt_combined_web_search": "",
+    "gpt_text_of_this_product_only_answer": "HIDDEN",
+    "gpt_select_industry_cluster_answer": [
+        "Food Supplements & Nutrition"
+    ],
+    "gpt_select_industry_cluster_reason": "Selected Food Supplements & Nutrition because the product is described as a malt extract syrup with nutritional information emphasizing carbohydrate and sugar content, typical of nutritional supplements or ingredients used for health and nutrition purposes. There is no mention of use in beverage, dairy, confectionery, bakery, or processed food service contexts in the document.",
+    "gpt_select_compositions_answer": [
+        "Cereals and cereal products",
+        "Gluten"
+    ],
+    "gpt_select_compositions_reason": "Selected Cereals and cereal products because the ingredients list includes barley and malted barley, which are cereals. Selected Gluten because the allergen information explicitly states the product contains gluten at 2,570 mg/kg.",
+    "gpt_select_functions_answer": [
+        "Dietary Fiber",
+        "Flavouring & Flavour Modulation",
+        "Protein",
+        "Sweetener"
+    ],
+    "gpt_select_functions_reason": "Selected Dietary Fiber because the document lists 'Total Dietary Fibre' as 1.5 g per 100g. Selected Flavouring & Flavour Modulation because the product has a 'pleasant characteristic cereal / malt odour' and 'sweet with characteristic cereal / malt flavour' indicating flavor contribution. Selected Protein because the nutritional information specifies protein content of 2.5 - 4.0 g per 100g. Selected Sweetener because the product contains significant sugars (maltose 30-40 g, maltotriose 6-10 g, glucose, sucrose, fructose) and is described as sweet. All other functions are not supported by the document.",
+    "gpt_select_applications_answer": [
+        "Beverage"
+    ],
+    "gpt_select_applications_reason": "Selected Beverage because the product is a viscous liquid syrup derived from barley and malted barley, which is commonly used as an ingredient in beverages. The description and composition indicate it is a malt extract syrup suitable for beverage applications. No direct mention or indication of other applications such as baby food, alcoholic beverage, or processed food is present in the document.",
+    "gpt_cas_from_doc_answer": "N/A",
+    "gpt_cas_from_doc_reason": "The document provides detailed product specifications, nutritional data, and ingredient information for ACTIMALT LIQUID REGULAR by Muntons, but does not mention any CAS Registry Number.",
+    "gpt_physical_form_answer": "Liquid",
+    "gpt_physical_form_reason": "Selected Liquid because the product is described as a viscous liquid and yellow-brown syrup in the document.",
+    "gpt_gen_product_description": "ACTIMALT LIQUID REGULAR is a viscous yellow-brown syrup made by enzyme-assisted hot water extraction of barley and malted barley, followed by filtration and vacuum concentration. It has a sweet, characteristic malt flavor and cereal aroma. Rich in soluble barley extracts, it is ideal for use in food and beverage applications requiring natural malt sweetness and flavor.",
+    "gpt_recommended_dosage_answer": "N/A",
+    "gpt_recommended_dosage_reason": "No recommended dosage instructions are mentioned in the document for ACTIMALT LIQUID REGULAR by Muntons.",
+    "gpt_certifications_answer": [],
+    "gpt_certifications_reason": "No certifications related to ACTIMALT LIQUID REGULAR by Muntons are mentioned in the provided document.",
+    "gpt_claims_answer": [],
+    "gpt_claims_reason": "No mention of bio-fermentation, meat or dairy alternative use, natural or ethical sourcing, resource or energy optimization, sustainable food waste reduction, or upcycling in the provided product specification and description.",
+    "gpt_health_benefits_answer": [],
+    "gpt_health_benefits_reason": "No applicable health benefits because product functions not in the required list (Dietary Fiber, Food Culture, Fortification/Nutraceutical, Probiotic/Postbiotic, Protein)",
+    "time_start": "2025-10-27 14:13:04.428923",
+    "time_end": "2025-10-27 14:13:34.523857",
+    "time_duration": "30.094934"
+}
