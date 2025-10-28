@@ -3,7 +3,7 @@
 **Use AI to parser PDF into specific format**
 
 ```
-[V1.21-beta] - 2025-10-28
+[V1.22-beta] - 2025-10-28
 - Code cleanup
 
 [V1.20-beta] - 2025-10-27

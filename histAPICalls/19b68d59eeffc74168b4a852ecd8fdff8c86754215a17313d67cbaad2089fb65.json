@@ -1,0 +1,57 @@
+{
+    "inputProductName": "Masala Tea Unsweetened",
+    "inputBusinessLine": "FBI",
+    "inputListDocumentation": "HIDDEN",
+    "inputSecret": "HIDDEN",
+    "inputWebSearch": false,
+    "inputParallel": true,
+    "stg_lsTempFile": "HIDDEN",
+    "stg_businessLineStr": "Food & Beverage",
+    "stg_hashinputProductName": "d8cd1bfe417616cd76df63c7be1f4a56b0135c21b2b1b6ace2be65e259f7582a",
+    "stg_hashinputBusinessLine": "c6cd4cf936fd5ad884ed4c278d147982124a6b7df27d95ddf58cd7a60660664c",
+    "stg_hashinputListDocumentation": "13c08f6dd3ed562b0139f61714ab32b3def983467dd06ea24c80d6dfca57293f",
+    "stg_hashCombined": "19b68d59eeffc74168b4a852ecd8fdff8c86754215a17313d67cbaad2089fb65",
+    "stg_lsParsedText": "HIDDEN",
+    "stg_parsedText": "HIDDEN",
+    "stg_lsBase64": "HIDDEN",
+    "gpt_manufacturer_or_supplier_answer": "Haldin Pacific Semesta, PT",
+    "gpt_manufacturer_or_supplier_reason": "The document is a product specification for Masala Tea Unsweetened and includes a copyright notice at the bottom stating 'Copyright. 2018 by Haldin Pacific Semesta, PT', indicating that Haldin Pacific Semesta, PT is the manufacturer or supplier of the product.",
+    "gpt_composition_search_answer": "",
+    "gpt_function_search_answer": "",
+    "gpt_application_search_answer": "",
+    "gpt_combined_web_search": "",
+    "gpt_text_of_this_product_only_answer": "HIDDEN",
+    "gpt_select_industry_cluster_answer": [
+        "Beverage & Dairy"
+    ],
+    "gpt_select_industry_cluster_reason": "Selected Beverage & Dairy because the document mentions the product is used in 'Beverages' with a specified use level of 11% solution, indicating its direct application in beverage preparation.",
+    "gpt_select_compositions_answer": [
+        "Spices",
+        "Tea"
+    ],
+    "gpt_select_compositions_reason": "Selected Spices because the product description mentions 'blend of multiple traditional natural ingredients spices'. Selected Tea because the product description mentions 'Masala Tea' and the taste is described as 'Unsweetened tea'.",
+    "gpt_select_functions_answer": [
+        "Flavouring & Flavour Modulation"
+    ],
+    "gpt_select_functions_reason": "Selected Flavouring & Flavour Modulation because the product description mentions a blend of multiple traditional natural ingredients spices and tea, and the taste is described as unsweetened tea, creamy, astringent, warm, indicating the product functions to provide flavor and aroma modulation. No other functions such as preservatives, acidity regulators, or sweeteners are mentioned in the document.",
+    "gpt_select_applications_answer": [
+        "Beverage"
+    ],
+    "gpt_select_applications_reason": "Selected Beverage because the document explicitly lists 'Beverages' as an application with a recommended use level of 11% solution. No other applications are mentioned or implied in the document.",
+    "gpt_cas_from_doc_answer": "N/A",
+    "gpt_cas_from_doc_reason": "The provided product specification document for Masala Tea Unsweetened by Haldin Pacific Semesta, PT does not mention any CAS Registry Number.",
+    "gpt_physical_form_answer": "Powder",
+    "gpt_physical_form_reason": "Selected Powder because the Appearance characteristic in the Product Characteristic section explicitly states 'Powder'.",
+    "gpt_gen_product_description": "Masala Tea Unsweetened from Haldin Pacific Semesta, PT is a powder blend of traditional natural spices and tea, offering a warm, aromatic flavor ideal for cold weather. It features a brown color, slightly floral spice aroma, and a creamy, astringent taste without sweetness. This soluble tea powder has a pH range of 5.9 to 7.1 and is designed for beverage applications at an 11% solution. It is microbiologically safe and meets strict heavy metal limits, ensuring quality and safety. The product should be stored sealed in a cool, dry place and has a shelf life of 12 months unopened.",
+    "gpt_recommended_dosage_answer": "11% Solution",
+    "gpt_recommended_dosage_reason": "Dosage is 11% Solution because it's mentioned under 'Applications and Recommended Use Levels' in the document.",
+    "gpt_certifications_answer": [],
+    "gpt_certifications_reason": "No certifications related to Masala Tea Unsweetened from Haldin Pacific Semesta, PT are mentioned in the provided document.",
+    "gpt_claims_answer": [],
+    "gpt_claims_reason": "No mention of bio-fermentation, meat or dairy alternatives, natural or ethical sourcing, resource or energy optimization, sustainable food waste reduction, or upcycled ingredients in the provided product specification.",
+    "gpt_health_benefits_answer": [],
+    "gpt_health_benefits_reason": "No applicable health benefits because product functions not in the required list (Dietary Fiber, Food Culture, Fortification/Nutraceutical, Probiotic/Postbiotic, Protein)",
+    "time_start": "2025-10-28 15:14:04.967167",
+    "time_end": "2025-10-28 15:14:31.943206",
+    "time_duration": "26.976039"
+}

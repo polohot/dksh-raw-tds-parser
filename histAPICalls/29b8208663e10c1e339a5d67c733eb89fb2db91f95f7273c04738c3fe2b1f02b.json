@@ -1,0 +1,74 @@
+{
+    "inputProductName": "Flat-leaf Parsley Fine",
+    "inputBusinessLine": "FBI",
+    "inputListDocumentation": "HIDDEN",
+    "inputSecret": "HIDDEN",
+    "inputWebSearch": false,
+    "inputParallel": true,
+    "stg_lsTempFile": "HIDDEN",
+    "stg_businessLineStr": "Food & Beverage",
+    "stg_hashinputProductName": "53bdbbb67788934fba94c44c888b65d05fb626a0ee4c4c5c0db97f1802ae472a",
+    "stg_hashinputBusinessLine": "c6cd4cf936fd5ad884ed4c278d147982124a6b7df27d95ddf58cd7a60660664c",
+    "stg_hashinputListDocumentation": "a204c97da825ac02127a487b795d47d2c7e55914126bdec82a159eaebc2f7b10",
+    "stg_hashCombined": "29b8208663e10c1e339a5d67c733eb89fb2db91f95f7273c04738c3fe2b1f02b",
+    "stg_lsParsedText": "HIDDEN",
+    "stg_parsedText": "HIDDEN",
+    "stg_lsBase64": "HIDDEN",
+    "gpt_manufacturer_or_supplier_answer": "Darégal",
+    "gpt_manufacturer_or_supplier_reason": "The document repeatedly references Darégal as the manufacturer or supplier for Flat-leaf Parsley Fine, including contact details and website (www.daregal.fr). The product specifications, packaging, and certifications are all associated with Darégal, confirming it as the supplier for Flat-leaf Parsley Fine.",
+    "gpt_composition_search_answer": "",
+    "gpt_function_search_answer": "",
+    "gpt_application_search_answer": "",
+    "gpt_combined_web_search": "",
+    "gpt_text_of_this_product_only_answer": "HIDDEN",
+    "gpt_select_industry_cluster_answer": [
+        "Processed Food & Food Service"
+    ],
+    "gpt_select_industry_cluster_reason": "Selected Processed Food & Food Service because the document mentions the product is used to add taste and visual gourmet touch to prepared meals, salads, soups, and sauces, indicating its application in culinary and food service contexts.",
+    "gpt_select_compositions_answer": [
+        "Herbs",
+        "Vegetal matter"
+    ],
+    "gpt_select_compositions_reason": "Selected 'Herbs' because the product is described as 'Flat-leaf Parsley Fine' which is a herb (Petroselinum sativum Hoffm.) and the document mentions 'Herbs freshly cut, washed and dried after harvest'. Selected 'Vegetal matter' because the document specifies 'Foreign vegetal matter < 0.1 % (of total mass)' indicating presence of vegetal matter in the product.",
+    "gpt_select_functions_answer": [
+        "Dietary Fiber",
+        "Flavouring & Flavour Modulation",
+        "Protein"
+    ],
+    "gpt_select_functions_reason": "Selected Dietary Fiber and Protein because the nutritional values section (7) lists 29.4 g of dietary fibers and 29.4 g of proteins per 100 g. Selected Flavouring & Flavour Modulation because the product is described as having a characteristic taste and odour of the plant and is used to add taste to meals (sections 1 and 2). No other functions are mentioned or implied in the document.",
+    "gpt_select_applications_answer": [
+        "Dressing",
+        "Fruit & Vegetables",
+        "Meat Products",
+        "Processed Food",
+        "Sauces",
+        "Seasonings",
+        "Soup"
+    ],
+    "gpt_select_applications_reason": "Selected Dressing, Sauces, Soup, Seasonings, Meat Products, Processed Food, and Fruit & Vegetables because the document explicitly mentions use in sauces, soups, salads, and prepared meals. The product is a dried herb (flat-leaf parsley) used as a seasoning and garnish, which relates to these culinary applications. There is no mention of use in beverages, baby food, confectionery, or nutraceuticals, so those are not selected.",
+    "gpt_cas_from_doc_answer": "N/A",
+    "gpt_cas_from_doc_reason": "The provided product specification document for Flat-leaf Parsley Fine from Darégal does not mention any CAS Registry Number.",
+    "gpt_physical_form_answer": "Diverse",
+    "gpt_physical_form_reason": "Selected Diverse because the document mentions a wide choice of cut adapted for all uses and shows multiple cut sizes (Extra Large, Large, Medium, Fine) indicating various physical forms of the product.",
+    "gpt_gen_product_description": "Flat-leaf Parsley Fine by Darégal is a dried herb product featuring finely cut parsley leaves with 80% of particles between 0.4 and 2 mm. It offers a uniform green color, authentic plant aroma and taste, and is ready to use in both hot and cold culinary applications such as sauces, salads, and soups. This eco-responsible product ensures guaranteed microbiological quality and is an economical alternative to fresh parsley, packaged in sealed kraft paper bags for freshness and easy sprinkling.",
+    "gpt_recommended_dosage_answer": "Warm sauce: 0.5-1.5%  Sauteed: 1-2%",
+    "gpt_recommended_dosage_reason": "Dosage is 'Warm sauce: 0.5-1.5%  Sauteed: 1-2%' because it's mentioned under section 2 - Preparation as incorporation examples for usage in culinary solutions.",
+    "gpt_certifications_answer": [
+        "ISO",
+        "BIO",
+        "BRC",
+        "IFS",
+        "Kosher",
+        "Vegan"
+    ],
+    "gpt_certifications_reason": "Selected ISO because of the mention of ISO 9001 and ISO 14001 certifications in the document. Selected BIO because of the mention of 'Biologique' certification. Selected BRC because BRC certification is explicitly listed. Selected IFS because IFS certification is explicitly listed. Selected Kosher because Kosher certification is explicitly listed. Selected Vegan because the product is stated as suitable for Vegan and Vegetarians. Other certifications are not mentioned or not related to this product.",
+    "gpt_claims_answer": [
+        "Natural & Ethically Sourced"
+    ],
+    "gpt_claims_reason": "Selected Natural & Ethically Sourced because the document mentions 'Eco-responsible' in benefits, certifications including ISO 14001 (environmental management), and detailed traceability and natural processing steps (selection of natural varieties, washing and drying, no additives, GMO free). No mention of bio-fermentation, meat/dairy alternative, resource/energy optimization, sustainable food waste reduction, or upcycled claims.",
+    "gpt_health_benefits_answer": [],
+    "gpt_health_benefits_reason": "No applicable health benefits because product functions not in the required list (Dietary Fiber, Food Culture, Fortification/Nutraceutical, Probiotic/Postbiotic, Protein)",
+    "time_start": "2025-10-28 15:07:35.054897",
+    "time_end": "2025-10-28 15:08:25.256473",
+    "time_duration": "50.201576"
+}

@@ -1,0 +1,69 @@
+{
+    "inputProductName": "Pre-gelatinized organic chickpeas flour",
+    "inputBusinessLine": "FBI",
+    "inputListDocumentation": "HIDDEN",
+    "inputSecret": "HIDDEN",
+    "inputWebSearch": false,
+    "inputParallel": true,
+    "stg_lsTempFile": "HIDDEN",
+    "stg_businessLineStr": "Food & Beverage",
+    "stg_hashinputProductName": "60de18832f1bafd62a03a94503d4b970585bbdb1f85a63555607cf1d6763ab4e",
+    "stg_hashinputBusinessLine": "c6cd4cf936fd5ad884ed4c278d147982124a6b7df27d95ddf58cd7a60660664c",
+    "stg_hashinputListDocumentation": "693e04d7be4620f189f7c6e5a38ff3883e7de2e96fe6c5f192383243607d9d0f",
+    "stg_hashCombined": "5f6cd9f10b8ceb3c8d6ae77c040d212179b34607ea2d07855d4b17062cd790dd",
+    "stg_lsParsedText": "HIDDEN",
+    "stg_parsedText": "HIDDEN",
+    "stg_lsBase64": "HIDDEN",
+    "gpt_manufacturer_or_supplier_answer": "Naturis",
+    "gpt_manufacturer_or_supplier_reason": "The document is a final product specification for Pre-gelatinized Organic Chickpeas Flour with product code YU15, and it is branded and issued by Naturis, which is indicated on all pages as the entity responsible for the product. There is no other manufacturer or supplier name mentioned specifically for this product.",
+    "gpt_composition_search_answer": "",
+    "gpt_function_search_answer": "",
+    "gpt_application_search_answer": "",
+    "gpt_combined_web_search": "",
+    "gpt_text_of_this_product_only_answer": "HIDDEN",
+    "gpt_select_industry_cluster_answer": [
+        "Processed Food & Food Service"
+    ],
+    "gpt_select_industry_cluster_reason": "Selected Processed Food & Food Service because the document mentions the product is suitable for instant sauces, soups, puree, and as a thickener, which are typical applications in processed food and food service industries. There is no mention of use in beverage, dairy, confectionery, bakery, or food supplements sectors.",
+    "gpt_select_compositions_answer": [
+        "Cereals containing gluten"
+    ],
+    "gpt_select_compositions_reason": "Selected 'Cereals containing gluten' because the document mentions that the product is manufactured in a plant that also produces cereals containing gluten, indicating possible cross-contamination.",
+    "gpt_select_functions_answer": [
+        "Dietary Fiber",
+        "Protein",
+        "Stabilizer & Thickener"
+    ],
+    "gpt_select_functions_reason": "Selected Dietary Fiber because the document states the product has 22.5 g dietary fibers per 100 g. Selected Protein because the product contains 22.3 g protein per 100 g as per nutritional values. Selected Stabilizer & Thickener because the product is described as suitable for use as a thickener in instant sauces, soups, puree, and humus, and the viscosity profile supports its thickening function. No other functions are mentioned or implied in the document.",
+    "gpt_select_applications_answer": [
+        "Dressing",
+        "Processed Food",
+        "Sauces",
+        "Soup"
+    ],
+    "gpt_select_applications_reason": "Selected Dressing, Sauces, and Soup because the document explicitly mentions suitability for instant sauces, soups, and as a thickener. Selected Processed Food because the product is a processed flour ingredient used in food formulations. Other applications are not mentioned or implied in the document.",
+    "gpt_cas_from_doc_answer": "N/A",
+    "gpt_cas_from_doc_reason": "The provided technical document for Pre-gelatinized organic chickpeas flour by Naturis does not mention any CAS Registry Number.",
+    "gpt_physical_form_answer": "Powder",
+    "gpt_physical_form_reason": "Selected Powder because the mention of 'Appearance: Fine powder' in the Sensory Requirements section of the document clearly indicates the physical form of the product.",
+    "gpt_gen_product_description": "Pre-gelatinized organic chickpeas flour by Naturis is a fine yellow to light brown powder made from organic chickpeas. It offers high protein and dietary fiber content, making it ideal for instant sauces, soups, purees, hummus, and as a natural thickener. This gluten-free, vegan-friendly flour provides excellent viscosity and stability, suitable for diverse dietary formulations.",
+    "gpt_recommended_dosage_answer": "N/A",
+    "gpt_recommended_dosage_reason": "No recommended dosage instructions are mentioned in the provided document for Pre-gelatinized organic chickpeas flour by Naturis.",
+    "gpt_certifications_answer": [
+        "BIO",
+        "HACCP",
+        "HALAL, JAKIM, MUI",
+        "Kosher",
+        "Vegan"
+    ],
+    "gpt_certifications_reason": "Selected BIO because the product complies with Reg. (CE) nº 834/07 and nº 889/08, verified by Q.Certificazioni S.r.l. IT BIO 014 as stated in section 14 Organic Declaration. Selected HACCP because Naturis operates according to its own HACCP plan guaranteeing safety and compliance as stated in section 9 HACCP Declaration. Selected HALAL, JAKIM, MUI because the product is explicitly stated as Halal Certified in section 16 Product Suitable For. Selected Kosher because the product is explicitly stated as Kosher certified in section 16 Product Suitable For. Selected Vegan because the product is explicitly stated as Vegan in section 16 Product Suitable For.",
+    "gpt_claims_answer": [
+        "Natural & Ethically Sourced"
+    ],
+    "gpt_claims_reason": "Selected Natural & Ethically Sourced because the product is organic (section 14 Organic Declaration) and raw materials are sourced from Italy and Argentina (section 13 Origin), indicating natural and traceable sourcing. No mention of bio-fermentation, meat & dairy alternative, resource & energy optimization, sustainable food waste reduction, or upcycling in the document.",
+    "gpt_health_benefits_answer": [],
+    "gpt_health_benefits_reason": "No applicable health benefits because product functions not in the required list (Dietary Fiber, Food Culture, Fortification/Nutraceutical, Probiotic/Postbiotic, Protein)",
+    "time_start": "2025-10-28 15:02:23.448531",
+    "time_end": "2025-10-28 15:03:14.200463",
+    "time_duration": "50.751932"
+}

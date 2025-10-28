@@ -1,0 +1,61 @@
+{
+    "inputProductName": "RP Maracaibo 65%",
+    "inputBusinessLine": "FBI",
+    "inputListDocumentation": "HIDDEN",
+    "inputSecret": "HIDDEN",
+    "inputWebSearch": false,
+    "inputParallel": true,
+    "stg_lsTempFile": "HIDDEN",
+    "stg_businessLineStr": "Food & Beverage",
+    "stg_hashinputProductName": "ff5907570082b8442739ef452ad9a2615a85512b11536f767b058f2788343feb",
+    "stg_hashinputBusinessLine": "c6cd4cf936fd5ad884ed4c278d147982124a6b7df27d95ddf58cd7a60660664c",
+    "stg_hashinputListDocumentation": "a5ba05c81bb5beaa841b92b806407159655074fe7a412da8c0f773c547f90820",
+    "stg_hashCombined": "77be8df5493c5405842c6910924e9973befc5e5282295f61a331a787faf9e75e",
+    "stg_lsParsedText": "HIDDEN",
+    "stg_parsedText": "HIDDEN",
+    "stg_lsBase64": "HIDDEN",
+    "gpt_manufacturer_or_supplier_answer": "Max. Felchlin A.G",
+    "gpt_manufacturer_or_supplier_reason": "The document specifies that the supplier for the product RP Maracaibo 65% is Max. Felchlin A.G.",
+    "gpt_composition_search_answer": "",
+    "gpt_function_search_answer": "",
+    "gpt_application_search_answer": "",
+    "gpt_combined_web_search": "",
+    "gpt_text_of_this_product_only_answer": "HIDDEN",
+    "gpt_select_industry_cluster_answer": [
+        "Confectionery & Bakery"
+    ],
+    "gpt_select_industry_cluster_reason": "Selected Confectionery & Bakery because the product is a special dark chocolate, which is a confectionery item, as mentioned in the document. There is no mention of use in beverage, dairy, supplements, or processed food service categories.",
+    "gpt_select_compositions_answer": [
+        "Milk",
+        "Almond"
+    ],
+    "gpt_select_compositions_reason": "Selected Milk and Almond because the document explicitly mentions 'Allergy: Milk, almond' and 'Contamination: Almond', indicating the presence of these substances in the product.",
+    "gpt_select_functions_answer": [],
+    "gpt_select_functions_reason": "No functions related to the listed categories are mentioned in the provided product specification document for RP Maracaibo 65%. The document only provides product description, packaging, storage, microbiology limits, and allergy information without indicating any functional additives or roles.",
+    "gpt_select_applications_answer": [
+        "Bread, Cakes & Pastries, Frozen Dough",
+        "Confectionery",
+        "Desserts & Ice Cream",
+        "Processed Food",
+        "Sweet Snack"
+    ],
+    "gpt_select_applications_reason": "Selected Confectionery because the product is a special dark chocolate, which is a confectionery item. Selected Bread, Cakes & Pastries, Frozen Dough and Desserts & Ice Cream because chocolate is commonly used as an ingredient in these applications, and the product is described as solid chocolate suitable for customization, implying use in bakery and dessert products. Selected Processed Food because chocolate is a processed food product. Selected Sweet Snack because chocolate is typically consumed as a sweet snack. No mention of beverage, alcoholic beverage, baby food, or nutraceutical applications in the document.",
+    "gpt_cas_from_doc_answer": "N/A",
+    "gpt_cas_from_doc_reason": "The provided product specification document for RP Maracaibo 65% from Max. Felchlin A.G does not mention any CAS Registry Number.",
+    "gpt_physical_form_answer": "Block",
+    "gpt_physical_form_reason": "Selected Block because the document mentions the package type as 'balk type to 1kg bag' and describes the product condition as 'solid type,' indicating a solid block form.",
+    "gpt_gen_product_description": "RP Maracaibo 65% is a special dark chocolate produced by Max. Felchlin A.G in Switzerland, designed specifically for Akutagawa. It comes in a solid, chocolate form packaged in 1 kg PE and paper bags. This chocolate contains milk and almond allergens and should be stored below 18°C to maintain quality. It offers a rich taste suitable for various culinary applications and has a shelf life of 24 months.",
+    "gpt_recommended_dosage_answer": "N/A",
+    "gpt_recommended_dosage_reason": "No recommended dosage instructions are mentioned in the provided product specification document for RP Maracaibo 65% from Max. Felchlin A.G.",
+    "gpt_certifications_answer": [
+        "ISO"
+    ],
+    "gpt_certifications_reason": "Selected ISO because the microbiology test methods reference ISO standards (ISO-4833-1 and ISO-21527-1/2) indicating compliance with ISO testing protocols. No other certifications are mentioned or implied in the document for RP Maracaibo 65% from Max. Felchlin A.G.",
+    "gpt_claims_answer": [],
+    "gpt_claims_reason": "No mention of bio-fermentation, meat or dairy alternatives, natural or ethical sourcing, resource or energy optimization, sustainable food waste reduction, or upcycling is found in the provided product specification document.",
+    "gpt_health_benefits_answer": [],
+    "gpt_health_benefits_reason": "No applicable health benefits because product functions not in the required list (Dietary Fiber, Food Culture, Fortification/Nutraceutical, Probiotic/Postbiotic, Protein)",
+    "time_start": "2025-10-28 15:16:07.317277",
+    "time_end": "2025-10-28 15:16:32.182802",
+    "time_duration": "24.865525"
+}

@@ -1,0 +1,65 @@
+{
+    "inputProductName": "Rosemary Extract",
+    "inputBusinessLine": "FBI",
+    "inputListDocumentation": "HIDDEN",
+    "inputSecret": "HIDDEN",
+    "inputWebSearch": false,
+    "inputParallel": true,
+    "stg_lsTempFile": "HIDDEN",
+    "stg_businessLineStr": "Food & Beverage",
+    "stg_hashinputProductName": "4d8a73b7f5862f7673850f87f9fd8662a8edb54b608d3613518debb4f35a76be",
+    "stg_hashinputBusinessLine": "c6cd4cf936fd5ad884ed4c278d147982124a6b7df27d95ddf58cd7a60660664c",
+    "stg_hashinputListDocumentation": "6a14175c01ffa62ed8ca0af5adac46b9703a27727d85257875ec8195757369a2",
+    "stg_hashCombined": "195c8e3e56bb23cf458d649fdb58fa92b054b15838399c5f237c2e81ba721b2f",
+    "stg_lsParsedText": "HIDDEN",
+    "stg_parsedText": "HIDDEN",
+    "stg_lsBase64": "HIDDEN",
+    "gpt_manufacturer_or_supplier_answer": "Hunan Huacheng Biotech,Inc.",
+    "gpt_manufacturer_or_supplier_reason": "The document specifies under the product information for Rosemary Extract that the manufacturer is Hunan Huacheng Biotech,Inc.",
+    "gpt_composition_search_answer": "",
+    "gpt_function_search_answer": "",
+    "gpt_application_search_answer": "",
+    "gpt_combined_web_search": "",
+    "gpt_text_of_this_product_only_answer": "HIDDEN",
+    "gpt_select_industry_cluster_answer": [
+        "Food Supplements & Nutrition"
+    ],
+    "gpt_select_industry_cluster_reason": "Selected Food Supplements & Nutrition because the product is a rosemary extract with active ingredients like rosmarinic acid, commonly used for nutritional and supplement purposes. The certifications such as FDA GRAS, Kosher, Halal, NON-GMO, and organic status support its use in food supplements and nutrition. There is no direct mention or indication in the document that it is used specifically in Beverage & Dairy, Confectionery & Bakery, or Processed Food & Food Service.",
+    "gpt_select_compositions_answer": [
+        "Plant Extracts",
+        "Heavy Metals",
+        "Microorganisms"
+    ],
+    "gpt_select_compositions_reason": "Selected Plant Extracts because the product is Rosemary Extract derived from Rosmarinus officinalis L. leaves as mentioned in the product information. Selected Heavy Metals because the chemical control section specifies limits for Arsenic, Cadmium, Lead, Mercury, and total Heavy Metals. Selected Microorganisms because the microbiological control section lists specifications for Total Plate Count, Yeast & Mold, Coliforms, E. coli, Salmonella, and S. aureus.",
+    "gpt_select_functions_answer": [
+        "Antioxidant",
+        "Fortification/Nutraceutical"
+    ],
+    "gpt_select_functions_reason": "Selected Antioxidant because the product contains Rosmarinic acid and Carnosic acid, which are well-known antioxidant compounds, as specified in the active ingredients section. Selected Fortification/Nutraceutical because the product is a natural extract with active ingredients (Rosmarinic acid) that are commonly used for health benefits, indicating its use as a nutraceutical. No other functions are mentioned or implied in the document.",
+    "gpt_select_applications_answer": [],
+    "gpt_select_applications_reason": "No specific application or usage in food or nutraceutical forms is mentioned in the document. The document only provides product specifications, certifications, and storage details for Rosemary Extract without indicating its use in any listed application categories.",
+    "gpt_cas_from_doc_answer": "N/A",
+    "gpt_cas_from_doc_reason": "The provided document for Rosemary Extract from Hunan Huacheng Biotech, Inc. does not mention any CAS Registry Number.",
+    "gpt_physical_form_answer": "Powder",
+    "gpt_physical_form_reason": "Selected Powder because the document specifies the appearance as 'Fine brown yellow powder' under Physical Control.",
+    "gpt_gen_product_description": "Rosemary Extract from Hunan Huacheng Biotech, Inc. is a fine brown yellow powder derived from 100% natural dried rosemary leaves using water and ethanol extraction. It contains at least 5% rosmarinic acid and up to 1% carnosic acid, offering antioxidant benefits. This product is Kosher, Halal, NON-GMO certified, and suitable for various applications requiring natural plant-based antioxidants.",
+    "gpt_recommended_dosage_answer": "N/A",
+    "gpt_recommended_dosage_reason": "No recommended dosage instructions are mentioned in the provided document for Rosemary Extract from Hunan Huacheng Biotech, Inc.",
+    "gpt_certifications_answer": [
+        "ISO",
+        "BRC",
+        "GRAS, FEMAGRAS",
+        "HALAL, JAKIM, MUI",
+        "Kosher"
+    ],
+    "gpt_certifications_reason": "Selected ISO because of the mention of CTI ISO 22000:2005 and CTI ISO 9001:2015 certifications in the document. Selected BRC because the document explicitly states BRC Food Certified. Selected GRAS, FEMAGRAS because FDA GRAS is mentioned in the document. Selected HALAL, JAKIM, MUI because Halal Certified is clearly mentioned. Selected Kosher because Kosher Certified and KOF-K PARVE Kosher Certified are mentioned.",
+    "gpt_claims_answer": [
+        "Natural & Ethically Sourced"
+    ],
+    "gpt_claims_reason": "Selected Natural & Ethically Sourced because the document mentions the product is made from 100% natural dried leaves and is NON-GMO verified, USDA Organic certified, Kosher and Halal certified, indicating natural and ethically sourced ingredients. No mention of bio-fermentation, meat & dairy alternative, resource & energy optimization, sustainable food waste reduction, or upcycling is found in the document.",
+    "gpt_health_benefits_answer": [],
+    "gpt_health_benefits_reason": "No applicable health benefits because product functions not in the required list (Dietary Fiber, Food Culture, Fortification/Nutraceutical, Probiotic/Postbiotic, Protein)",
+    "time_start": "2025-10-28 15:10:05.466951",
+    "time_end": "2025-10-28 15:10:38.004738",
+    "time_duration": "32.537787"
+}

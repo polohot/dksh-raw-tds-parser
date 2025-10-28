@@ -3,6 +3,7 @@ FROM python:3.12.11
 
 # Set work directory
 WORKDIR /app
+RUN mkdir -p /app/histAPICalls
 
 # Copy requirements first (to leverage Docker layer caching)
 COPY requirements.txt .

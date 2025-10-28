@@ -1,0 +1,72 @@
+{
+    "inputProductName": "Flat-leaf Parsley Medium",
+    "inputBusinessLine": "FBI",
+    "inputListDocumentation": "HIDDEN",
+    "inputSecret": "HIDDEN",
+    "inputWebSearch": false,
+    "inputParallel": true,
+    "stg_lsTempFile": "HIDDEN",
+    "stg_businessLineStr": "Food & Beverage",
+    "stg_hashinputProductName": "4a4e829fcd1b802a87e088f94a4a7f171059158ba765253e60a105bdd53bb568",
+    "stg_hashinputBusinessLine": "c6cd4cf936fd5ad884ed4c278d147982124a6b7df27d95ddf58cd7a60660664c",
+    "stg_hashinputListDocumentation": "a204c97da825ac02127a487b795d47d2c7e55914126bdec82a159eaebc2f7b10",
+    "stg_hashCombined": "621af9c1b1be4cfa4273b3d340b1ac351ccf804d1913cb58ac1a0680c27b7c34",
+    "stg_lsParsedText": "HIDDEN",
+    "stg_parsedText": "HIDDEN",
+    "stg_lsBase64": "HIDDEN",
+    "gpt_manufacturer_or_supplier_answer": "Darégal",
+    "gpt_manufacturer_or_supplier_reason": "The document repeatedly references Darégal as the manufacturer or supplier of Flat-leaf Parsley Medium, including contact details, certifications, and packaging information specifically for this product.",
+    "gpt_composition_search_answer": "",
+    "gpt_function_search_answer": "",
+    "gpt_application_search_answer": "",
+    "gpt_combined_web_search": "",
+    "gpt_text_of_this_product_only_answer": "HIDDEN",
+    "gpt_select_industry_cluster_answer": [
+        "Processed Food & Food Service"
+    ],
+    "gpt_select_industry_cluster_reason": "Selected Processed Food & Food Service because the document mentions the product is used to add visual and taste enhancement to prepared meals, salads, soups, and sauces, indicating culinary and food service applications.",
+    "gpt_select_compositions_answer": [
+        "Herbs",
+        "Vegetal matter"
+    ],
+    "gpt_select_compositions_reason": "Selected 'Herbs' because the product is described as flat-leaf parsley, a herb, freshly cut, washed, and dried after harvest. Selected 'Vegetal matter' because the product is plant-based and contains vegetal matter with a specification of foreign vegetal matter less than 0.1%.",
+    "gpt_select_functions_answer": [
+        "Dietary Fiber",
+        "Flavouring & Flavour Modulation",
+        "Protein"
+    ],
+    "gpt_select_functions_reason": "Selected Dietary Fiber and Protein because the nutritional values section lists 29.4 g of dietary fibers and 29.4 g of proteins per 100 g. Selected Flavouring & Flavour Modulation because the product is described as having an authentic and natural taste characteristic of the plant, used to add taste to meals. No mention of other functions such as preservatives, antioxidants, emulsifiers, or acidity regulators is found in the document.",
+    "gpt_select_applications_answer": [
+        "Dressing",
+        "Fruit & Vegetables",
+        "Sauces",
+        "Seasonings",
+        "Soup"
+    ],
+    "gpt_select_applications_reason": "Selected Dressing, Sauces, Soup, Seasonings, and Fruit & Vegetables because the document explicitly mentions the product is used to add taste and visual touch to meals, salads, soups, and sauces, indicating culinary applications in these categories. The product is a dried herb (parsley), which is a vegetable product, justifying Fruit & Vegetables. No mention of use in beverages, baby food, bakery, confectionery, or nutraceuticals, so those are not selected.",
+    "gpt_cas_from_doc_answer": "N/A",
+    "gpt_cas_from_doc_reason": "The provided product specification document for Flat-leaf Parsley Medium from Darégal does not mention any CAS Registry Number.",
+    "gpt_physical_form_answer": "Diverse",
+    "gpt_physical_form_reason": "Selected Diverse because the document describes the product as 'herbs freshly cut, washed and dried after harvest' with a 'wide choice of cut adapted for all your uses' and specifies particle sizes for medium cut variants, indicating a form consisting of cut dried pieces rather than a single uniform physical form.",
+    "gpt_gen_product_description": "Flat-leaf Parsley Medium from Darégal is a dried herb with a uniform green color and a characteristic fresh parsley aroma and taste. It features medium-sized cut pieces ranging from 0.4 to 4 mm, making it versatile for use in both hot and cold dishes such as sauces, salads, and soups. This product offers guaranteed microbiological quality, is ready to use, economical compared to fresh parsley, and eco-responsible. Packaged in kraft paper bags with polyethylene lining, it ensures freshness and ease of handling for culinary professionals and enthusiasts alike.",
+    "gpt_recommended_dosage_answer": "Warm sauce: 0.5-1.5%",
+    "gpt_recommended_dosage_reason": "Dosage is 'Warm sauce: 0.5-1.5%' because it's mentioned under section 2 - Preparation as an incorporation example for Flat-leaf Parsley Medium in the document.",
+    "gpt_certifications_answer": [
+        "ISO",
+        "BIO",
+        "BRC",
+        "IFS",
+        "Kosher",
+        "Vegan"
+    ],
+    "gpt_certifications_reason": "Selected ISO because ISO 9001 and ISO 14001 certifications are mentioned in the document. Selected BIO because 'Biologique' certification is explicitly listed. Selected BRC because BRC certification is listed under Additional Information. Selected IFS because IFS certification is listed under Additional Information. Selected Kosher because Kosher certification is listed under Additional Information. Selected Vegan because the product is stated as suitable for Vegan and Vegetarians. No other certifications from the list are mentioned or implied in the document.",
+    "gpt_claims_answer": [
+        "Natural & Ethically Sourced"
+    ],
+    "gpt_claims_reason": "Selected Natural & Ethically Sourced because the document mentions the product is 'Authentic and natural taste', 'Eco-responsible', 'No additives', 'GMO Free', 'Conforms to European regulations', and has certifications including Biologique and ISO 14001, indicating natural and ethical sourcing. No mention of bio-fermentation, meat/dairy alternative, resource/energy optimization, sustainable food waste reduction, or upcycling is found in the document.",
+    "gpt_health_benefits_answer": [],
+    "gpt_health_benefits_reason": "No applicable health benefits because product functions not in the required list (Dietary Fiber, Food Culture, Fortification/Nutraceutical, Probiotic/Postbiotic, Protein)",
+    "time_start": "2025-10-28 15:06:43.748874",
+    "time_end": "2025-10-28 15:07:35.035815",
+    "time_duration": "51.286941"
+}

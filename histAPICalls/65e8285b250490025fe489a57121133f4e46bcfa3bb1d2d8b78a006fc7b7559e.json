@@ -1,0 +1,58 @@
+{
+    "inputProductName": "Apple Juice Concentrate",
+    "inputBusinessLine": "FBI",
+    "inputListDocumentation": "HIDDEN",
+    "inputSecret": "HIDDEN",
+    "inputWebSearch": false,
+    "inputParallel": true,
+    "stg_lsTempFile": "HIDDEN",
+    "stg_businessLineStr": "Food & Beverage",
+    "stg_hashinputProductName": "3e66f6d9f02048718b6111db071a35143b4d0a1b0a85720a11e7724c48c7b9f6",
+    "stg_hashinputBusinessLine": "c6cd4cf936fd5ad884ed4c278d147982124a6b7df27d95ddf58cd7a60660664c",
+    "stg_hashinputListDocumentation": "d50e0d48858a469013620ba4b60c93ea4fef3f73866f1bb5a9eb6917dbdea81a",
+    "stg_hashCombined": "65e8285b250490025fe489a57121133f4e46bcfa3bb1d2d8b78a006fc7b7559e",
+    "stg_lsParsedText": "HIDDEN",
+    "stg_parsedText": "HIDDEN",
+    "stg_lsBase64": "HIDDEN",
+    "gpt_manufacturer_or_supplier_answer": "WILD",
+    "gpt_manufacturer_or_supplier_reason": "The document repeatedly features the name 'WILD' prominently at the top of each page and in the header section, indicating that WILD is the manufacturer or supplier of the Apple Juice Concentrate product described in the specification document.",
+    "gpt_composition_search_answer": "",
+    "gpt_function_search_answer": "",
+    "gpt_application_search_answer": "",
+    "gpt_combined_web_search": "",
+    "gpt_text_of_this_product_only_answer": "HIDDEN",
+    "gpt_select_industry_cluster_answer": [
+        "Beverage & Dairy"
+    ],
+    "gpt_select_industry_cluster_reason": "Selected Beverage & Dairy because the product is Apple Juice Concentrate, which is primarily used in beverage production as indicated by the application dosage for 100% juice (167 kg : 1000 l). There is no mention of use in confectionery, supplements, or processed food service applications in the document.",
+    "gpt_select_compositions_answer": [
+        "Fruit Juice Concentrates"
+    ],
+    "gpt_select_compositions_reason": "Selected Fruit Juice Concentrates because the document explicitly states the ingredient as 'apple juice concentrate' which is a fruit juice concentrate.",
+    "gpt_select_functions_answer": [],
+    "gpt_select_functions_reason": "No specific functional roles such as acidity regulator, preservative, sweetener, or others are explicitly mentioned in the document. The product is described solely as apple juice concentrate with composition and nutritional data, without indication of functional additives or roles.",
+    "gpt_select_applications_answer": [
+        "Beverage",
+        "Fruit & Vegetables"
+    ],
+    "gpt_select_applications_reason": "Selected Beverage because the product is described as Apple Juice Concentrate with a standard dosage for 100% juice application. Selected Fruit & Vegetables because the product is composed solely of apple juice concentrate, which is a fruit-based ingredient. No other applications are mentioned or implied in the document.",
+    "gpt_cas_from_doc_answer": "N/A",
+    "gpt_cas_from_doc_reason": "The provided product specification document for Apple Juice Concentrate from manufacturer WILD does not mention any CAS Registry Number.",
+    "gpt_physical_form_answer": "Liquid",
+    "gpt_physical_form_reason": "Selected Liquid because the product is described as Apple Juice Concentrate with a Brix value indicating a concentrated liquid form, and storage recommendations include tank trucks and stirring before dispensing, which are typical for liquid products.",
+    "gpt_gen_product_description": "Apple Juice Concentrate from WILD is a high-quality liquid concentrate made purely from apple juice. It has a Brix value around 70 °Bx, indicating a rich sugar content, and a balanced acidity with a pH between 3.0 and 4.0. This concentrate is free from allergens and genetically modified ingredients, making it suitable for various food and beverage applications. It offers natural sweetness and flavor, ideal for juice production and culinary uses, with stable microbiological quality and recommended storage conditions to maintain freshness.",
+    "gpt_recommended_dosage_answer": "100% JUICE: 167 kg : 1000 l",
+    "gpt_recommended_dosage_reason": "Dosage is '100% JUICE: 167 kg : 1000 l' because it's mentioned under 'Application with Standard Dosage' in the document.",
+    "gpt_certifications_answer": [
+        "GMP",
+        "HACCP"
+    ],
+    "gpt_certifications_reason": "Selected GMP and HACCP because the document explicitly states that Good Manufacturing Practice (GMP) and HACCP systems are implemented to avoid cross-contamination of allergens. No other certifications from the provided list are mentioned or implied in the document.",
+    "gpt_claims_answer": [],
+    "gpt_claims_reason": "No mention of bio-fermentation processes, meat or dairy alternative claims, natural or ethical sourcing, resource or energy optimization, sustainable food waste reduction, or upcycling is found in the provided product specification for Apple Juice Concentrate by WILD.",
+    "gpt_health_benefits_answer": [],
+    "gpt_health_benefits_reason": "No applicable health benefits because product functions not in the required list (Dietary Fiber, Food Culture, Fortification/Nutraceutical, Probiotic/Postbiotic, Protein)",
+    "time_start": "2025-10-28 15:03:14.219390",
+    "time_end": "2025-10-28 15:03:45.016576",
+    "time_duration": "30.797186"
+}
