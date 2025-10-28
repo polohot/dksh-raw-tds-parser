@@ -3,6 +3,9 @@
 **Use AI to parser PDF into specific format**
 
 ```
+[V1.21-beta] - 2025-10-28
+- Code cleanup
+
 [V1.20-beta] - 2025-10-27
 - Add end point "v1_parse_pim_fields_b64"
     Allow input as base64 string inplace of PDF files
