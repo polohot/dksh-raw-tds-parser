@@ -1,5 +1,6 @@
 # GENERAL
 from fastapi import FastAPI, File, Form, UploadFile, HTTPException, Body
+from typing import Dict, Any
 from typing import List, Annotated
 import asyncio
 import random
@@ -159,14 +160,15 @@ async def run_main(mainDict, time_start):
     hashCombined = hashlib.sha256((mainDict['stg_hashinputProductName'] + mainDict['stg_hashinputBusinessLine'] + mainDict['stg_hashinputListDocumentation']).encode()).hexdigest()
     mainDict['stg_hashCombined'] = hashCombined
     # LOAD FROM HIST IF EXISTS
-    if os.path.isfile(os.path.join('histAPICalls/', hashCombined + '.json')):
-        with open(os.path.join('histAPICalls/', hashCombined + '.json'), "r", encoding="utf-8") as file:
-            mainDict = json.load(file)
-        time.sleep(random.uniform(15, 25))
+    mainDictH = load_hist_by_hash(hashCombined)
+    if mainDictH is not None:
+        mainDict = mainDictH
+        time.sleep(random.uniform(10, 15))
         time_end = datetime.datetime.now()
         mainDict['time_start'] = str(time_start)
         mainDict['time_end'] = str(time_end)
         mainDict['time_duration'] = str((time_end - time_start).total_seconds())    
+        mainDict['stg_parsedText'] = 'HIDDEN'
         return mainDict
     
     ####################
@@ -244,19 +246,20 @@ async def run_main(mainDict, time_start):
     mainDict['inputSecret'] = 'HIDDEN'
     mainDict['stg_lsTempFile'] = 'HIDDEN'
     mainDict['stg_lsParsedText'] = 'HIDDEN'
-    mainDict['stg_parsedText'] = 'HIDDEN'
+    # mainDict['stg_parsedText'] = 'HIDDEN'
     mainDict['stg_lsBase64'] = 'HIDDEN'
     mainDict['gpt_text_of_this_product_only_answer'] = 'HIDDEN'
 
     #######################
     # STAGE 7 - SAVE HASH #
     #######################
-    filepath = f"histAPICalls/{mainDict['stg_hashCombined']}.json"
+    tmp_dttm = mainDict['time_start'].replace("-", "").replace(" ", "_").replace(":", "").replace(".", "_")
+    filepath = f"histAPICalls/{tmp_dttm}__{mainDict['stg_hashCombined']}.json"
     with open(filepath, "w", encoding="utf-8") as file:
         json.dump(mainDict, file, indent=4, 
                 ensure_ascii=False,   # Keep all non-ASCII characters readable
                 skipkeys=True)        # Skip any keys that aren't valid JSON types
-
+    mainDict['stg_parsedText'] = 'HIDDEN'
     return mainDict
 
 
@@ -300,43 +303,91 @@ async def v1_histAPICalls_count():
 @app.post("/v1_histAPICalls_list")
 async def v1_histAPICalls_list():
     try:
-        def _list_files() -> List[str]:
-            with os.scandir('histAPICalls/') as it:
-                return [entry.name.rsplit('.', 1)[0] for entry in it if entry.is_file() and entry.name.endswith('.json')]
-
-        list_files = await anyio.to_thread.run_sync(_list_files)
-        return {"list_histAPICalls": list_files}
+        def _build_summary() -> Dict[str, Dict[str, Any]]:
+            by_date: Dict[str, Dict[str, Any]] = {}
+            with os.scandir("histAPICalls/") as it:
+                for entry in it:
+                    if not entry.is_file() or not entry.name.endswith(".json"):
+                        continue                    
+                    stem = entry.name[:-5] # strip ".json"
+                    try:
+                        prefix, hash_combined = stem.split("__", 1)
+                    except ValueError:
+                        continue
+                    date_raw = prefix.split("_", 1)[0]
+                    if len(date_raw) != 8 or not date_raw.isdigit():
+                        continue
+                    date_key = f"{date_raw[0:4]}-{date_raw[4:6]}-{date_raw[6:8]}"
+                    if date_key not in by_date:
+                        by_date[date_key] = {"count": 0, "hashCombined": []}
+                    by_date[date_key]["count"] += 1
+                    by_date[date_key]["hashCombined"].append(hash_combined)
+            sorted_dates = sorted(by_date.keys(), reverse=True)
+            return {d: by_date[d] for d in sorted_dates}
+        body = await anyio.to_thread.run_sync(_build_summary)
+        return body
     except FileNotFoundError:
-        raise HTTPException(status_code=404, detail=f"Directory not found: histAPICalls/")
+        raise HTTPException(status_code=404, detail="Directory not found: histAPICalls/")
     except OSError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# @app.post("/v1_histAPICalls_read")
+# async def v1_histAPICalls_read(
+#     stg_hashCombined: Annotated[str, Form(...)]):
+#     try:
+#         filepath = f"histAPICalls/{stg_hashCombined}.json"
+#         if os.path.isfile(filepath):
+#             def _read_file() -> dict:
+#                 with open(filepath, "r", encoding="utf-8") as file:
+#                     return json.load(file)
+#             file_content = await anyio.to_thread.run_sync(_read_file)
+#             return file_content
+#         else:
+#             raise HTTPException(status_code=404, detail=f"File not found: {stg_hashCombined}.json")
+#     except OSError as e:
+#         raise HTTPException(status_code=500, detail=str(e))
+    
 @app.post("/v1_histAPICalls_read")
 async def v1_histAPICalls_read(
-    stg_hashCombined: Annotated[str, Form(...)]):
+    stg_hashCombined: Annotated[str, Form(...)]
+):
     try:
-        filepath = f"histAPICalls/{stg_hashCombined}.json"
-        if os.path.isfile(filepath):
-            def _read_file() -> dict:
-                with open(filepath, "r", encoding="utf-8") as file:
-                    return json.load(file)
-            file_content = await anyio.to_thread.run_sync(_read_file)
-            return file_content
-        else:
-            raise HTTPException(status_code=404, detail=f"File not found: {stg_hashCombined}.json")
+        def _find_and_read() -> dict:
+            suffix = f"__{stg_hashCombined}.json"
+            with os.scandir("histAPICalls/") as it:
+                for entry in it:
+                    if entry.is_file() and entry.name.endswith(suffix):
+                        with open(entry.path, "r", encoding="utf-8") as f:
+                            return json.load(f)
+            raise FileNotFoundError(f"File not found for hash: {stg_hashCombined}")
+
+        file_content = await anyio.to_thread.run_sync(_find_and_read)
+        return file_content
+
+    except FileNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
     except OSError as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/v1_histAPICalls_delete")
 async def v1_histAPICalls_delete(
-    stg_hashCombined: Annotated[str, Form(...)]):
+    stg_hashCombined: Annotated[str, Form(...)]
+):
     try:
-        filepath = f"histAPICalls/{stg_hashCombined}.json"
-        if os.path.isfile(filepath):
-            await anyio.to_thread.run_sync(os.remove, filepath)
-            return {"detail": f"File {stg_hashCombined}.json removed successfully."}
-        else:
-            raise HTTPException(status_code=404, detail=f"File not found: {stg_hashCombined}.json")
+        def _find_and_delete() -> str:
+            suffix = f"__{stg_hashCombined}.json"
+            with os.scandir("histAPICalls/") as it:
+                for entry in it:
+                    if entry.is_file() and entry.name.endswith(suffix):
+                        os.remove(entry.path)
+                        return entry.name  # return actual filename
+            raise FileNotFoundError(f"File not found for hash: {stg_hashCombined}")
+
+        deleted_filename = await anyio.to_thread.run_sync(_find_and_delete)
+        return {"detail": f"File '{deleted_filename}' removed successfully."}
+
+    except FileNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
     except OSError as e:
         raise HTTPException(status_code=500, detail=str(e))
 

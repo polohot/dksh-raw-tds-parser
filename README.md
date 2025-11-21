@@ -3,6 +3,12 @@
 **Use AI to parser PDF into specific format**
 
 ```
+[V1.23-beta] - 2025-11-20
+- PIM_buildBodySelectIndustryCluster
+    Change selection list to new list from SFDC
+- mainDict['stg_parsedText'] - to save in history, but not to send back in response
+- Reduce wait time for those hash already called 15-25s become 10-15s
+
 [V1.22-beta] - 2025-10-28
 - Code cleanup
 

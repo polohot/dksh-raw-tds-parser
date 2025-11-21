@@ -231,37 +231,72 @@ def PIM_buildBodyGetProductInfo(parsed_text, product_name, manufacturer_name, ls
 
 def PIM_buildBodySelectIndustryCluster(parsed_text, product_name, manufacturer_name, ls_base64, business_line, searched_text=''):
     # Define mapping of business lines to industry clusters
+
+    # OLD LIST
+    # if business_line == 'FBI':
+    #     selection_list = [
+    #         'Beverage & Dairy',
+    #         'Confectionary & Bakery',
+    #         'Food Supplements & Nutrition',
+    #         'Processed Food & Food Service']
+    # elif business_line == 'PCI':
+    #     selection_list = [
+    #         'Cosmetics & Toiletries',
+    #         'Homecare & Institutional Cleaning',
+    #         'Cosmetics & Toiletries, Homecare & Institutional Cleaning']
+    # elif business_line == 'PHI':
+    #     selection_list = [
+    #         'Animal Care Industry',
+    #         'API',
+    #         'Biopharma',
+    #         'Excipients',
+    #         'Intermediates & Reagents',
+    #         'Nutraceuticals',
+    #         'Packing Materials',
+    #         'Clean Room Management']
+    # elif business_line == 'SCI':
+    #     selection_list = [
+    #         'Electronic & Specialties',
+    #         'Paints & Coatings',
+    #         'Polymers',
+    #         'Agrochemicals',
+    #         'Electronic & Specialties, Paints & Coatings',
+    #         'Paints & Coatings, Polymers',
+    #         'Electronic & Specialties, Polymers',
+    #         'Electronic & Specialties, Paints & Coatings, Polymers']
+    
+    # 2025-11-20 | YEOH HUI YIN & PAULA: Change to new list
     if business_line == 'FBI':
         selection_list = [
-            'Beverage & Dairy',
-            'Confectionery & Bakery',
-            'Food Supplements & Nutrition',
-            'Processed Food & Food Service']
+            'Beverage & Dairy (BD)',
+            'Confectionary & Bakery (CB)',
+            'Food Supplements & Nutrition (FSN)',
+            'Processed Food & Food Service (PFFS)']
+            # Seafood
+            # Food & Beverage Industry VAM
+            # Food Service VAM
     elif business_line == 'PCI':
         selection_list = [
-            'Cosmetics & Toiletries',
-            'Homecare & Institutional Cleaning',
-            'Cosmetics & Toiletries, Homecare & Institutional Cleaning']
+            'Personal Care',
+            'Homecare & Institutional Cleaning']
     elif business_line == 'PHI':
         selection_list = [
-            'Animal Care',
-            'API',
+            'Animal Care Industry (ACI)',
+            'APIs',
             'Biopharma',
             'Excipients',
-            'Intermediates & Reagents',
+            'Intermediates',
             'Nutraceuticals',
             'Packing Materials',
             'Clean Room Management']
     elif business_line == 'SCI':
         selection_list = [
-            'Electronic & Specialties',
-            'Paints & Coatings',
-            'Polymers',
-            'Agrochemicals',
-            'Electronic & Specialties, Paints & Coatings',
-            'Paints & Coatings, Polymers',
-            'Electronic & Specialties, Polymers',
-            'Electronic & Specialties, Paints & Coatings, Polymers']
+            'Electronics & Specialties (ES)',
+            'Paints & Coatings (PC)',
+            'Polymers (PO)',
+            'Agrochemicals (AG)']
+
+
     # SYSTEM PROMPT
     system_prompt = f"""
     # INSTRUCTION #
@@ -2150,3 +2185,14 @@ def pdf_to_base64(pdf_path):
 def base64_to_pdf(b64_string, output_path):
     with open(output_path, "wb") as pdf_file:
         pdf_file.write(base64.b64decode(b64_string))
+
+def load_hist_by_hash(hash_combined, folder='histAPICalls'):
+    suffix = f"__{hash_combined}.json"
+    # scandir is faster and gives you dir entries directly
+    with os.scandir(folder) as it:
+        for entry in it:
+            # `is_file()` avoids directories; `name` avoids extra stat calls
+            if entry.is_file() and entry.name.endswith(suffix):
+                with open(entry.path, "r", encoding="utf-8") as f:
+                    return json.load(f)
+    return None
