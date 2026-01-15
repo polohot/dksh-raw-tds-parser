@@ -14,6 +14,9 @@ import datetime
 import hashlib
 import time
 import anyio
+import requests
+import json
+import simple_salesforce
 from PIL import Image
 
 # URLLIB3
@@ -208,7 +211,6 @@ async def run_main(mainDict, time_start):
     # STAGE 5 - PARALLEL #
     ######################
     if mainDict['inputParallel'] == True:
-        pass
         (
             (mainDict['gpt_select_industry_cluster_answer'], mainDict['gpt_select_industry_cluster_reason']),
             (mainDict['gpt_select_compositions_answer'], mainDict['gpt_select_compositions_reason']),

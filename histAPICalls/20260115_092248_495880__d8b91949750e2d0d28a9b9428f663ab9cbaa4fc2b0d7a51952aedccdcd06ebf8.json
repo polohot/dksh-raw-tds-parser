@@ -1,0 +1,61 @@
+{
+    "inputProductName": "ACTIVE JUICE CAVOLO NERO (KALE)",
+    "inputBusinessLine": "PCI",
+    "inputListDocumentation": "HIDDEN",
+    "inputSecret": "HIDDEN",
+    "inputWebSearch": false,
+    "inputParallel": true,
+    "stg_lsTempFile": "HIDDEN",
+    "stg_businessLineStr": "Personal Care",
+    "stg_hashinputProductName": "e30e5f86bc89114c4c4430789baaa3b67c3beb6a126bd96ff7d99d43ea170632",
+    "stg_hashinputBusinessLine": "835aada79e600fc216628b3dbb692683a800d4c6dcfdf78a60410d98778883d8",
+    "stg_hashinputListDocumentation": "de777e64dd454949cb00757c5bebeee14fe89f3a89b0cd9984ce4497170a276c",
+    "stg_hashCombined": "d8b91949750e2d0d28a9b9428f663ab9cbaa4fc2b0d7a51952aedccdcd06ebf8",
+    "stg_lsParsedText": "HIDDEN",
+    "stg_parsedText": "TEXT_FROM_FILE_NAME:de777e64dd454949cb00757c5bebeee14fe89f3a89b0cd9984ce4497170a276c.pdf \n\n\n## Page 1\n\nphenbiox\nTECHNICAL DATA SHEET / SCHEDA TECNICA\nNome Prodotto: ACTIVE JUICE CAVOLO NERO\nProduct Name: ACTIVE JUICE CAVOLO NERO (KALE)\nKind of product/Tipo di prodotto\nFresh vegetal juice / Succo vegetale fresco\nPlant used/Pianta utilizzata\nKale leaf/Cavolo nero foglie\nUse/Utilizzo\nIngredient for cosmetic products / Additivo per cosmesi\nINCI name/nome INCI:\nAQUA, BRASSICA OLERACEA ACEPHALA JUICE, CITRIC ACID, SODIUM BENZOATE,\nPOTASSIUM SORBATE\nCTFA name/nome CTFA:\nComposition/Composizione\nINCI name\n% w/w\nCAS\nEINECS\nAQUA\nQ.S. to/Q.B. a 100\n7732-18-5\n231-791-2\nBRASSICA OLERACEA\nACEPHALA JUICE\n20\nCITRIC ACID\n1,5\n77-92-9 / 5949-29-1\n201-069-1\nSODIUM BENZOATE\n0,2\n532-32-1\n208-534-8\nPOTASSIUM SORBATE\n0,1\n24634-61-5 / 590-00-1\n246-376-1\nSpecifications/Caratteristiche\nAspect/Aspetto\nWater solution/Soluzione acquosa\nColour/Colore\nCharacteristic/Caratteristico\nOdour/Odore\nCharacteristic/Caratteristico\npH\n2,6 - 3,5\nBoiling point/Punto di ebollizione:\n98-102℃ (at 760mmHg)\nDensity/Densità\n~ 1 g/cm3\nTotal microbial content/Conta microbica totale\n< 100 CFU/g\nPathogens/Patogeni\nNone/Assenti\nPHENBIOX srl via Ungheri 7/H 40012 Calderara di Reno (BO), Italy -C.F. / P.IVA / VAT nº 02696621206\nTel/Phone: +39 051 726640 - e-mail: info@phenbiox.it\n\n## Page 2\n\nphenbiox\nRecommendations /Raccomandazioni\nDuring formulation consider that the product has an acidic pH/Tenere presente in fase formulativa che il\nprodotto ha un pH acido.\nStore in a cool dry place, avoid prolonged exposure to light and heat/Conservare in luogo fresco e asciutto\nal riparo da fonti di calore e di luce.\nDue to the nature of the product a light precipitation might occur/Vista la naturalità del prodotto è possibile\nla formazione di una leggera posa.\nStatements/Dichiarazioni\nORIGIN/ORIGINE: Plant derived product/Prodotto di origine vegetale.\nPREFERENTIAL ORIGIN/ORIGINE PREFERENZIALE: The product is of EU (Italian) preferential origin\n/ Il prodotto originario della COMUNITÀ EUROPEA (ITALIA)\nSOLVENT IMPURITY/SOLVENTI RESIDUI: No solvent has been used in the production of the product\nexcept water and/or glycerine/Non si utilizzano solventi, tranne acqua e/o glicerina vegetale.\nGMO/OGM: The product does not contain nor does not come from genetically modified plant\nmaterials/ingredients therefore is considered a GMO free product/Il prodotto non contiene e non proviene\nda Organismi Geneticamente Modificati pertanto può essere considerate un prodotto OGM free.\nANIMAL TESTING/TEST SU ANIMALI: The product has not been tested on animals/Il prodotto non è mai\nstato testato su animali.\nSHELF-LIFE/DURATA DI CONSERVAZIONE: 12 months/12 mesi\nLast update/Ultimo aggiornamento: 25/10/2017\nPhenbiox s.r.l.\nPHENBIOX srl via Ungheri 7/H 40012 Calderara di Reno (BO), Italy -C.F. / P.IVA / VAT nº 02696621206\nTel/Phone: +39 051 726640 - e-mail: info@phenbiox.it",
+    "stg_lsBase64": "HIDDEN",
+    "gpt_manufacturer_or_supplier_answer": "PHENBIOX srl",
+    "gpt_manufacturer_or_supplier_reason": "The technical data sheet for the product ACTIVE JUICE CAVOLO NERO (KALE) lists PHENBIOX srl as the company with contact details and address, indicating it is the manufacturer or supplier of this product.",
+    "gpt_composition_search_answer": "",
+    "gpt_function_search_answer": "",
+    "gpt_application_search_answer": "",
+    "gpt_combined_web_search": "",
+    "gpt_text_of_this_product_only_answer": "HIDDEN",
+    "gpt_select_industry_cluster_answer": [
+        "Personal Care"
+    ],
+    "gpt_select_industry_cluster_reason": "Selected Personal Care because the document explicitly states the product is an ingredient for cosmetic products, indicating its use in personal care formulations. There is no mention or indication of use in homecare or institutional cleaning products.",
+    "gpt_select_compositions_answer": [
+        "Derived Natural",
+        "Synthetic",
+        "Vegetal"
+    ],
+    "gpt_select_compositions_reason": "Selected Derived Natural because the product contains citric acid, sodium benzoate, and potassium sorbate, which are derived natural substances. Selected Synthetic because sodium benzoate and potassium sorbate are synthetic preservatives. Selected Vegetal because the product is a fresh vegetal juice from kale leaves, explicitly stated as plant derived product.",
+    "gpt_select_functions_answer": [],
+    "gpt_select_functions_reason": "No specific functional claims or descriptions related to any of the listed functions are mentioned in the document. The product is described as a fresh vegetal juice ingredient for cosmetic products with no explicit functional properties such as antioxidant, preservative, emulsifier, etc. The composition and specifications do not indicate any of the functions listed.",
+    "gpt_select_applications_answer": [
+        "Skin Care"
+    ],
+    "gpt_select_applications_reason": "Selected Skin Care because the product is described as an ingredient for cosmetic products, which typically includes skin care formulations, and the product is a fresh vegetal juice from kale used as an additive in cosmetics.",
+    "gpt_cas_from_doc_answer": "N/A",
+    "gpt_cas_from_doc_reason": "The document lists CAS numbers only for the individual components of the juice (e.g., water, citric acid, sodium benzoate, potassium sorbate), but no CAS Registry Number is provided specifically for the product 'ACTIVE JUICE CAVOLO NERO (KALE)' itself.",
+    "gpt_physical_form_answer": "Liquid",
+    "gpt_physical_form_reason": "Selected Liquid because the document mentions the product as a 'Fresh vegetal juice' and describes its aspect as 'Water solution', indicating a liquid physical form.",
+    "gpt_gen_product_description": "ACTIVE JUICE CAVOLO NERO (KALE) is a fresh vegetal juice derived from kale leaves, presented as a water-based solution with a characteristic color and odor. It contains 20% kale juice along with citric acid and preservatives, offering an acidic pH between 2.6 and 3.5. This natural, GMO-free ingredient is ideal for cosmetic formulations, providing plant-derived benefits without animal testing and with a shelf life of 12 months.",
+    "gpt_recommended_dosage_answer": "N/A",
+    "gpt_recommended_dosage_reason": "No recommended dosage instructions are mentioned in the document for ACTIVE JUICE CAVOLO NERO (KALE) from PHENBIOX srl.",
+    "gpt_certifications_answer": [
+        "Vegan"
+    ],
+    "gpt_certifications_reason": "Selected Vegan because the document states the product is GMO free and has not been tested on animals, indicating it is suitable for vegan use. No other certifications are mentioned in the document.",
+    "gpt_claims_answer": [
+        "Natural Cosmetic",
+        "Vegan"
+    ],
+    "gpt_claims_reason": "Selected Natural Cosmetic because the product is described as a plant derived product and a fresh vegetal juice intended as an ingredient for cosmetic products, indicating its natural origin. Selected Vegan because the product is plant derived, contains no animal testing, and no animal ingredients are mentioned, supporting a vegan claim. No other specific functional claims such as anti-oxidant, anti-inflammatory, or moisturizing are mentioned in the document.",
+    "gpt_health_benefits_answer": [],
+    "gpt_health_benefits_reason": "Only applicable for FBI business line",
+    "time_start": "2026-01-15 09:22:48.495880",
+    "time_end": "2026-01-15 09:23:19.207171",
+    "time_duration": "30.711291"
+}
