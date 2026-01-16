@@ -4,8 +4,8 @@
 
 ```
 [V1.24-beta] - 2026-01-15
-- Update "PIM_buildBodySelectFunction"
-    Add new selection list for "FUNCTIONS"
+- Update "PIM_buildBodySelectFunction" - selection list for "FUNCTIONS"
+- Update "PIM_buildBodySelectApplication" - selection list for "APPLICATIONS"
 
 [V1.23-beta] - 2025-11-20
 - PIM_buildBodySelectIndustryCluster

@@ -1,0 +1,59 @@
+{
+    "inputProductName": "Apple juice concentrate",
+    "inputBusinessLine": "FBI",
+    "inputListDocumentation": "HIDDEN",
+    "inputSecret": "HIDDEN",
+    "inputWebSearch": false,
+    "inputParallel": true,
+    "stg_lsTempFile": "HIDDEN",
+    "stg_businessLineStr": "Food & Beverage",
+    "stg_hashinputProductName": "0343b82bf37df21f81b2483da549e25266d8e32ad6309266f53cad6dc55fc5d8",
+    "stg_hashinputBusinessLine": "c6cd4cf936fd5ad884ed4c278d147982124a6b7df27d95ddf58cd7a60660664c",
+    "stg_hashinputListDocumentation": "052dcc5b3b022350022a3f5a43a20a8fde7c3f8cb7b7dd220eaac4f3d97b6e93",
+    "stg_hashCombined": "baa09d9d9c0e216143cebe752ba65d001971d22e443bb025c082ee25901ab279",
+    "stg_lsParsedText": "HIDDEN",
+    "stg_parsedText": "TEXT_FROM_FILE_NAME:PIM000007436-Specification_1101103010101_Apple juice concentrate_Austria Juice Standard - Stock quality - Medium acidity.pdf \n\n\n## Page 1\n\nAUSTRIA\nJUICE\nProduct Specification\nAJ spec no .:\n1101103010101\nAJ material no .:\n11011030\nApple juice concentrate\nReviewed by:\nMHI\nReview date:\n22.08.2016\nGeneral Information:\nConcentrated apple juice is made by physically removing water from apple juice obtained from pressing of sound and ripe\napples.\nThis product complies with Directive 2012/12/EU and the AIJN Code of Practice.\nThis product contains no substances causing allergies or intolerances according to Regulation (EU) 1169/2011 Annex II.\nThis product complies with Regulation (EC) 1829/2003 and 1830/2003 and does not contain genetically modified\norganisms (GMO).\nResidues of Heavy metals and mycotoxins are within the limits of Regulation (EC) 1881/2006 and pesticide residues are in\naccordance with the Regulation (EC) 396/2005.\nFurther information:\nBotanical Name:\nMalus domestica Borkh.\nSensorical Specification:\nAppearance:\nTypical, clear, golden-yellow, viscous liquid\nFlavour and Taste: Typical for the named fruit\nPhysico-chemical Specification:\nRelating to concentrate:\nParameter\nUnit\nMethod\nTarget\nMIN\nMAX\nSoluble solids\n°Bx\nrefractometric\n69,5\n70,5\nTotal acidity as malic acid at pH 8.1\n%\ntitration\n1,8\n2,7\npH value\n20g conc. + 20g dest. H2O\n3,0\n4,2\nRelating to juice strength:\nParameter\nUnit\nMethod\nTarget\nMIN\nMAX\nJuice strength\n°Bx\npycnometric\n11,2\nAbsorption at 440nm\nAU\nphotometric\n0,20\n0,40\nTurbidity\nNTU\noptical\nMicrobiological Specification:\nParameter\nUnit\nMethod\nAseptically\nNon-Aseptically\nTotal viable count\ncfu/ml\nplate method\n< 30\n< 300\nYeasts\ncfu/ml\nplate method\n< 10\n< 100\nMould\ncfu/ml\nplate method\n< 10\n< 100\nPackaging and recommended storage information:\nPackaging:\nas agreed\nRecommended storage temperature: 4 - 6 ℃\nShelf life:\n6 months\nYour juice. Your choice!\nV02\nAUSTRIA JUICE GmbH | Kroellendorf 45 | 3365 Allhartsberg | Austria | www.austriajuice.com | Tel .: +43-7448-2304-0 |\nFax: +43-7448-2304-900 | info@austriajuice.com | Regional court: St. Poelten | Commercial register: FN 51816a |\nVAT: ATU62700456 | Managing Directors: DI Franz Ennser, MBA Markus Wagner, Dr. Lukas Maier\nPrint date:\n22.08.2016\nPage 1 of 1\n2,0",
+    "stg_lsBase64": "HIDDEN",
+    "gpt_manufacturer_or_supplier_answer": "AUSTRIA JUICE GmbH",
+    "gpt_manufacturer_or_supplier_reason": "The document is a product specification for Apple juice concentrate issued by AUSTRIA JUICE GmbH, with their contact details and company information clearly stated at the bottom of the page.",
+    "gpt_composition_search_answer": "",
+    "gpt_function_search_answer": "",
+    "gpt_application_search_answer": "",
+    "gpt_combined_web_search": "",
+    "gpt_text_of_this_product_only_answer": "HIDDEN",
+    "gpt_select_industry_cluster_answer": [
+        "Beverage & Dairy (BD)"
+    ],
+    "gpt_select_industry_cluster_reason": "Selected Beverage & Dairy (BD) because the product is apple juice concentrate, which is primarily used in beverage production as indicated by the product type and specifications related to juice concentration and quality. There is no mention of use in confectionary, food supplements, or processed food service in the document.",
+    "gpt_select_compositions_answer": [
+        "Fruit juice",
+        "Malic acid"
+    ],
+    "gpt_select_compositions_reason": "Selected 'Fruit juice' because the product is described as concentrated apple juice made from pressing ripe apples. Selected 'Malic acid' because the physico-chemical specification lists total acidity as malic acid, indicating its presence in the product.",
+    "gpt_select_functions_answer": [
+        "Acidity Regulator"
+    ],
+    "gpt_select_functions_reason": "Selected Acidity Regulator because the document specifies total acidity as malic acid and pH values, indicating control of acidity in the product. No mention of other functions such as preservatives, antioxidants, sweeteners, or emulsifiers is found in the document.",
+    "gpt_select_applications_answer": [
+        "Processed Food",
+        "Beverage",
+        "Ingredients Manufacturers"
+    ],
+    "gpt_select_applications_reason": "Selected Processed Food and Beverage because the product is apple juice concentrate, which is typically used in beverage production and processed food applications. Selected Ingredients Manufacturers because the product is a concentrate ingredient used by manufacturers in food and beverage production. No mention of direct use in baby food, plant-based alternatives, snacks, or nutraceuticals in the document.",
+    "gpt_cas_from_doc_answer": "N/A",
+    "gpt_cas_from_doc_reason": "The document provides detailed specifications for Apple juice concentrate from AUSTRIA JUICE GmbH but does not mention any CAS Registry Number.",
+    "gpt_physical_form_answer": "Liquid",
+    "gpt_physical_form_reason": "Selected Liquid because the document mentions in the Sensorical Specification section that the appearance of the apple juice concentrate is a 'viscous liquid'.",
+    "gpt_gen_product_description": "Apple juice concentrate from AUSTRIA JUICE GmbH is a clear, golden-yellow viscous liquid made by removing water from pressed ripe apples. It contains no allergens or GMOs and meets strict EU regulations for safety and quality. With a typical apple flavor, it is ideal for use in beverages and food products, offering consistent taste and high soluble solids content.",
+    "gpt_recommended_dosage_answer": "N/A",
+    "gpt_recommended_dosage_reason": "No recommended dosage instructions are mentioned in the document for Apple juice concentrate from AUSTRIA JUICE GmbH.",
+    "gpt_certifications_answer": [],
+    "gpt_certifications_reason": "No certifications related to Apple juice concentrate from AUSTRIA JUICE GmbH are explicitly mentioned in the provided document.",
+    "gpt_claims_answer": [],
+    "gpt_claims_reason": "No mention of bio-fermentation processes, meat or dairy alternatives, natural or ethical sourcing claims, resource or energy optimization, sustainable food waste reduction, or upcycling in the provided product specification document.",
+    "gpt_health_benefits_answer": [],
+    "gpt_health_benefits_reason": "No applicable health benefits because product functions not in the required list (Dietary Fiber, Food Culture, Fortification/Nutraceutical, Probiotic/Postbiotic, Protein)",
+    "time_start": "2026-01-16 09:58:48.538560",
+    "time_end": "2026-01-16 09:59:18.614256",
+    "time_duration": "30.075696"
+}
