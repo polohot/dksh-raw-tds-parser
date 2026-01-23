@@ -3,6 +3,10 @@
 **Use AI to parser PDF into specific format**
 
 ```
+[V1.25-beta] - 2026-01-23
+- Update "PIM_buildBodySelectCertifications" - selection list for "CERTIFICATIONS"
+- Update "PIM_buildBodySelectClaims" - selection list for "CLAIMS"
+
 [V1.24-beta] - 2026-01-15
 - Update "PIM_buildBodySelectFunction" - selection list for "FUNCTIONS"
 - Update "PIM_buildBodySelectApplication" - selection list for "APPLICATIONS"
